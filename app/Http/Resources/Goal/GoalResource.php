@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Http\Resources\Goal;
+
+use App\Http\Resources\GoalStep\GoalStepResource;
+use App\Models\Goal;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+/**
+ * @mixin Goal
+ */
+class GoalResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function toArray($request): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'steps' => GoalStepResource::collection($this->whenLoaded('steps')),
+        ];
+    }
+}
