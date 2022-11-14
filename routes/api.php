@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Currency\CurrencyController;
+use App\Http\Controllers\Exchange\ExchangeController;
 use App\Http\Controllers\Goal\GoalController;
 use App\Http\Controllers\GoalStep\GoalStepController;
 use App\Http\Controllers\Income\IncomeController;
@@ -57,6 +58,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('balances', [BalanceController::class, 'store']);
     Route::put('balances/{id}', [BalanceController::class, 'update'])->whereNumber('id');
     Route::delete('balances/{id}', [BalanceController::class, 'destroy'])->whereNumber('id');
+
+    Route::get('exchanges', [ExchangeController::class, 'index']);
+    Route::post('exchanges', [ExchangeController::class, 'store']);
 });
 
 // Example for auth

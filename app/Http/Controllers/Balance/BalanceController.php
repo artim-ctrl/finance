@@ -20,7 +20,7 @@ class BalanceController extends Controller
      */
     public function index(Request $request): BalanceCollection
     {
-        /** @var Balance[] $balances */
+        /** @var array<Balance> $balances */
         $balances = Balance::query()
             ->where('user_id', $request->user()->id)
             ->get()->all();
