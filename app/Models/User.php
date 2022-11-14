@@ -15,7 +15,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $email
  * @property string $password
  *
- * @property Collection<UserBalance> $balances
+ * @property Collection<Balance> $balances
  */
 class User extends Authenticatable
 {
@@ -44,6 +44,6 @@ class User extends Authenticatable
 
     public function balances(): HasMany
     {
-        return $this->hasMany(UserBalance::class);
+        return $this->hasMany(Balance::class);
     }
 }

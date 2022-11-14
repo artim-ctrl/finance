@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property User $user
  * @property Currency $currency
  */
-class UserBalance extends Model
+class Balance extends Model
 {
     use HasTimestamps;
 

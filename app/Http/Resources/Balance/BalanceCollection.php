@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources\UserBalance;
+namespace App\Http\Resources\Balance;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class UserBalanceCollection extends ResourceCollection
+class BalanceCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.

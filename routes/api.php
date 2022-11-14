@@ -9,7 +9,7 @@ use App\Http\Controllers\Income\IncomeController;
 use App\Http\Controllers\Loan\LoanController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\TokenController;
-use App\Http\Controllers\UserBalance\UserBalanceController;
+use App\Http\Controllers\Balance\BalanceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -53,10 +53,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('goals/{goalId}/steps', [GoalStepController::class, 'store'])->whereNumber('goalId');
     Route::delete('goals/{goalId}/steps/{id}', [GoalStepController::class, 'destroy'])->whereNumber(['goalId', 'id']);
 
-    Route::get('user-balances', [UserBalanceController::class, 'index']);
-    Route::post('user-balances', [UserBalanceController::class, 'store']);
-    Route::put('user-balances/{id}', [UserBalanceController::class, 'update'])->whereNumber('id');
-    Route::delete('user-balances/{id}', [UserBalanceController::class, 'destroy'])->whereNumber('id');
+    Route::get('balances', [BalanceController::class, 'index']);
+    Route::post('balances', [BalanceController::class, 'store']);
+    Route::put('balances/{id}', [BalanceController::class, 'update'])->whereNumber('id');
+    Route::delete('balances/{id}', [BalanceController::class, 'destroy'])->whereNumber('id');
 });
 
 // Example for auth

@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Resources\UserBalance;
+namespace App\Http\Resources\Balance;
 
-use App\Models\UserBalance;
+use App\Models\Balance;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin UserBalance
+ * @mixin Balance
  */
-class UserBalanceResource extends JsonResource
+class BalanceResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
