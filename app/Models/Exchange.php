@@ -8,17 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
+ * TODO: Do i need an actions table?
+ *
  * @property int $id
  * @property int $user_id
- * @property int $currency_id_from
+ * @property int $balance_id_from
  * @property float $amount_from
- * @property int $currency_id_to
+ * @property int $balance_id_to
  * @property float $amount_to
  * @property Carbon $exchanged_at
  *
  * @property User $user
- * @property Currency $currencyFrom
- * @property Currency $currencyTo
+ * @property Balance $balanceFrom
+ * @property Balance $balanceTo
  */
 class Exchange extends Model
 {
@@ -27,9 +29,9 @@ class Exchange extends Model
     /** @var array<string> */
     protected $fillable = [
         'user_id',
-        'currency_id_from',
+        'balance_id_from',
         'amount_from',
-        'currency_id_to',
+        'balance_id_to',
         'amount_to',
         'exchanged_at',
     ];
@@ -44,13 +46,13 @@ class Exchange extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function currencyFrom(): BelongsTo
+    public function balanceFrom(): BelongsTo
     {
-        return $this->belongsTo(Currency::class, 'currency_id_from');
+        return $this->belongsTo(Balance::class, 'balance_id_from');
     }
 
-    public function currencyTo(): BelongsTo
+    public function balanceTo(): BelongsTo
     {
-        return $this->belongsTo(Currency::class, 'currency_id_to');
+        return $this->belongsTo(Balance::class, 'balance_id_to');
     }
 }

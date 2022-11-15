@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Exchange;
 
-use App\Http\Resources\Currency\CurrencyResource;
+use App\Http\Resources\Balance\BalanceResource;
 use App\Http\Resources\User\UserResource;
 use App\Models\Exchange;
 use Illuminate\Http\Request;
@@ -24,9 +24,9 @@ class ExchangeResource extends JsonResource
         return [
             'id' => $this->id,
             'user' => UserResource::make($this->user),
-            'currency_from' => CurrencyResource::make($this->currencyFrom),
+            'balance_from' => BalanceResource::make($this->balanceFrom),
             'amount_from' => $this->amount_from,
-            'currency_to' => CurrencyResource::make($this->currencyTo),
+            'balance_to' => BalanceResource::make($this->balanceTo),
             'amount_to' => $this->amount_to,
             'exchanged_at' => $this->exchanged_at->format('d.m.Y H:i:s'),
         ];

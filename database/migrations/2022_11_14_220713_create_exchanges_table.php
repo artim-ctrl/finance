@@ -17,9 +17,9 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('currency_id_from')->constrained('currencies')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('balance_id_from')->constrained('balances')->cascadeOnUpdate()->cascadeOnDelete();
             $table->float('amount_from');
-            $table->foreignId('currency_id_to')->constrained('currencies')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('balance_id_to')->constrained('balances')->cascadeOnUpdate()->cascadeOnDelete();
             $table->float('amount_to');
             $table->dateTime('exchanged_at');
 
