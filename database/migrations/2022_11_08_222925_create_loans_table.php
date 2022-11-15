@@ -15,12 +15,12 @@ return new class extends Migration
     {
         Schema::create('loans', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->comment('User-named loan');
             $table->float('amount');
-            $table->foreignId('currency_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
-            $table->integer('term');
-            $table->date('first_payment')->nullable();
-            $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('currency_id')->comment('Currency in which the loan was issued')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->integer('term')->comment('Number of months for which the loan was issued');
+            $table->date('first_payment')->nullable()->comment('Date on which the first payment was made');
+            $table->foreignId('user_id')->comment('Borrower')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->timestamps();
         });

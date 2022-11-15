@@ -13,7 +13,7 @@ class CurrencyFactory extends Factory
     public function definition(): array
     {
         return [
-            'code' => fake()->countryCode(),
+            'code' => fake()->currencyCode(),
         ];
     }
 }

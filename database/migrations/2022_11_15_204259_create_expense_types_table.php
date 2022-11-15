@@ -13,14 +13,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('balances', function (Blueprint $table) {
+        Schema::create('expense_types', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('user_id')->comment('Balance owner')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('currency_id')->comment('Balance currency')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
-            $table->float('amount');
+            $table->string('name', 255)->comment('User-named or common type of expense');
+            $table->foreignId('user_id')->comment('User who made type of expense')->nullable()->constrained()->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->timestamps();
+
+            $table->unique([
+                'user_id',
+                'name',
+            ], 'user_id-name-unique-index');
         });
     }
 
@@ -31,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('balances');
+        Schema::dropIfExists('expense_types');
     }
 };

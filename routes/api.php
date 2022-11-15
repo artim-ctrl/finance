@@ -4,6 +4,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Currency\CurrencyController;
 use App\Http\Controllers\Exchange\ExchangeController;
+use App\Http\Controllers\Expense\ExpenseController;
+use App\Http\Controllers\ExpenseType\ExpenseTypeController;
 use App\Http\Controllers\Goal\GoalController;
 use App\Http\Controllers\GoalStep\GoalStepController;
 use App\Http\Controllers\Income\IncomeController;
@@ -26,7 +28,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('login', LoginController::class);
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function () { // TODO: split into files
     Route::get('profile', [ProfileController::class, 'show']);
     Route::post('profile', [ProfileController::class, 'update']);
 
@@ -61,6 +63,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('exchanges', [ExchangeController::class, 'index']);
     Route::post('exchanges', [ExchangeController::class, 'store']);
+
+    Route::get('expense-types', [ExpenseTypeController::class, 'index']);
+    Route::post('expense-types', [ExpenseTypeController::class, 'store']);
+
+    Route::get('expenses', [ExpenseController::class, 'index']);
+    Route::post('expenses', [ExpenseController::class, 'store']);
 });
 
 // Example for auth

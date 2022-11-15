@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('incomes', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 255);
-            $table->smallInteger('day_receiving');
-            $table->foreignId('currency_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->string('name', 255)->comment('User-named income');
+            $table->smallInteger('day_receiving')->comment('Monthly income date');
+            $table->foreignId('currency_id')->comment('The currency in which the user receives income')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->float('amount');
-            $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('user_id')->comment('Income recipient')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });
     }

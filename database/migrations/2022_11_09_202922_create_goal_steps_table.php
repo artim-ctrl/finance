@@ -16,14 +16,14 @@ return new class extends Migration
         Schema::create('goal_steps', function (Blueprint $table) {
             $table->id();
 
-            $table->string('name', 255);
+            $table->string('name', 255)->comment('User-named step of the goal');
             $table->foreignId('goal_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
 
-            $table->foreignId('estimated_currency_id')->constrained('currencies')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->float('estimated_amount');
+            $table->foreignId('estimated_currency_id')->comment('Estimated value currency')->constrained('currencies')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->float('estimated_amount')->comment('Estimated amount');
 
-            $table->foreignId('currency_id')->nullable()->constrained()->cascadeOnUpdate()->cascadeOnDelete();
-            $table->float('amount')->nullable();
+            $table->foreignId('currency_id')->comment('Actual value currency')->nullable()->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->float('amount')->comment('Actual amount')->nullable();
 
             $table->timestamps();
         });

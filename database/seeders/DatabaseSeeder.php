@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Currency;
+use App\Models\ExpenseType;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -31,6 +32,11 @@ class DatabaseSeeder extends Seeder
 
         Currency::factory()->create([
             'code' => 'TRY',
+        ]);
+
+        ExpenseType::factory()->create([
+            'name' => 'Common',
+            'user_id' => null,
         ]);
     }
 }
