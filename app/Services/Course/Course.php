@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Currency;
+namespace App\Services\Course;
 
 use Illuminate\Support\Facades\Facade;
 
@@ -11,13 +11,14 @@ use Illuminate\Support\Facades\Facade;
  * @method static float usdToRub(float $amount)
  * @method static float tryToUsd(float $amount)
  * @method static float tryToRub(float $amount)
+ * @method static float getCourse(string $from, string $to, float $amount = 1)
  *
- * @see CurrencyManager
+ * @see CourseManager
  */
-class Currency extends Facade
+class Course extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return CurrencyManager::class;
+        return CourseManager::class;
     }
 }

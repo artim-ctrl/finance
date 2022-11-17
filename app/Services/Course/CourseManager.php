@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\Currency;
+namespace App\Services\Course;
 
-class CurrencyManager
+class CourseManager
 {
     public function __construct(protected Client $client)
     {
@@ -10,35 +10,35 @@ class CurrencyManager
 
     public function usdToRub(float $amount): float
     {
-        return $this->getCurrency('USD', 'RUB', $amount);
+        return $this->getCourse('USD', 'RUB', $amount);
     }
 
     public function usdToTry(float $amount): float
     {
-        return $this->getCurrency('USD', 'TRY', $amount);
+        return $this->getCourse('USD', 'TRY', $amount);
     }
 
     public function rubToUsd(float $amount): float
     {
-        return $this->getCurrency('RUB', 'USD', $amount);
+        return $this->getCourse('RUB', 'USD', $amount);
     }
 
     public function rubToTry(float $amount): float
     {
-        return $this->getCurrency('RUB', 'TRY', $amount);
+        return $this->getCourse('RUB', 'TRY', $amount);
     }
 
     public function tryToUsd(float $amount): float
     {
-        return $this->getCurrency('TRY', 'USD', $amount);
+        return $this->getCourse('TRY', 'USD', $amount);
     }
 
     public function tryToRub(float $amount): float
     {
-        return $this->getCurrency('TRY', 'RUB', $amount);
+        return $this->getCourse('TRY', 'RUB', $amount);
     }
 
-    protected function getCurrency(string $from, string $to, float $amount): float
+    public function getCourse(string $from, string $to, float $amount = 1): float
     {
         return $this->client->getCurrency($from, $to) * $amount;
     }

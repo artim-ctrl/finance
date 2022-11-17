@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Currency\CoursesController;
 use App\Http\Controllers\Currency\CurrencyController;
 use App\Http\Controllers\Exchange\ExchangeController;
 use App\Http\Controllers\Expense\ExpenseController;
@@ -70,6 +71,8 @@ Route::middleware('auth:sanctum')->group(function () { // TODO: split into files
 
     Route::get('expenses', [ExpenseController::class, 'index']);
     Route::post('expenses', [ExpenseController::class, 'store']);
+
+    Route::get('courses', CoursesController::class);
 });
 
 // Example for auth

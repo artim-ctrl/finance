@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Currency;
+namespace App\Services\Course;
 
 use GuzzleHttp\Client as ClientGuzzle;
 use Illuminate\Support\Facades\Cache;

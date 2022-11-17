@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\GoalStep;
 
-use App\Exceptions\GoalStepNotFoundException;
+use App\Exceptions\Goal\GoalNotFoundException;
+use App\Exceptions\GoalStep\GoalStepNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Goal\GoalCollection;
 use App\Http\Resources\GoalStep\GoalStepResource;
+use App\Models\Goal;
 use App\Models\GoalStep;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class GoalStepController extends Controller
 {
@@ -70,11 +70,19 @@ class GoalStepController extends Controller
      */
     public function destroy(Request $request, int $goalId, int $id): JsonResponse
     {
+        if (
+            ! Goal::query()
+                ->where('id', $goalId)
+                ->where('user_id', $request->user()->id)
+                ->exists()
+        ) {
+            throw new GoalNotFoundException('Goal not found.');
+        }
+
         /** @var GoalStep $goalStep */
         $goalStep = GoalStep::query()
             ->where('id', $id)
             ->where('goal_id', $goalId)
-            ->where('user_id', $request->user()->id)
             ->first();
         if ($goalStep === null) {
             throw new GoalStepNotFoundException('Goal step not found.');
