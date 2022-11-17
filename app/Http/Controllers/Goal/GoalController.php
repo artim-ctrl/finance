@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Goal;
 
+use App\Exceptions\Goal\GoalNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Goal\GoalCollection;
 use App\Http\Resources\Goal\GoalResource;
@@ -25,6 +26,19 @@ class GoalController extends Controller
             ->get()->all();
 
         return GoalCollection::make($goals);
+    }
+
+    public function show(int $id): GoalResource
+    {
+        $goal = Goal::query()
+            ->where('id', $id)
+            ->with('steps')
+            ->first();
+        if ($goal === null) {
+            throw new GoalNotFoundException('Goal not found.');
+        }
+
+        return GoalResource::make($goal);
     }
 
     /**

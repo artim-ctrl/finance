@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\GoalStep;
 
+use App\Exceptions\GoalStepNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Goal\GoalCollection;
 use App\Http\Resources\GoalStep\GoalStepResource;
@@ -43,14 +44,14 @@ class GoalStepController extends Controller
         // TODO: validate goalId for access
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'estimated_currency_id' => 'required|exists:currencies,id',
+            'estimated_currency_id' => 'required|integer|exists:currencies,id',
             'estimated_amount' => 'required|numeric',
+            'currency_id' => 'nullable|integer|exists:currencies,id',
         ]);
 
         $validated = array_merge($validated, [
             'user_id' => $request->user()->id,
             'goal_id' => $goalId,
-            'currency_id' => null,
             'amount' => null,
         ]);
 
@@ -63,15 +64,19 @@ class GoalStepController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Request $request
+     * @param int $goalId
      * @param int $id
      * @return JsonResponse
      */
-    public function destroy(Request $request, int $id): JsonResponse
+    public function destroy(Request $request, int $goalId, int $id): JsonResponse
     {
         /** @var GoalStep $goalStep */
-        $goalStep = GoalStep::findOrFail($id);
+        $goalStep = GoalStep::query()
+            ->where('id', $id)
+            ->where('goal_id', $goalId)
+            ->first();
         if ($goalStep->goal->user_id !== $request->user()->id) {
-            throw (new ModelNotFoundException())->setModel(get_class($goalStep), $id);
+            throw new GoalStepNotFoundException('Goal step not found.');
         }
 
         $goalStep->forceDelete();
