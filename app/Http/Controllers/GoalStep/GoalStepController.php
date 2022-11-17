@@ -74,8 +74,9 @@ class GoalStepController extends Controller
         $goalStep = GoalStep::query()
             ->where('id', $id)
             ->where('goal_id', $goalId)
+            ->where('user_id', $request->user()->id)
             ->first();
-        if ($goalStep->goal->user_id !== $request->user()->id) {
+        if ($goalStep === null) {
             throw new GoalStepNotFoundException('Goal step not found.');
         }
 
