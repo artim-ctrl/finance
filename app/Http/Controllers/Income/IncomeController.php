@@ -36,10 +36,10 @@ class IncomeController extends Controller
 
     public function destroy(int $id): JsonResponse
     {
-        /** @var Income $incoem */
-        $incoem = Income::findOrFail($id);
+        /** @var Income $income */
+        $income = Income::findOrFail($id);
 
-        $incoem->forceDelete();
+        $income->forceDelete();
 
         return response()->json([
             'status' => 'ok',

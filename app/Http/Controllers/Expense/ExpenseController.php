@@ -52,7 +52,7 @@ class ExpenseController extends Controller
                 ->where('user_id', $request->user()->id)
                 ->first();
             if ($balance === null) {
-                throw new BalanceNotFoundException('User\'s balance not found.'); // TODO: Change to config usage?
+                throw new BalanceNotFoundException('User\'s balance not found.'); // TODO: Change to config usage? I mean /lang directory
             }
 
             if ($balance->amount < $validated['amount']) {
