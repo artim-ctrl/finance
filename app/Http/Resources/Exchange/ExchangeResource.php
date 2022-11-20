@@ -23,7 +23,6 @@ class ExchangeResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user' => UserResource::make($this->user),
             'balance_from' => BalanceResource::make($this->balanceFrom),
             'amount_from' => $this->amount_from,
             'balance_to' => BalanceResource::make($this->balanceTo),

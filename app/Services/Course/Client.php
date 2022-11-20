@@ -14,6 +14,11 @@ class Client
 
     public function getCurrency(string $from, string $to): float
     {
+        // TODO: crutch
+        if ($from === $to) {
+            return 1;
+        }
+
         $cacheKey = $this->getCacheKey($from, $to);
         if (Cache::has($cacheKey)) {
             return Cache::get($cacheKey);
