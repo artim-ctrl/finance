@@ -8,6 +8,7 @@ use App\Http\Controllers\Exchange\ExchangeController;
 use App\Http\Controllers\Expense\ExpenseController;
 use App\Http\Controllers\ExpenseType\ExpenseTypeController;
 use App\Http\Controllers\Goal\GoalController;
+use App\Http\Controllers\Goal\TotalsController;
 use App\Http\Controllers\GoalStep\GoalStepController;
 use App\Http\Controllers\Income\IncomeController;
 use App\Http\Controllers\Loan\LoanController;
@@ -57,6 +58,8 @@ Route::middleware('auth:sanctum')->group(function () { // TODO: split into files
     Route::get('goals/{goalId}/steps', [GoalStepController::class, 'index'])->whereNumber('goalId');
     Route::post('goals/{goalId}/steps', [GoalStepController::class, 'store'])->whereNumber('goalId');
     Route::delete('goals/{goalId}/steps/{id}', [GoalStepController::class, 'destroy'])->whereNumber(['goalId', 'id']);
+
+    Route::post('goals/{goalId}/totals', TotalsController::class)->whereNumber('goalId');
 
     Route::get('balances', [BalanceController::class, 'index']);
     Route::post('balances', [BalanceController::class, 'store']);
