@@ -6,10 +6,7 @@ use App\Exceptions\Goal\GoalNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Goal\GoalCollection;
 use App\Http\Resources\Goal\GoalResource;
-use App\Models\Currency;
 use App\Models\Goal;
-use App\Models\GoalStep;
-use App\Services\Course\Course;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -31,7 +28,7 @@ class GoalController extends Controller
         return GoalCollection::make($goals);
     }
 
-    public function show(Request $request, int $id): JsonResponse
+    public function show(Request $request, int $id): GoalResource
     {
         /** @var Goal $goal */
         $goal = Goal::query()
@@ -43,76 +40,7 @@ class GoalController extends Controller
             throw new GoalNotFoundException('Goal not found.');
         }
 
-        $currencies = Currency::all();
-
-        // TODO: move totals to separate method
-        // TODO: move to services
-        $totalsByCurrency = [];
-        $currencies->each(function(Currency $currency) use ($goal, &$totalsByCurrency) {
-            $totalsByCurrency[$currency->code] = $goal->steps
-                ->filter(fn(GoalStep $step) => $step->estimatedCurrency->code === $currency->code)
-                ->pluck('estimated_amount')
-                ->sum();
-        });
-
-        $totalsAll = [];
-        $currencies->each(function(Currency $currency) use ($goal, &$totalsAll) {
-            $totalsAll[$currency->code] = round(
-                $goal->steps
-                    ->map(fn (GoalStep $goalStep) =>
-                        Course::getCourse($goalStep->estimatedCurrency->code, $currency->code, $goalStep->estimated_amount)
-                    )
-                    ->sum(),
-                2
-            );
-        });
-
-        $differencesByCurrency = [];
-        $currencies->each(function (Currency $currency) use ($goal, &$differencesByCurrency){
-            $differencesByCurrency[$currency->code] = round(
-                $goal->steps
-                    ->filter(fn (GoalStep $goalStep) => $goalStep->currency->code === $currency->code && $goalStep->amount !== null)
-                    ->map(fn (GoalStep $goalStep) => $goalStep->estimated_amount - $goalStep->amount)
-                    ->sum(),
-                2
-            );
-        });
-
-        $differencesAll = [];
-        $currencies->each(function (Currency $currency) use ($goal, &$differencesAll) {
-            $map = fn (GoalStep $goalStep) =>
-                Course::getCourse(
-                    $goalStep->estimatedCurrency->code,
-                    $currency->code,
-                    $goalStep->estimated_amount
-                ) - Course::getCourse(
-                    $goalStep->currency->code,
-                    $currency->code,
-                    $goalStep->amount
-                );
-
-            $differencesAll[$currency->code] = round(
-                $goal->steps
-                    ->filter(fn (GoalStep $goalStep) => $goalStep->amount !== null)
-                    ->map($map)
-                    ->sum(),
-                2
-            );
-        });
-
-        return response()->json([
-            'data' => [
-                'goal' => GoalResource::make($goal),
-                'totals' => [
-                    'byCurrency' => $totalsByCurrency,
-                    'all' => $totalsAll,
-                ],
-                'differences' => [
-                    'byCurrency' => $differencesByCurrency,
-                    'all' => $differencesAll,
-                ],
-            ],
-        ]);
+        return GoalResource::make($goal);
     }
 
     /**
