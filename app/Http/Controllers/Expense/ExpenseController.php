@@ -33,6 +33,7 @@ class ExpenseController extends Controller
             'expense_type_id' => 'required|integer',
             'balance_id' => 'required|integer',
             'amount' => 'required|numeric',
+            'spent_at' => 'nullable|date',
         ]);
 
         DB::beginTransaction();

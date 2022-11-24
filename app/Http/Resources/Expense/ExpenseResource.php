@@ -27,6 +27,7 @@ class ExpenseResource extends JsonResource
             'type' => ExpenseTypeResource::make($this->type), // TODO: user is not required here
             'balance' => BalanceResource::make($this->balance),
             'amount' => $this->amount,
+            'spent_at' => $this->spent_at?->format('d.m.Y') ?: $this->created_at->format('d.m.Y'),
         ];
     }
 }

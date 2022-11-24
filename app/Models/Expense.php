@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,6 +14,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $expense_type_id
  * @property int $balance_id
  * @property float $amount
+ * @property Carbon $spent_at
+ * @property Carbon $created_at
  *
  * @property User $user
  * @property ExpenseType $type
@@ -29,6 +32,12 @@ class Expense extends Model
         'expense_type_id',
         'balance_id',
         'amount',
+        'spent_at',
+    ];
+
+    /** @var array<string, string> */
+    protected $casts = [
+        'spent_at' => 'date',
     ];
 
     public function user(): BelongsTo
