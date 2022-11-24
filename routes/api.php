@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Balance\BalanceController;
 use App\Http\Controllers\Currency\CoursesController;
 use App\Http\Controllers\Currency\CurrencyController;
 use App\Http\Controllers\Exchange\ExchangeController;
@@ -14,7 +16,6 @@ use App\Http\Controllers\Income\IncomeController;
 use App\Http\Controllers\Loan\LoanController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\TokenController;
-use App\Http\Controllers\Balance\BalanceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,6 +30,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('login', LoginController::class);
+Route::post('register', RegisterController::class);
 
 Route::middleware('auth:sanctum')->group(function () { // TODO: split into files
     Route::get('profile', [ProfileController::class, 'show']);
