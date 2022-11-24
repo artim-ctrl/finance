@@ -31,9 +31,7 @@ class ProfileController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $user->update([
-            'name' => $validated['name'],
-        ]);
+        $user->update(['name' => $validated['name']]);
 
         return UserResource::make($user);
     }

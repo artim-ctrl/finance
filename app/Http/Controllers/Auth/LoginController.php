@@ -23,7 +23,7 @@ class LoginController extends Controller
         if (! Auth::attempt($request->only(['email', 'password']))) {
             return response()->json([
                 'error' => 'Credentials are wrong',
-            ]);
+            ], 400);
         }
 
         $user = User::query()
