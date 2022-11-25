@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Exchange;
 use App\Exceptions\Balance\BalanceNotEnoughException;
 use App\Exceptions\Balance\BalanceNotFoundException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Exchange\StoreRequest;
 use App\Http\Resources\Exchange\ExchangeCollection;
 use App\Http\Resources\Exchange\ExchangeResource;
 use App\Models\Balance;
@@ -26,20 +27,13 @@ class ExchangeController extends Controller
     }
 
     /**
-     * TODO: try to use the request as dynamic-typed class
-     *
-     * @param Request $request
+     * @param StoreRequest $request
      * @return ExchangeResource
+     * @throws Throwable
      */
-    public function store(Request $request): ExchangeResource
+    public function store(StoreRequest $request): ExchangeResource
     {
-        $validated = $request->validate([
-            'balance_id_from' => 'required|integer',
-            'amount_from' => 'required|numeric',
-            'balance_id_to' => 'required|integer',
-            'amount_to' => 'required|numeric',
-            'exchanged_at' => 'required|date',
-        ]);
+        $validated = $request->validated();
 
         try {
             DB::beginTransaction();
@@ -74,16 +68,16 @@ class ExchangeController extends Controller
             $balanceTo->update(['amount' => $balanceTo->amount + $validated['amount_to']]);
 
             $validated = array_merge($validated, ['user_id' => $user->id]);
+
+            /** @var Exchange $exchange */
+            $exchange = Exchange::create($validated);
+
+            DB::commit();
         } catch (Throwable $exception) {
             DB::rollBack();
 
             throw $exception;
         }
-
-        DB::commit();
-
-        /** @var Exchange $exchange */
-        $exchange = Exchange::create($validated);
 
         return ExchangeResource::make($exchange);
     }

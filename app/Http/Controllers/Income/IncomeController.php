@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Income;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Income\StoreRequest;
 use App\Http\Resources\Income\IncomeCollection;
 use App\Http\Resources\Income\IncomeResource;
 use App\Models\Income;
@@ -18,17 +19,13 @@ class IncomeController extends Controller
         return IncomeCollection::make($incomes);
     }
 
-    public function store(Request $request): IncomeResource
+    public function store(StoreRequest $request): IncomeResource
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'day_receiving' => 'required|integer|max:31',
-            'currency_id' => 'required|exists:currencies,id',
-            'amount' => 'required|numeric',
-        ]);
+        $validated = $request->validated();
 
         $validated = array_merge($validated, ['user_id' => $request->user()->id]);
 
+        /** @var Income $income */
         $income = Income::create($validated);
 
         return IncomeResource::make($income);

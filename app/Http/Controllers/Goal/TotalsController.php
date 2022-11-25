@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Goal;
 
 use App\Exceptions\Goal\GoalNotFoundException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Goal\Totals\IndexRequest;
 use App\Models\Currency;
 use App\Models\Goal;
 use App\Models\GoalStep;
@@ -16,11 +17,11 @@ class TotalsController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param Request $request
+     * @param IndexRequest $request
      * @param int $goalId
      * @return JsonResponse
      */
-    public function __invoke(Request $request, int $goalId): JsonResponse
+    public function __invoke(IndexRequest $request, int $goalId): JsonResponse
     {
         $courses = $request->input('courses');
 
@@ -36,7 +37,6 @@ class TotalsController extends Controller
 
         $currencies = Currency::all();
 
-        // TODO: move totals to separate method
         // TODO: move to services
         $totalsByCurrency = [];
         $currencies->each(function (Currency $currency) use ($goal, &$totalsByCurrency) {
@@ -62,7 +62,7 @@ class TotalsController extends Controller
         $currencies->each(function (Currency $currency) use ($goal, &$differencesByCurrency) {
             $differencesByCurrency[$currency->code] = round(
                 $goal->steps
-                    ->filter(fn(GoalStep $goalStep) => $goalStep->currency->code === $currency->code && $goalStep->amount !== null)
+                    ->filter(fn(GoalStep $goalStep) => $goalStep->amount !== null && $goalStep->currency !== null && $goalStep->currency->code === $currency->code)
                     ->map(fn(GoalStep $goalStep) => $goalStep->estimated_amount - $goalStep->amount)
                     ->sum(),
                 2
@@ -83,7 +83,7 @@ class TotalsController extends Controller
 
             $differencesAll[$currency->code] = round(
                 $goal->steps
-                    ->filter(fn(GoalStep $goalStep) => $goalStep->amount !== null)
+                    ->filter(fn(GoalStep $goalStep) => $goalStep->amount !== null && $goalStep->currency !== null)
                     ->map($map)
                     ->sum(),
                 2

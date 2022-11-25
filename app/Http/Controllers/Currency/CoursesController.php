@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Currency;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Currency\Course\IndexRequest;
 use App\Models\Currency;
 use App\Services\Course\Course;
 use Illuminate\Http\JsonResponse;
@@ -14,17 +15,13 @@ class CoursesController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param Request $request
+     * @param IndexRequest $request
      * @return JsonResponse
      */
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(IndexRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'currencies' => 'required|array',
-        ]);
-
-        $currencies = Currency::query()->whereIn('code', $validated['currencies'])->get()->pluck('code');
-        if (count($validated['currencies']) !== $currencies->count()) {
+        $currencies = Currency::query()->whereIn('code', $request->input('currencies'))->get()->pluck('code');
+        if (count($request->input('currencies')) !== $currencies->count()) {
             throw new RuntimeException('Currencies don\'t exist');
         }
 

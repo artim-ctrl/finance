@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ExpenseType;
 
 use App\Exceptions\ExpenseType\ExpenseTypeAlreadyExistsException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ExpenseType\StoreRequest;
 use App\Http\Resources\ExpenseType\ExpenseTypeCollection;
 use App\Http\Resources\ExpenseType\ExpenseTypeResource;
 use App\Models\ExpenseType;
@@ -21,11 +22,9 @@ class ExpenseTypeController extends Controller
         return ExpenseTypeCollection::make($expenseTypes);
     }
 
-    public function store(Request $request): ExpenseTypeResource
+    public function store(StoreRequest $request): ExpenseTypeResource
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
+        $validated = $request->validated();
 
         if (
             ExpenseType::query()

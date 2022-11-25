@@ -3,23 +3,17 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\NewAccessToken;
 
 class LoginController extends Controller
 {
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(LoginRequest $request): JsonResponse
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
-            'token-name' => 'required|string',
-        ]);
-
         if (! Auth::attempt($request->only(['email', 'password']))) {
             return response()->json([
                 'error' => 'Credentials are wrong',

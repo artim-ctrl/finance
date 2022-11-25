@@ -6,6 +6,7 @@ use App\Exceptions\Balance\BalanceNotEnoughException;
 use App\Exceptions\Balance\BalanceNotFoundException;
 use App\Exceptions\ExpenseType\ExpenseTypeNotExistsException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Expense\StoreRequest;
 use App\Http\Resources\Expense\ExpenseCollection;
 use App\Http\Resources\Expense\ExpenseResource;
 use App\Models\Balance;
@@ -26,15 +27,9 @@ class ExpenseController extends Controller
         return ExpenseCollection::make($expenses);
     }
 
-    public function store(Request $request): ExpenseResource
+    public function store(StoreRequest $request): ExpenseResource
     {
-        $validated = $request->validate([ // TODO: move to request-class
-            'name' => 'required|string|max:255',
-            'expense_type_id' => 'required|integer',
-            'balance_id' => 'required|integer',
-            'amount' => 'required|numeric',
-            'spent_at' => 'nullable|date',
-        ]);
+        $validated = $request->validated();
 
         DB::beginTransaction();
 
@@ -68,13 +63,13 @@ class ExpenseController extends Controller
 
             /** @var Expense $expense */
             $expense = Expense::create($validated);
+
+            DB::commit();
         } catch (Throwable $exception) {
             DB::rollBack();
 
             throw $exception;
         }
-
-        DB::commit();
 
         return ExpenseResource::make($expense);
     }
