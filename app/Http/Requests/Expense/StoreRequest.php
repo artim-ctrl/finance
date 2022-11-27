@@ -19,6 +19,7 @@ class StoreRequest extends FormRequest
             'balance_id' => 'required|integer',
             'amount' => 'required|numeric',
             'spent_at' => 'nullable|date',
+            'planned_at' => 'nullable|date',
         ];
     }
 }

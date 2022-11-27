@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $balance_id
  * @property float $amount
  * @property Carbon $spent_at
+ * @property Carbon $planned_at
  * @property Carbon $created_at
  *
  * @property User $user
@@ -33,11 +34,13 @@ class Expense extends Model
         'balance_id',
         'amount',
         'spent_at',
+        'planned_at',
     ];
 
     /** @var array<string, string> */
     protected $casts = [
         'spent_at' => 'date',
+        'planned_at' => 'date',
     ];
 
     public function user(): BelongsTo

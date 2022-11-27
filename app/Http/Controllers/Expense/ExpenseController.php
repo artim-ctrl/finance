@@ -12,6 +12,7 @@ use App\Http\Resources\Expense\ExpenseResource;
 use App\Models\Balance;
 use App\Models\Expense;
 use App\Models\ExpenseType;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -36,8 +37,8 @@ class ExpenseController extends Controller
         try {
             if (
                 ! ExpenseType::query()
-                    ->whereNull('user_id')
-                    ->orWhere('user_id', $request->user()->id)
+                    ->where('id', $validated['expense_type_id'])
+                    ->where(fn(Builder $query) => $query->whereNull('user_id')->orWhere('user_id', $request->user()->id))
                     ->exists()
             ) {
                 throw new ExpenseTypeNotExistsException('Expense type not found.');
@@ -45,21 +46,24 @@ class ExpenseController extends Controller
 
             /** @var Balance $balance */
             $balance = Balance::query()
+                ->where('id', $validated['balance_id'])
                 ->where('user_id', $request->user()->id)
                 ->first();
             if ($balance === null) {
                 throw new BalanceNotFoundException('User\'s balance not found.'); // TODO: Change to config usage? I mean /lang directory
             }
 
-            if ($balance->amount < $validated['amount']) {
-                throw new BalanceNotEnoughException('There are not enough funds on the balance.');
-            }
-
             $validated = array_merge($validated, ['user_id' => $request->user()->id]);
 
-            $balance->update([
-                'amount' => $balance->amount - $validated['amount'],
-            ]);
+            if ($validated['spent_at'] !== null) {
+                if ($balance->amount < $validated['amount']) {
+                    throw new BalanceNotEnoughException('There are not enough funds on the balance.');
+                }
+
+                $balance->update([
+                    'amount' => $balance->amount - $validated['amount'],
+                ]);
+            }
 
             /** @var Expense $expense */
             $expense = Expense::create($validated);
