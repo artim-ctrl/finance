@@ -7,10 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Goal\Totals\IndexRequest;
 use App\Models\Currency;
 use App\Models\Goal;
-use App\Models\GoalStep;
-use App\Services\Course\Course;
+use App\Services\GoalStep\DifferencesGettingService;
+use App\Services\GoalStep\TotalsGettingService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class TotalsController extends Controller
 {
@@ -19,9 +18,11 @@ class TotalsController extends Controller
      *
      * @param IndexRequest $request
      * @param int $goalId
+     * @param TotalsGettingService $totalsGettingService
+     * @param DifferencesGettingService $differencesGettingService
      * @return JsonResponse
      */
-    public function __invoke(IndexRequest $request, int $goalId): JsonResponse
+    public function __invoke(IndexRequest $request, int $goalId, TotalsGettingService $totalsGettingService, DifferencesGettingService $differencesGettingService): JsonResponse
     {
         $courses = $request->input('courses');
 
@@ -37,58 +38,10 @@ class TotalsController extends Controller
 
         $currencies = Currency::all();
 
-        // TODO: move to services
-        $totalsByCurrency = [];
-        $currencies->each(function (Currency $currency) use ($goal, &$totalsByCurrency) {
-            $totalsByCurrency[$currency->code] = $goal->steps
-                ->filter(fn(GoalStep $step) => $step->estimatedCurrency->code === $currency->code)
-                ->pluck('estimated_amount')
-                ->sum();
-        });
-
-        $totalsAll = [];
-        $currencies->each(function (Currency $currency) use ($goal, &$totalsAll, $courses) {
-            $totalsAll[$currency->code] = round(
-                $goal->steps
-                    ->map(fn(GoalStep $goalStep) =>
-                        (($courses[$goalStep->estimatedCurrency->code][$currency->code] ?? 0) * $goalStep->estimated_amount)
-                            ?: Course::getCourse($goalStep->estimatedCurrency->code, $currency->code, $goalStep->estimated_amount))
-                    ->sum(),
-                2
-            );
-        });
-
-        $differencesByCurrency = [];
-        $currencies->each(function (Currency $currency) use ($goal, &$differencesByCurrency) {
-            $differencesByCurrency[$currency->code] = round(
-                $goal->steps
-                    ->filter(fn(GoalStep $goalStep) => $goalStep->amount !== null && $goalStep->currency !== null && $goalStep->currency->code === $currency->code)
-                    ->map(fn(GoalStep $goalStep) => $goalStep->estimated_amount - $goalStep->amount)
-                    ->sum(),
-                2
-            );
-        });
-
-        $differencesAll = [];
-        $currencies->each(function (Currency $currency) use ($goal, &$differencesAll, $courses) {
-            $map = fn(GoalStep $goalStep) => (($courses[$goalStep->estimatedCurrency->code][$currency->code] ?? 0) * $goalStep->estimated_amount) ?: Course::getCourse(
-                    $goalStep->estimatedCurrency->code,
-                    $currency->code,
-                    $goalStep->estimated_amount
-                ) - (($courses[$goalStep->currency->code][$currency->code] ?? 0) * $goalStep->estimated_amount) ?: Course::getCourse(
-                    $goalStep->currency->code,
-                    $currency->code,
-                    $goalStep->amount
-                );
-
-            $differencesAll[$currency->code] = round(
-                $goal->steps
-                    ->filter(fn(GoalStep $goalStep) => $goalStep->amount !== null && $goalStep->currency !== null)
-                    ->map($map)
-                    ->sum(),
-                2
-            );
-        });
+        $totalsByCurrency = $totalsGettingService->getByCurrency($currencies, $goal);
+        $totalsAll = $totalsGettingService->getAll($currencies, $courses, $goal);
+        $differencesByCurrency = $differencesGettingService->getByCurrency($currencies, $goal);
+        $differencesAll = $differencesGettingService->getAll($currencies, $courses, $goal);
 
         return response()->json([
             'data' => [

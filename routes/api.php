@@ -59,6 +59,7 @@ Route::middleware('auth:sanctum')->group(function () { // TODO: split into files
 
     Route::get('goals/{goalId}/steps', [GoalStepController::class, 'index'])->whereNumber('goalId');
     Route::post('goals/{goalId}/steps', [GoalStepController::class, 'store'])->whereNumber('goalId');
+    Route::put('goals/{goalId}/steps/{id}', [GoalStepController::class, 'update'])->whereNumber(['goalId', 'id']);
     Route::delete('goals/{goalId}/steps/{id}', [GoalStepController::class, 'destroy'])->whereNumber(['goalId', 'id']);
 
     Route::post('goals/{goalId}/totals', TotalsController::class)->whereNumber('goalId');

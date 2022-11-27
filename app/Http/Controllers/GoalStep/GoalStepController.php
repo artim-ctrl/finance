@@ -6,6 +6,7 @@ use App\Exceptions\Goal\GoalNotFoundException;
 use App\Exceptions\GoalStep\GoalStepNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GoalStep\StoreRequest;
+use App\Http\Requests\GoalStep\UpdateRequest;
 use App\Http\Resources\Goal\GoalCollection;
 use App\Http\Resources\GoalStep\GoalStepResource;
 use App\Models\Goal;
@@ -58,6 +59,23 @@ class GoalStepController extends Controller
         return GoalStepResource::make($goalStep);
     }
 
+    public function update(UpdateRequest $request, int $goalId, int $id): GoalStepResource
+    {
+        if (! Goal::query()->where('id', $goalId)->where('user_id', $request->user()->id)->exists()) {
+            throw new GoalNotFoundException('Goal not exist');
+        }
+
+        /** @var GoalStep $goalStep */
+        $goalStep = GoalStep::query()->where('id', $id)->first();
+        if ($goalStep === null || $goalStep->goal_id !== $goalId) {
+            throw new GoalStepNotFoundException('Goal step not found.');
+        }
+
+        $goalStep->update(['amount' => $request->input('amount')]);
+
+        return GoalStepResource::make($goalStep);
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -68,14 +86,13 @@ class GoalStepController extends Controller
      */
     public function destroy(Request $request, int $goalId, int $id): JsonResponse
     {
+        if (! Goal::query()->where('id', $goalId)->where('user_id', $request->user()->id)->exists()) {
+            throw new GoalNotFoundException('Goal not exist');
+        }
+
         /** @var GoalStep $goalStep */
-        $goalStep = GoalStep::query()
-            ->leftJoin('goals', 'goal_steps.goal_id', '=', 'goals.id')
-            ->where('goal_steps.id', $id)
-            ->where('goals.id', $goalId)
-            ->where('goals.user_id', $request->user()->id)
-            ->first();
-        if ($goalStep === null) {
+        $goalStep = GoalStep::query()->where('id', $id)->first();
+        if ($goalStep === null || $goalStep->goal_id !== $goalId) {
             throw new GoalStepNotFoundException('Goal step not found.');
         }
 
