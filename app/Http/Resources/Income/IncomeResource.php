@@ -19,12 +19,24 @@ class IncomeResource extends JsonResource
      */
     public function toArray($request): array
     {
+        $nextIncrease = null;
+        if ($this->increase_month !== null) {
+            $nextIncrease = now()->setDay($this->day_receiving)->setMonth($this->increase_month);
+        }
+
+        $nextReceiving = now()->setDay($this->day_receiving);
+        if ($nextReceiving->day < now()->day) {
+            $nextReceiving->addMonth();
+        }
+
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'day_receiving' => $this->day_receiving,
+            'next_receiving' => $nextReceiving->format('d.m.Y'),
             'currency' => $this->currency->code,
             'amount' => $this->amount,
+            'next_increase' => $nextIncrease?->format('d.m.Y'),
+            'increase_amount' => $this->increase_amount,
         ];
     }
 }

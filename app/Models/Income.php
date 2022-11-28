@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $currency_id
  * @property float $amount
  * @property int $user_id
+ * @property int|null $increase_month
+ * @property float|null $increase_amount
  *
  * @property Currency $currency
  * @property User $user
@@ -28,6 +30,8 @@ class Income extends Model
         'currency_id',
         'amount',
         'user_id',
+        'increase_month',
+        'increase_amount',
     ];
 
     public function currency(): BelongsTo

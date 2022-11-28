@@ -18,6 +18,8 @@ class StoreRequest extends FormRequest
             'day_receiving' => 'required|integer|max:31',
             'currency_id' => 'required|exists:currencies,id',
             'amount' => 'required|numeric',
+            'increase_month' => 'nullable|integer|min:1|max:12',
+            'increase_amount' => 'nullable|numeric',
         ];
     }
 }
