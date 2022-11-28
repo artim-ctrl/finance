@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property int $id
  * @property string $name
+ * @property string $description
  * @property int $user_id
  * @property int $expense_type_id
  * @property int $balance_id
@@ -29,6 +30,7 @@ class Expense extends Model
     /** @var array<int, string> */
     protected $fillable = [
         'name',
+        'description',
         'user_id',
         'expense_type_id',
         'balance_id',

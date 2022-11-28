@@ -24,6 +24,7 @@ class ExpenseResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'description' => $this->description,
             'type' => ExpenseTypeResource::make($this->type), // TODO: user is not required here
             'balance' => BalanceResource::make($this->balance),
             'amount' => $this->amount,

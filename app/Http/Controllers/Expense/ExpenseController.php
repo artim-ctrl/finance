@@ -33,7 +33,6 @@ class ExpenseController extends Controller
         $validated = $request->validated();
 
         DB::beginTransaction();
-
         try {
             if (
                 ! ExpenseType::query()

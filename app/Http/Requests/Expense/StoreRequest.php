@@ -15,6 +15,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:2048',
             'expense_type_id' => 'required|integer',
             'balance_id' => 'required|integer',
             'amount' => 'required|numeric',
