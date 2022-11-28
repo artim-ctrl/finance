@@ -20,6 +20,7 @@ class StoreRequest extends FormRequest
             'amount' => 'required|numeric',
             'spent_at' => 'nullable|date',
             'planned_at' => 'nullable|date',
+            'for_history' => 'required|boolean',
         ];
     }
 }
