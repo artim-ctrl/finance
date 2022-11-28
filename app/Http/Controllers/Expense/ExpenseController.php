@@ -54,7 +54,7 @@ class ExpenseController extends Controller
             }
 
             $validated = array_merge($validated, ['user_id' => $request->user()->id]);
-            if ($validated['spent_at'] !== null || $validated['for_history']) {
+            if ($validated['spent_at'] !== null || ! $validated['for_history']) {
                 if ($balance->amount < $validated['amount']) {
                     throw new BalanceNotEnoughException('There are not enough funds on the balance.');
                 }
