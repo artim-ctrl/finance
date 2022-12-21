@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Cache;
 class Client
 {
     protected const BASE_URI = 'https://api.apilayer.com';
-    protected const API_KEY = 'VDG3ryp05xX5p00LF7edN3Agvh93V1fz';
     protected const CACHE_PREFIX = 'currency';
     protected const CACHE_TTL = 24 * 60 * 60;
 
@@ -40,7 +39,7 @@ class Client
     {
         return new ClientGuzzle([
             'base_uri' => static::BASE_URI,
-            'headers' => ['apiKey' => static::API_KEY],
+            'headers' => ['apiKey' => config('apilayer.key')],
         ]);
     }
 
