@@ -3,6 +3,7 @@
 namespace App\Services\Course;
 
 use GuzzleHttp\Client as ClientGuzzle;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Cache;
 
 class Client
@@ -11,6 +12,9 @@ class Client
     protected const CACHE_PREFIX = 'currency';
     protected const CACHE_TTL = 24 * 60 * 60;
 
+    /**
+     * @throws GuzzleException
+     */
     public function getCurrency(string $from, string $to): float
     {
         // TODO: crutch
