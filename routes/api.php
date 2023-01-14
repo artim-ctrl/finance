@@ -80,8 +80,3 @@ Route::middleware('auth:sanctum')->group(function () { // TODO: split into files
 
     Route::get('courses', CoursesController::class);
 });
-
-// Example for auth
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });

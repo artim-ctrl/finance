@@ -34,6 +34,10 @@ class DatabaseSeeder extends Seeder
             'code' => 'TRY',
         ]);
 
+        Currency::factory()->create([
+            'code' => 'EUR',
+        ]);
+
         ExpenseType::factory()->create([
             'name' => 'Common',
             'user_id' => null,
