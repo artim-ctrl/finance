@@ -39,6 +39,7 @@ class LoanResource extends JsonResource
             'term' => $this->term,
             'first_payment' => $this->first_payment->format('d.m.Y'),
             'next_payment' => $nextPayment->format('d.m.Y'),
+            'last_payment' => $this->first_payment->addMonths($this->term - 1)->format('d.m.Y'),
         ];
     }
 }
