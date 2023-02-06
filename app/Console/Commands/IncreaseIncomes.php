@@ -29,7 +29,12 @@ class IncreaseIncomes extends Command
      */
     public function handle(): int
     {
-        $incomes = Income::query()->whereNotNull('increase_month');
+        $today = now();
+        $incomes = Income::query()
+            ->whereNotNull('increase_month')
+            ->where('day_receiving', $today->day)
+            ->where('increase_month', $today->month);
+
         $incomes->chunk(10000, function (Collection $chunk) {
             $chunk->each(function (Income $income) {
                 $income->update([
