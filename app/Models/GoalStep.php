@@ -12,8 +12,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $goal_id
  * @property int $estimated_currency_id
  * @property float $estimated_amount
- * @property int $currency_id
- * @property float $amount
+ * @property int|null $currency_id
+ * @property float|null $amount
  *
  * @property Goal $goal
  * @property Currency $estimatedCurrency

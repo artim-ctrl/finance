@@ -13,15 +13,22 @@ class TotalsGettingService
     /**
      * @param Collection<Currency> $currencies
      * @param Goal $goal
+     * @param bool $left
      * @return array<string, float>
      */
-    public function getByCurrency(Collection $currencies, Goal $goal): array
+    public function getByCurrency(Collection $currencies, Goal $goal, bool $left = false): array
     {
         $totals = [];
         foreach ($currencies as $currency) {
             $sum = $goal->steps
                 ->filter(fn(GoalStep $step) => $step->estimatedCurrency->code === $currency->code)
-                ->pluck('estimated_amount')
+                ->map(function (GoalStep $step) use ($left) {
+                    if ($left && null !== $step->amount) {
+                        return 0;
+                    }
+
+                    return $step->estimated_amount;
+                })
                 ->sum();
 
             $totals[$currency->code] = round($sum, 2);
@@ -34,15 +41,20 @@ class TotalsGettingService
      * @param Collection<Currency> $currencies
      * @param array<string, array<string, float>> $courses
      * @param Goal $goal
+     * @param bool $left
      * @return array<string, float>
      */
-    public function getAll(Collection $currencies, array $courses, Goal $goal): array
+    public function getAll(Collection $currencies, array $courses, Goal $goal, bool $left = false): array
     {
         $totals = [];
         foreach ($currencies as $currency) {
-            $sum = $goal->steps->map(
-                fn(GoalStep $goalStep) => $this->getCourse($goalStep, $currency, $courses)
-            )->sum();
+            $sum = $goal->steps->map(function (GoalStep $goalStep) use ($currency, $courses, $left) {
+                if ($left && null !== $goalStep->amount) {
+                    return 0;
+                }
+
+                return $this->getCourse($goalStep, $currency, $courses);
+            })->sum();
 
             $totals[$currency->code] = round($sum, 2);
         }

@@ -22,8 +22,12 @@ class TotalsController extends Controller
      * @param DifferencesGettingService $differencesGettingService
      * @return JsonResponse
      */
-    public function __invoke(IndexRequest $request, int $goalId, TotalsGettingService $totalsGettingService, DifferencesGettingService $differencesGettingService): JsonResponse
-    {
+    public function __invoke(
+        IndexRequest $request,
+        int $goalId,
+        TotalsGettingService $totalsGettingService,
+        DifferencesGettingService $differencesGettingService,
+    ): JsonResponse {
         $courses = $request->input('courses');
 
         /** @var Goal $goal */
@@ -32,7 +36,7 @@ class TotalsController extends Controller
             ->where('user_id', $request->user()->id)
             ->with(['steps', 'steps.estimatedCurrency', 'steps.currency'])
             ->first();
-        if ($goal === null) {
+        if (null === $goal) {
             throw new GoalNotFoundException('Goal not found.');
         }
 
@@ -40,8 +44,12 @@ class TotalsController extends Controller
 
         $totalsByCurrency = $totalsGettingService->getByCurrency($currencies, $goal);
         $totalsAll = $totalsGettingService->getAll($currencies, $courses, $goal);
+
         $differencesByCurrency = $differencesGettingService->getByCurrency($currencies, $goal);
         $differencesAll = $differencesGettingService->getAll($currencies, $courses, $goal);
+
+        $leftByCurrency = $totalsGettingService->getByCurrency($currencies, $goal, left: true);
+        $leftAll = $totalsGettingService->getAll($currencies, $courses, $goal, left: true);
 
         return response()->json([
             'data' => [
@@ -52,6 +60,10 @@ class TotalsController extends Controller
                 'differences' => [
                     'byCurrency' => $differencesByCurrency,
                     'all' => $differencesAll,
+                ],
+                'left' => [
+                    'byCurrency' => $leftByCurrency,
+                    'all' => $leftAll,
                 ],
             ],
         ]);
