@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Services\Course;
+namespace App\Modules\Course;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static float getCourse(string $from, string $to, float $amount = 1)
+ * @method static float getCourse(string $from, string $to)
+ * @method static array getCourses(string $from, array $to)
  *
  * @see CourseManager
  */

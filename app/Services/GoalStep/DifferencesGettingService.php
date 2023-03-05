@@ -5,11 +5,15 @@ namespace App\Services\GoalStep;
 use App\Models\Currency;
 use App\Models\Goal;
 use App\Models\GoalStep;
-use App\Services\Course\Course;
+use App\Services\Currency\GettingCourseService;
 use Illuminate\Support\Collection;
 
 class DifferencesGettingService
 {
+    public function __construct(protected GettingCourseService $gettingCourseService)
+    {
+    }
+
     /**
      * @param Collection<Currency> $currencies
      * @param Goal $goal
@@ -73,14 +77,14 @@ class DifferencesGettingService
         if ($estimatedCourse !== null) {
             $estimatedAmount = $estimatedCourse * $goalStep->estimated_amount;
         } else {
-            $estimatedAmount = Course::getCourse($goalStep->estimatedCurrency->code, $currency->code, $goalStep->estimated_amount);
+            $estimatedAmount = $this->gettingCourseService->calcAmount($goalStep->estimatedCurrency->code, $currency->code, $goalStep->estimated_amount);
         }
 
         $course = $courses[$goalStep->currency->code][$currency->code] ?? null;
         if ($course !== null) {
             $amount = $course * $goalStep->estimated_amount;
         } else {
-            $amount = Course::getCourse($goalStep->currency->code, $currency->code, $goalStep->amount);
+            $amount = $this->gettingCourseService->calcAmount($goalStep->currency->code, $currency->code, $goalStep->amount);
         }
 
         return $estimatedAmount - $amount;

@@ -5,13 +5,16 @@ namespace App\Http\Controllers\Currency;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Currency\Course\IndexRequest;
 use App\Models\Currency;
-use App\Services\Course\Course;
+use App\Services\Currency\GettingCourseService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use RuntimeException;
 
 class CoursesController extends Controller
 {
+    public function __construct(protected GettingCourseService $gettingCourseService)
+    {
+    }
+
     /**
      * Handle the incoming request.
      *
@@ -32,7 +35,7 @@ class CoursesController extends Controller
                 if ($currencyFrom === $currencyTo) {
                     $coursesTo[$currencyTo] = 1;
                 } else {
-                    $coursesTo[$currencyTo] = Course::getCourse($currencyFrom, $currencyTo);
+                    $coursesTo[$currencyTo] = $this->gettingCourseService->calcAmount($currencyFrom, $currencyTo);
                 }
             }
 

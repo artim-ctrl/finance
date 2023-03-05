@@ -5,11 +5,15 @@ namespace App\Services\GoalStep;
 use App\Models\Currency;
 use App\Models\Goal;
 use App\Models\GoalStep;
-use App\Services\Course\Course;
+use App\Services\Currency\GettingCourseService;
 use Illuminate\Support\Collection;
 
 class TotalsGettingService
 {
+    public function __construct(protected GettingCourseService $gettingCourseService)
+    {
+    }
+
     /**
      * @param Collection<Currency> $currencies
      * @param Goal $goal
@@ -69,6 +73,6 @@ class TotalsGettingService
             return $customCourse * $goalStep->estimated_amount;
         }
 
-        return Course::getCourse($goalStep->estimatedCurrency->code, $currency->code, $goalStep->estimated_amount);
+        return $this->gettingCourseService->calcAmount($goalStep->estimatedCurrency->code, $currency->code, $goalStep->estimated_amount);
     }
 }
