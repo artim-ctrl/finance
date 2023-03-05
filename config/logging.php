@@ -52,18 +52,9 @@ return [
 
     'channels' => [
         'stack' => [
-            'driver' => 'custom',
-            'via' => \Artim\Logger\Logger\File\FileLogSetter::class,
-
-            'handler' => \Monolog\Handler\StreamHandler::class,
-            'handler_with' => [
-                'stream' => storage_path('logs/laravel-artim.log'),
-            ],
-            'formatter' => \Artim\Logger\Logger\File\JsonFormatter::class,
-            'formatter_with' => [
-                'dateFormat' => 'Y-m-d H:i:s',
-                'includeStackTraces' => true,
-            ],
+            'driver' => 'stack',
+            'channels' => ['single'],
+            'ignore_exceptions' => false,
         ],
 
         'single' => [
