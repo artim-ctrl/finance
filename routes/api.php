@@ -4,6 +4,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Balance\BalanceController;
+use App\Http\Controllers\Calendar\CalendarController;
+use App\Http\Controllers\Calendar\Month\MonthController;
+use App\Http\Controllers\Calendar\Month\Row\RowController;
 use App\Http\Controllers\Currency\CoursesController;
 use App\Http\Controllers\Currency\CurrencyController;
 use App\Http\Controllers\Exchange\ExchangeController;
@@ -79,4 +82,18 @@ Route::middleware('auth:sanctum')->group(function () { // TODO: split into files
     Route::post('expenses', [ExpenseController::class, 'store']);
 
     Route::get('courses', CoursesController::class);
+
+    Route::prefix('calendars')->group(function () {
+        Route::get('/', [CalendarController::class, 'show']);
+
+        Route::prefix('/months')->group(function () {
+            Route::post('/', [MonthController::class, 'store']);
+            Route::delete('/{to}', [MonthController::class, 'destroy']);
+
+            Route::prefix('{monthId}/rows')->group(function () {
+                Route::post('/', [RowController::class, 'store']);
+                Route::delete('/{id}', [RowController::class, 'destroy']);
+            });
+        });
+    });
 });
