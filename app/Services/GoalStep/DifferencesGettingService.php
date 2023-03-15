@@ -24,7 +24,7 @@ class DifferencesGettingService
         $differences = [];
         foreach ($currencies as $currency) {
             $sum = $goal->steps
-                ->filter(fn(GoalStep $goalStep) => $goalStep->amount !== null && $goalStep->currency !== null)
+                ->filter(fn (GoalStep $goalStep) => null !== $goalStep->amount && null !== $goalStep->currency)
                 ->map(function (GoalStep $goalStep) use ($currency) {
                     if ($goalStep->currency->code === $currency->code && $goalStep->estimatedCurrency->code === $currency->code) {
                         return $goalStep->estimated_amount - $goalStep->amount;
@@ -55,8 +55,8 @@ class DifferencesGettingService
         $differences = [];
         foreach ($currencies as $currency) {
             $sum = $goal->steps
-                ->filter(fn(GoalStep $goalStep) => $goalStep->amount !== null && $goalStep->currency !== null)
-                ->map(fn(GoalStep $goalStep) => $this->getCourse($goalStep, $currency, $courses))
+                ->filter(fn (GoalStep $goalStep) => null !== $goalStep->amount && null !== $goalStep->currency)
+                ->map(fn (GoalStep $goalStep) => $this->getCourse($goalStep, $currency, $courses))
                 ->sum();
 
             $differences[$currency->code] = round($sum, 2);
@@ -74,14 +74,14 @@ class DifferencesGettingService
     protected function getCourse(GoalStep $goalStep, Currency $currency, array $courses): float
     {
         $estimatedCourse = $courses[$goalStep->estimatedCurrency->code][$currency->code] ?? null;
-        if ($estimatedCourse !== null) {
+        if (null !== $estimatedCourse) {
             $estimatedAmount = $estimatedCourse * $goalStep->estimated_amount;
         } else {
             $estimatedAmount = $this->gettingCourseService->calcAmount($goalStep->estimatedCurrency->code, $currency->code, $goalStep->estimated_amount);
         }
 
         $course = $courses[$goalStep->currency->code][$currency->code] ?? null;
-        if ($course !== null) {
+        if (null !== $course) {
             $amount = $course * $goalStep->estimated_amount;
         } else {
             $amount = $this->gettingCourseService->calcAmount($goalStep->currency->code, $currency->code, $goalStep->amount);

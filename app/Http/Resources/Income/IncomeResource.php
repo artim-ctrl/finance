@@ -20,7 +20,7 @@ class IncomeResource extends JsonResource
     public function toArray($request): array
     {
         $nextIncrease = null;
-        if ($this->increase_month !== null) {
+        if (null !== $this->increase_month) {
             $nextIncrease = now()->setDay($this->day_receiving)->setMonth($this->increase_month);
         }
 

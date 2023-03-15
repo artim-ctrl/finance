@@ -34,13 +34,14 @@ class ExpenseController extends Controller
     public function store(StoreData $data): ExpenseResource
     {
         DB::beginTransaction();
+
         try {
             $userId = auth()->id();
 
             if (
                 ! ExpenseType::query()
                     ->where('id', $data->expenseTypeId)
-                    ->where(fn(Builder $query) => $query->whereNull('user_id')->orWhere('user_id', $userId))
+                    ->where(fn (Builder $query) => $query->whereNull('user_id')->orWhere('user_id', $userId))
                     ->exists()
             ) {
                 throw new ExpenseTypeNotExistsException('Expense type not found.');

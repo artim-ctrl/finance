@@ -3,7 +3,6 @@
 namespace App\Http\Resources\Exchange;
 
 use App\Http\Resources\Balance\BalanceResource;
-use App\Http\Resources\User\UserResource;
 use App\Models\Exchange;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;

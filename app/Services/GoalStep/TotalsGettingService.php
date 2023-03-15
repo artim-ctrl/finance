@@ -25,7 +25,7 @@ class TotalsGettingService
         $totals = [];
         foreach ($currencies as $currency) {
             $sum = $goal->steps
-                ->filter(fn(GoalStep $step) => $step->estimatedCurrency->code === $currency->code)
+                ->filter(fn (GoalStep $step) => $step->estimatedCurrency->code === $currency->code)
                 ->map(function (GoalStep $step) use ($left) {
                     if ($left && null !== $step->amount) {
                         return 0;
@@ -69,7 +69,7 @@ class TotalsGettingService
     protected function getCourse(GoalStep $goalStep, Currency $currency, array $courses): float
     {
         $customCourse = $courses[$goalStep->estimatedCurrency->code][$currency->code] ?? null;
-        if ($customCourse !== null) {
+        if (null !== $customCourse) {
             return $customCourse * $goalStep->estimated_amount;
         }
 
