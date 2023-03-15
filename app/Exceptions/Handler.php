@@ -66,13 +66,13 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $e): Response
     {
         if (str_contains($request->getUri(), '/api')) {
-            return $this->renderJson($request, $e);
+            return $this->renderJson($e);
         }
 
         return parent::render($request, $e);
     }
 
-    protected function renderJson(Request $request, Throwable $e): JsonResponse
+    protected function renderJson(Throwable $e): JsonResponse
     {
         if ($e instanceof ModelNotFoundException) {
             return response()->json([

@@ -2,6 +2,8 @@
 
 namespace App\Exceptions\ExpenseType;
 
-class ExpenseTypeAlreadyExistsException extends \RuntimeException
+use RuntimeException;
+
+class ExpenseTypeAlreadyExistsException extends RuntimeException
 {
 }

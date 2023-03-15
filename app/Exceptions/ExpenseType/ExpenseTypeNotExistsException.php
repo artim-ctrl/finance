@@ -2,6 +2,8 @@
 
 namespace App\Exceptions\ExpenseType;
 
-class ExpenseTypeNotExistsException extends \RuntimeException
+use RuntimeException;
+
+class ExpenseTypeNotExistsException extends RuntimeException
 {
 }

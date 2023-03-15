@@ -24,7 +24,6 @@ class TokenController extends Controller
 
         return response()->json([
             'data' => [
-                /** @phpstan-ignore-next-line  */
                 'current_token_id' => $personalAccessToken->id,
                 'tokens' => PersonalAccessTokenResource::collection($tokens),
             ],

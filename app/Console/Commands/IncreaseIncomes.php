@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Income;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
+use Symfony\Component\Console\Command\Command as BaseCommand;
 
 class IncreaseIncomes extends Command
 {
@@ -45,6 +46,6 @@ class IncreaseIncomes extends Command
             });
         });
 
-        return Command::SUCCESS;
+        return BaseCommand::SUCCESS;
     }
 }

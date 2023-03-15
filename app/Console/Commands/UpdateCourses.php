@@ -6,6 +6,7 @@ use App\Services\Currency\GettingCourseService;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Symfony\Component\Console\Command\Command as BaseCommand;
 
 class UpdateCourses extends Command
 {
@@ -46,6 +47,6 @@ class UpdateCourses extends Command
             }
         }
 
-        return Command::SUCCESS;
+        return BaseCommand::SUCCESS;
     }
 }

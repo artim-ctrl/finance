@@ -2,6 +2,8 @@
 
 namespace App\Exceptions\Balance;
 
-class BalanceNotEnoughException extends \RuntimeException
+use RuntimeException;
+
+class BalanceNotEnoughException extends RuntimeException
 {
 }

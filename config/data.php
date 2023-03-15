@@ -1,5 +1,9 @@
 <?php
 
+use Illuminate\Contracts\Support\Arrayable;
+use Spatie\LaravelData\Transformers\ArrayableTransformer;
+use Spatie\LaravelData\Transformers\DateTimeInterfaceTransformer;
+
 return [
     /*
      * The package will use this format when working with dates. If this option
@@ -13,8 +17,8 @@ return [
      * types.
      */
     'transformers' => [
-        DateTimeInterface::class => \Spatie\LaravelData\Transformers\DateTimeInterfaceTransformer::class,
-        \Illuminate\Contracts\Support\Arrayable::class => \Spatie\LaravelData\Transformers\ArrayableTransformer::class,
+        DateTimeInterface::class => DateTimeInterfaceTransformer::class,
+        Arrayable::class => ArrayableTransformer::class,
         BackedEnum::class => Spatie\LaravelData\Transformers\EnumTransformer::class,
     ],
 
