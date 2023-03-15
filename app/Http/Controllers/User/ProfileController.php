@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\User\Profile\UpdateRequest;
+use App\Http\Requests\User\Profile\UpdateData;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -20,17 +20,15 @@ class ProfileController extends Controller
     }
 
     /**
-     * @param UpdateRequest $request
+     * @param UpdateData $data
      * @return UserResource
      */
-    public function update(UpdateRequest $request): UserResource
+    public function update(UpdateData $data): UserResource
     {
-        $validated = $request->validated();
-
         /** @var User $user */
-        $user = $request->user();
+        $user = auth()->user();
 
-        $user->update(['name' => $validated['name']]);
+        $user->update(['name' => $data->name]);
 
         return UserResource::make($user);
     }

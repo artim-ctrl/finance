@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Goal;
 
 use App\Exceptions\Goal\GoalNotFoundException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Goal\Totals\IndexRequest;
+use App\Http\Requests\Goal\Totals\IndexData;
 use App\Models\Currency;
 use App\Models\Goal;
 use App\Services\GoalStep\DifferencesGettingService;
@@ -16,24 +16,22 @@ class TotalsController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param IndexRequest $request
+     * @param IndexData $data
      * @param int $goalId
      * @param TotalsGettingService $totalsGettingService
      * @param DifferencesGettingService $differencesGettingService
      * @return JsonResponse
      */
     public function __invoke(
-        IndexRequest $request,
-        int $goalId,
-        TotalsGettingService $totalsGettingService,
+        IndexData                 $data,
+        int                       $goalId,
+        TotalsGettingService      $totalsGettingService,
         DifferencesGettingService $differencesGettingService,
     ): JsonResponse {
-        $courses = $request->input('courses');
-
         /** @var Goal $goal */
         $goal = Goal::query()
             ->where('id', $goalId)
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', auth()->id())
             ->with(['steps', 'steps.estimatedCurrency', 'steps.currency'])
             ->first();
         if (null === $goal) {
@@ -43,13 +41,13 @@ class TotalsController extends Controller
         $currencies = Currency::all();
 
         $totalsByCurrency = $totalsGettingService->getByCurrency($currencies, $goal);
-        $totalsAll = $totalsGettingService->getAll($currencies, $courses, $goal);
+        $totalsAll = $totalsGettingService->getAll($currencies, $data->courses, $goal);
 
         $differencesByCurrency = $differencesGettingService->getByCurrency($currencies, $goal);
-        $differencesAll = $differencesGettingService->getAll($currencies, $courses, $goal);
+        $differencesAll = $differencesGettingService->getAll($currencies, $data->courses, $goal);
 
         $leftByCurrency = $totalsGettingService->getByCurrency($currencies, $goal, left: true);
-        $leftAll = $totalsGettingService->getAll($currencies, $courses, $goal, left: true);
+        $leftAll = $totalsGettingService->getAll($currencies, $data->courses, $goal, left: true);
 
         return response()->json([
             'data' => [

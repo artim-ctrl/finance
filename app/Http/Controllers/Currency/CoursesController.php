@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Currency;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Currency\Course\IndexRequest;
+use App\Http\Requests\Currency\Course\IndexData;
 use App\Models\Currency;
 use App\Services\Currency\GettingCourseService;
 use Illuminate\Http\JsonResponse;
@@ -11,20 +11,21 @@ use RuntimeException;
 
 class CoursesController extends Controller
 {
-    public function __construct(protected GettingCourseService $gettingCourseService)
-    {
+    public function __construct(
+        protected GettingCourseService $gettingCourseService,
+    ) {
     }
 
     /**
      * Handle the incoming request.
      *
-     * @param IndexRequest $request
+     * @param IndexData $request
      * @return JsonResponse
      */
-    public function __invoke(IndexRequest $request): JsonResponse
+    public function __invoke(IndexData $request): JsonResponse
     {
-        $currencies = Currency::query()->whereIn('code', $request->input('currencies'))->get()->pluck('code');
-        if (count($request->input('currencies')) !== $currencies->count()) {
+        $currencies = Currency::query()->whereIn('code', $request->currencies)->get()->pluck('code');
+        if (count($request->currencies) !== $currencies->count()) {
             throw new RuntimeException('Currencies don\'t exist');
         }
 

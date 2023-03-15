@@ -6,7 +6,7 @@ use App\Exceptions\Balance\BalanceNotEnoughException;
 use App\Exceptions\Balance\BalanceNotFoundException;
 use App\Exceptions\ExpenseType\ExpenseTypeNotExistsException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Expense\StoreRequest;
+use App\Http\Requests\Expense\StoreData;
 use App\Http\Resources\Expense\ExpenseCollection;
 use App\Http\Resources\Expense\ExpenseResource;
 use App\Models\Balance;
@@ -28,16 +28,19 @@ class ExpenseController extends Controller
         return ExpenseCollection::make($expenses);
     }
 
-    public function store(StoreRequest $request): ExpenseResource
+    /**
+     * @throws Throwable
+     */
+    public function store(StoreData $data): ExpenseResource
     {
-        $validated = $request->validated();
-
         DB::beginTransaction();
         try {
+            $userId = auth()->id();
+
             if (
                 ! ExpenseType::query()
-                    ->where('id', $validated['expense_type_id'])
-                    ->where(fn(Builder $query) => $query->whereNull('user_id')->orWhere('user_id', $request->user()->id))
+                    ->where('id', $data->expenseTypeId)
+                    ->where(fn(Builder $query) => $query->whereNull('user_id')->orWhere('user_id', $userId))
                     ->exists()
             ) {
                 throw new ExpenseTypeNotExistsException('Expense type not found.');
@@ -45,21 +48,21 @@ class ExpenseController extends Controller
 
             /** @var Balance $balance */
             $balance = Balance::query()
-                ->where('id', $validated['balance_id'])
-                ->where('user_id', $request->user()->id)
+                ->where('id', $data->balanceId)
+                ->where('user_id', $userId)
                 ->first();
-            if ($balance === null) {
+            if (null === $balance) {
                 throw new BalanceNotFoundException('User\'s balance not found.'); // TODO: Change to config usage? I mean /lang directory
             }
 
-            $validated = array_merge($validated, ['user_id' => $request->user()->id]);
-            if ($validated['spent_at'] !== null && ! $validated['for_history']) {
-                if ($balance->amount < $validated['amount']) {
+            $validated = array_merge($data->all(), ['user_id' => $userId]);
+            if (null !== $data->spentAt && ! $data->forHistory) {
+                if ($balance->amount < $data->amount) {
                     throw new BalanceNotEnoughException('There are not enough funds on the balance.');
                 }
 
                 $balance->update([
-                    'amount' => $balance->amount - $validated['amount'],
+                    'amount' => $balance->amount - $data->amount,
                 ]);
             }
 

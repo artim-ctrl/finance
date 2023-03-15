@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Balance;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Balance\StoreRequest;
-use App\Http\Requests\Balance\UpdateRequest;
+use App\Http\Requests\Balance\StoreData;
+use App\Http\Requests\Balance\UpdateData;
 use App\Http\Resources\Balance\BalanceCollection;
 use App\Http\Resources\Balance\BalanceResource;
 use App\Models\Balance;
@@ -33,12 +33,12 @@ class BalanceController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreRequest $request
+     * @param StoreData $data
      * @return BalanceResource
      */
-    public function store(StoreRequest $request): BalanceResource
+    public function store(StoreData $data): BalanceResource
     {
-        $validated = array_merge($request->validated(), ['user_id' => $request->user()->id]);
+        $validated = array_merge($data->all(), ['user_id' => auth()->id()]);
 
         /** @var Balance $balance */
         $balance = Balance::create($validated);
@@ -49,20 +49,20 @@ class BalanceController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateRequest $request
+     * @param UpdateData $data
      * @param int $id
      * @return BalanceResource
      */
-    public function update(UpdateRequest $request, int $id): BalanceResource
+    public function update(UpdateData $data, int $id): BalanceResource
     {
         /** @var Balance $balance */
         $balance = Balance::findOrFail($id);
-        if ($balance->user_id !== $request->user()->id) {
+        if ($balance->user_id !== auth()->id()) {
             throw (new ModelNotFoundException())->setModel(get_class($balance), $id);
         }
 
         $balance->update([
-            'amount' => $request->input('amount'),
+            'amount' => $data->amount,
         ]);
 
         return BalanceResource::make($balance);

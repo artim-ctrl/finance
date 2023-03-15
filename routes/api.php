@@ -37,7 +37,7 @@ Route::post('register', RegisterController::class);
 
 Route::middleware('auth:sanctum')->group(function () { // TODO: split into files
     Route::get('profile', [ProfileController::class, 'show']);
-    Route::post('profile', [ProfileController::class, 'update']);
+    Route::put('profile', [ProfileController::class, 'update']);
 
     Route::get('tokens', [TokenController::class, 'index']);
 

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Calendar\Month;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Calendar\Month\StoreRequest;
+use App\Http\Requests\Calendar\Month\StoreData;
 use App\Http\Resources\Calendar\Month\CalendarMonthResource;
 use App\Models\Calendar;
 use App\Models\CalendarMonth;
@@ -16,14 +16,15 @@ class MonthController extends Controller
     /**
      * @throws Exception
      */
-    public function store(StoreRequest $request): CalendarMonthResource
+    public function store(StoreData $data): CalendarMonthResource
     {
         /** @var Calendar $calendar */
         $calendar = Calendar::query()
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', auth()->id())
             ->first();
 
-        if ($request->input('to') === 'left') {
+        // TODO: change to enum ?
+        if ('left' === $data->to) {
             /** @var CalendarMonth $firstMonth */
             $firstMonth = CalendarMonth::query()
                 ->where('calendar_id', $calendar->id)
@@ -38,7 +39,7 @@ class MonthController extends Controller
                 $year = $firstMonth->year;
                 $month = $firstMonth->month - 1;
             }
-        } elseif ($request->input('to') === 'right') {
+        } elseif ('right' === $data->to) {
             /** @var CalendarMonth $lastMonth */
             $lastMonth = CalendarMonth::query()
                 ->where('calendar_id', $calendar->id)
@@ -84,7 +85,7 @@ class MonthController extends Controller
             ->first();
 
         /** @var CalendarMonth $month */
-        if ($to === 'left') {
+        if ('left' === $to) {
             $month = CalendarMonth::query()
                 ->where('calendar_id', $calendar->id)
                 ->orderBy('year')

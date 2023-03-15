@@ -5,8 +5,8 @@ namespace App\Http\Controllers\GoalStep;
 use App\Exceptions\Goal\GoalNotFoundException;
 use App\Exceptions\GoalStep\GoalStepNotFoundException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\GoalStep\StoreRequest;
-use App\Http\Requests\GoalStep\UpdateRequest;
+use App\Http\Requests\GoalStep\StoreData;
+use App\Http\Requests\GoalStep\UpdateData;
 use App\Http\Resources\Goal\GoalCollection;
 use App\Http\Resources\GoalStep\GoalStepResource;
 use App\Models\Goal;
@@ -37,19 +37,18 @@ class GoalStepController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreRequest $request
+     * @param StoreData $data
      * @param int $goalId
      * @return GoalStepResource
      */
-    public function store(StoreRequest $request, int $goalId): GoalStepResource
+    public function store(StoreData $data, int $goalId): GoalStepResource
     {
-        $validated = $request->validated();
-        if (! Goal::query()->where('id', $goalId)->where('user_id', $request->user()->id)->exists()) {
+        if (! Goal::query()->where('id', $goalId)->where('user_id', auth()->id())->exists()) {
             throw new GoalNotFoundException('Goal not exist');
         }
 
-        $validated = array_merge($validated, [
-            'user_id' => $request->user()->id,
+        $validated = array_merge($data->all(), [
+            'user_id' => auth()->id(),
             'goal_id' => $goalId,
             'amount' => null,
         ]);
@@ -59,19 +58,19 @@ class GoalStepController extends Controller
         return GoalStepResource::make($goalStep);
     }
 
-    public function update(UpdateRequest $request, int $goalId, int $id): GoalStepResource
+    public function update(UpdateData $data, int $goalId, int $id): GoalStepResource
     {
-        if (! Goal::query()->where('id', $goalId)->where('user_id', $request->user()->id)->exists()) {
+        if (! Goal::query()->where('id', $goalId)->where('user_id', auth()->id())->exists()) {
             throw new GoalNotFoundException('Goal not exist');
         }
 
         /** @var GoalStep $goalStep */
         $goalStep = GoalStep::query()->where('id', $id)->first();
-        if ($goalStep === null || $goalStep->goal_id !== $goalId) {
+        if (null === $goalStep || $goalStep->goal_id !== $goalId) {
             throw new GoalStepNotFoundException('Goal step not found.');
         }
 
-        $goalStep->update(['amount' => $request->input('amount')]);
+        $goalStep->update(['amount' => $data->amount]);
 
         return GoalStepResource::make($goalStep);
     }
@@ -92,7 +91,7 @@ class GoalStepController extends Controller
 
         /** @var GoalStep $goalStep */
         $goalStep = GoalStep::query()->where('id', $id)->first();
-        if ($goalStep === null || $goalStep->goal_id !== $goalId) {
+        if (null === $goalStep || $goalStep->goal_id !== $goalId) {
             throw new GoalStepNotFoundException('Goal step not found.');
         }
 

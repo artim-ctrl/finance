@@ -4,7 +4,7 @@ namespace App\Http\Controllers\ExpenseType;
 
 use App\Exceptions\ExpenseType\ExpenseTypeAlreadyExistsException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ExpenseType\StoreRequest;
+use App\Http\Requests\ExpenseType\StoreData;
 use App\Http\Resources\ExpenseType\ExpenseTypeCollection;
 use App\Http\Resources\ExpenseType\ExpenseTypeResource;
 use App\Models\ExpenseType;
@@ -22,20 +22,18 @@ class ExpenseTypeController extends Controller
         return ExpenseTypeCollection::make($expenseTypes);
     }
 
-    public function store(StoreRequest $request): ExpenseTypeResource
+    public function store(StoreData $data): ExpenseTypeResource
     {
-        $validated = $request->validated();
-
         if (
             ExpenseType::query()
-                ->where('user_id', $request->user()->id)
-                ->where('name', $validated['name'])
+                ->where('user_id', auth()->id())
+                ->where('name', $data->name)
                 ->exists()
         ) {
-            throw new ExpenseTypeAlreadyExistsException('Expense type with name ['.$validated['name'].'] already exists.');
+            throw new ExpenseTypeAlreadyExistsException('Expense type with name ['.$data->name.'] already exists.');
         }
 
-        $validated = array_merge($validated, ['user_id' => $request->user()->id]);
+        $validated = array_merge($data->all(), ['user_id' => auth()->id()]);
 
         $expenseType = ExpenseType::create($validated);
 

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Goal;
 
 use App\Exceptions\Goal\GoalNotFoundException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Goal\StoreRequest;
+use App\Http\Requests\Goal\StoreData;
 use App\Http\Resources\Goal\GoalCollection;
 use App\Http\Resources\Goal\GoalResource;
 use App\Models\Goal;
@@ -37,7 +37,7 @@ class GoalController extends Controller
             ->where('user_id', $request->user()->id)
             ->with('steps')
             ->first();
-        if ($goal === null) {
+        if (null === $goal) {
             throw new GoalNotFoundException('Goal not found.');
         }
 
@@ -47,14 +47,12 @@ class GoalController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreRequest $request
+     * @param StoreData $data
      * @return GoalResource
      */
-    public function store(StoreRequest $request): GoalResource
+    public function store(StoreData $data): GoalResource
     {
-        $validated = $request->validated();
-
-        $validated = array_merge($validated, ['user_id' => $request->user()->id]);
+        $validated = array_merge($data->all(), ['user_id' => auth()->id()]);
 
         /** @var Goal $goal */
         $goal = Goal::create($validated);
@@ -72,7 +70,7 @@ class GoalController extends Controller
     {
         /** @var Goal $goal */
         $goal = Goal::query()->where('id', $id)->first();
-        if ($goal === null) {
+        if (null === $goal) {
             throw new GoalNotFoundException('Goal not found.');
         }
 

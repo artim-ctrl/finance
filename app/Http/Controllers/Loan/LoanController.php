@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Loan;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Loan\StoreRequest;
+use App\Http\Requests\Loan\StoreData;
 use App\Http\Resources\Loan\LoanCollection;
 use App\Http\Resources\Loan\LoanResource;
 use App\Models\Loan;
@@ -19,11 +19,9 @@ class LoanController extends Controller
         return LoanCollection::make($loans);
     }
 
-    public function store(StoreRequest $request): LoanResource
+    public function store(StoreData $data): LoanResource
     {
-        $validated = $request->validated();
-
-        $validated = array_merge($validated, ['user_id' => $request->user()->id]);
+        $validated = array_merge($data->all(), ['user_id' => auth()->id()]);
 
         /** @var Loan $loan */
         $loan = Loan::create($validated);

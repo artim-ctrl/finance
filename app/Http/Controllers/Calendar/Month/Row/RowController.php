@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Calendar\Month\Row;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Calendar\Month\Row\StoreRequest;
+use App\Http\Requests\Calendar\Month\Row\StoreData;
 use App\Http\Resources\Calendar\Month\Row\MonthRowResource;
 use App\Models\Calendar;
 use App\Models\CalendarMonth;
@@ -17,11 +17,11 @@ class RowController extends Controller
     /**
      * @throws Exception
      */
-    public function store(StoreRequest $request, int $monthId): MonthRowResource
+    public function store(StoreData $request, int $monthId): MonthRowResource
     {
         /** @var Calendar $calendar */
         $calendar = Calendar::query()
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', auth()->id())
             ->first();
 
         /** @var CalendarMonth $month */
@@ -35,9 +35,9 @@ class RowController extends Controller
 
         $row = MonthRow::create([
             'month_id' => $month->id,
-            'name' => $request->input('name'),
-            'amount' => (float)$request->input('amount'),
-            'currency_id' => $request->input('currency_id'),
+            'name' => $request->name,
+            'amount' => $request->amount,
+            'currency_id' => $request->currencyId,
         ]);
 
         return MonthRowResource::make($row);

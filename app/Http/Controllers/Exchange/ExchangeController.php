@@ -5,12 +5,11 @@ namespace App\Http\Controllers\Exchange;
 use App\Exceptions\Balance\BalanceNotEnoughException;
 use App\Exceptions\Balance\BalanceNotFoundException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Exchange\StoreRequest;
+use App\Http\Requests\Exchange\StoreData;
 use App\Http\Resources\Exchange\ExchangeCollection;
 use App\Http\Resources\Exchange\ExchangeResource;
 use App\Models\Balance;
 use App\Models\Exchange;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -27,47 +26,44 @@ class ExchangeController extends Controller
     }
 
     /**
-     * @param StoreRequest $request
+     * @param StoreData $data
      * @return ExchangeResource
      * @throws Throwable
      */
-    public function store(StoreRequest $request): ExchangeResource
+    public function store(StoreData $data): ExchangeResource
     {
-        $validated = $request->validated();
-
         try {
             DB::beginTransaction();
 
             // TODO: refactor to services and repositories
-            /** @var User $user */
-            $user = $request->user();
+            $userId = auth()->id();
 
             /** @var Balance $balanceFrom */
             $balanceFrom = Balance::query()
-                ->where('id', $validated['balance_id_from'])
-                ->where('user_id', $user->id)
+                ->where('id', $data->balanceIdFrom)
+                ->where('user_id', $userId)
                 ->get()->first();
-            if ($balanceFrom === null) {
+            if (null === $balanceFrom) {
                 throw new BalanceNotFoundException('User\'s balance FROM not found.');
             }
 
             /** @var Balance $balanceTo */
             $balanceTo = Balance::query()
-                ->where('id', $validated['balance_id_to'])
-                ->where('user_id', $user->id)
+                ->where('id', $data->balanceIdTo)
+                ->where('user_id', $userId)
                 ->get()->first();
-            if ($balanceTo === null) {
+            if (null === $balanceTo) {
                 throw new BalanceNotFoundException('User\'s balance TO not found.');
             }
 
-            if ($balanceFrom->amount < $validated['amount_from']) {
+            if ($balanceFrom->amount < $data->amountFrom) {
                 throw new BalanceNotEnoughException('There are not enough funds on the balance.');
             }
 
-            $balanceFrom->update(['amount' => $balanceFrom->amount - $validated['amount_from']]);
-            $balanceTo->update(['amount' => $balanceTo->amount + $validated['amount_to']]);
+            $balanceFrom->update(['amount' => $balanceFrom->amount - $data->amountFrom]);
+            $balanceTo->update(['amount' => $balanceTo->amount + $data->amountTo]);
 
-            $validated = array_merge($validated, ['user_id' => $user->id]);
+            $validated = array_merge($data->all(), ['user_id' => $userId]);
 
             /** @var Exchange $exchange */
             $exchange = Exchange::create($validated);
