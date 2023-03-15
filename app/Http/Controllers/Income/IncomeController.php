@@ -8,13 +8,12 @@ use App\Http\Resources\Income\IncomeCollection;
 use App\Http\Resources\Income\IncomeResource;
 use App\Models\Income;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class IncomeController extends Controller
 {
-    public function index(Request $request): IncomeCollection
+    public function index(): IncomeCollection
     {
-        $incomes = Income::query()->where('user_id', $request->user()->id)->get()->all();
+        $incomes = Income::query()->where('user_id', auth()->id())->get()->all();
 
         return IncomeCollection::make($incomes);
     }

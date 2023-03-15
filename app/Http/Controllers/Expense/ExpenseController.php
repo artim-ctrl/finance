@@ -13,16 +13,15 @@ use App\Models\Balance;
 use App\Models\Expense;
 use App\Models\ExpenseType;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class ExpenseController extends Controller
 {
-    public function index(Request $request): ExpenseCollection
+    public function index(): ExpenseCollection
     {
         $expenses = Expense::query()
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', auth()->id())
             ->get()->all();
 
         return ExpenseCollection::make($expenses);
@@ -41,13 +40,14 @@ class ExpenseController extends Controller
             if (
                 ! ExpenseType::query()
                     ->where('id', $data->expenseTypeId)
+                    /** @phpstan-ignore-next-line */
                     ->where(fn (Builder $query) => $query->whereNull('user_id')->orWhere('user_id', $userId))
                     ->exists()
             ) {
                 throw new ExpenseTypeNotExistsException('Expense type not found.');
             }
 
-            /** @var Balance $balance */
+            /** @var Balance|null $balance */
             $balance = Balance::query()
                 ->where('id', $data->balanceId)
                 ->where('user_id', $userId)

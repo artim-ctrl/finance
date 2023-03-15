@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * @property Goal $goal
  * @property Currency $estimatedCurrency
- * @property Currency $currency
+ * @property Currency|null $currency
  */
 class GoalStep extends Model
 {

@@ -10,8 +10,9 @@ use Illuminate\Support\Collection;
 
 class DifferencesGettingService
 {
-    public function __construct(protected GettingCourseService $gettingCourseService)
-    {
+    public function __construct(
+        protected GettingCourseService $gettingCourseService,
+    ) {
     }
 
     /**
@@ -26,9 +27,9 @@ class DifferencesGettingService
             $sum = $goal->steps
                 ->filter(fn (GoalStep $goalStep) => null !== $goalStep->amount && null !== $goalStep->currency)
                 ->map(function (GoalStep $goalStep) use ($currency) {
-                    if ($goalStep->currency->code === $currency->code && $goalStep->estimatedCurrency->code === $currency->code) {
+                    if ($goalStep->currency?->code === $currency->code && $goalStep->estimatedCurrency->code === $currency->code) {
                         return $goalStep->estimated_amount - $goalStep->amount;
-                    } elseif ($goalStep->currency->code === $currency->code) {
+                    } elseif ($goalStep->currency?->code === $currency->code) {
                         return -$goalStep->amount;
                     } elseif ($goalStep->estimatedCurrency->code === $currency->code) {
                         return $goalStep->estimated_amount;
@@ -80,11 +81,11 @@ class DifferencesGettingService
             $estimatedAmount = $this->gettingCourseService->calcAmount($goalStep->estimatedCurrency->code, $currency->code, $goalStep->estimated_amount);
         }
 
-        $course = $courses[$goalStep->currency->code][$currency->code] ?? null;
+        $course = $courses[$goalStep->currency?->code][$currency->code] ?? null;
         if (null !== $course) {
             $amount = $course * $goalStep->estimated_amount;
         } else {
-            $amount = $this->gettingCourseService->calcAmount($goalStep->currency->code, $currency->code, $goalStep->amount);
+            $amount = $this->gettingCourseService->calcAmount((string) $goalStep->currency?->code, $currency->code, (float) $goalStep->amount);
         }
 
         return $estimatedAmount - $amount;

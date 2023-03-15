@@ -12,23 +12,21 @@ use App\Http\Resources\GoalStep\GoalStepResource;
 use App\Models\Goal;
 use App\Models\GoalStep;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class GoalStepController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
      * @param int $goalId
      * @return GoalCollection
      */
-    public function index(Request $request, int $goalId): GoalCollection
+    public function index(int $goalId): GoalCollection
     {
         $goalSteps = GoalStep::query()
             ->leftJoin('goals', 'goal_steps.goal_id', '=', 'goals.id')
             ->where('goal_id', $goalId)
-            ->where('goals.user_id', $request->user()->id)
+            ->where('goals.user_id', auth()->id())
             ->get()->all();
 
         return GoalCollection::make($goalSteps);
@@ -64,7 +62,7 @@ class GoalStepController extends Controller
             throw new GoalNotFoundException('Goal not exist');
         }
 
-        /** @var GoalStep $goalStep */
+        /** @var GoalStep|null $goalStep */
         $goalStep = GoalStep::query()->where('id', $id)->first();
         if (null === $goalStep || $goalStep->goal_id !== $goalId) {
             throw new GoalStepNotFoundException('Goal step not found.');
@@ -78,18 +76,17 @@ class GoalStepController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Request $request
      * @param int $goalId
      * @param int $id
      * @return JsonResponse
      */
-    public function destroy(Request $request, int $goalId, int $id): JsonResponse
+    public function destroy(int $goalId, int $id): JsonResponse
     {
-        if (! Goal::query()->where('id', $goalId)->where('user_id', $request->user()->id)->exists()) {
+        if (! Goal::query()->where('id', $goalId)->where('user_id', auth()->id())->exists()) {
             throw new GoalNotFoundException('Goal not exist');
         }
 
-        /** @var GoalStep $goalStep */
+        /** @var GoalStep|null $goalStep */
         $goalStep = GoalStep::query()->where('id', $id)->first();
         if (null === $goalStep || $goalStep->goal_id !== $goalId) {
             throw new GoalStepNotFoundException('Goal step not found.');

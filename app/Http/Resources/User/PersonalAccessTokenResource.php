@@ -21,14 +21,14 @@ class PersonalAccessTokenResource extends JsonResource
      * Transform the resource into an array.
      *
      * @param Request $request
-     * @return array
+     * @return array<string, mixed>
      */
-    public function toArray($request): array
+    public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'created_at' => $this->created_at->format('d.m.Y H:i:s'),
+            'created_at' => $this->created_at?->format('d.m.Y H:i:s'),
             'last_used_at' => $this->last_used_at?->format('d.m.Y H:i:s'),
         ];
     }

@@ -9,7 +9,6 @@ use App\Models\Calendar;
 use App\Models\CalendarMonth;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class MonthController extends Controller
 {
@@ -77,21 +76,22 @@ class MonthController extends Controller
         return CalendarMonthResource::make($month);
     }
 
-    public function destroy(Request $request, string $to): JsonResponse
+    public function destroy(string $to): JsonResponse
     {
         /** @var Calendar $calendar */
         $calendar = Calendar::query()
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', auth()->id())
             ->first();
 
-        /** @var CalendarMonth $month */
         if ('left' === $to) {
+            /** @var CalendarMonth $month */
             $month = CalendarMonth::query()
                 ->where('calendar_id', $calendar->id)
                 ->orderBy('year')
                 ->orderBy('month')
                 ->first();
         } else {
+            /** @var CalendarMonth $month */
             $month = CalendarMonth::query()
                 ->where('calendar_id', $calendar->id)
                 ->orderByDesc('year')

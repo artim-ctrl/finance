@@ -9,32 +9,30 @@ use App\Http\Resources\Goal\GoalCollection;
 use App\Http\Resources\Goal\GoalResource;
 use App\Models\Goal;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class GoalController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
      * @return GoalCollection
      */
-    public function index(Request $request): GoalCollection
+    public function index(): GoalCollection
     {
         $goals = Goal::query()
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', auth()->id())
             ->with('steps')
             ->get()->all();
 
         return GoalCollection::make($goals);
     }
 
-    public function show(Request $request, int $id): GoalResource
+    public function show(int $id): GoalResource
     {
-        /** @var Goal $goal */
+        /** @var Goal|null $goal */
         $goal = Goal::query()
             ->where('id', $id)
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', auth()->id())
             ->with('steps')
             ->first();
         if (null === $goal) {
@@ -68,7 +66,7 @@ class GoalController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
-        /** @var Goal $goal */
+        /** @var Goal|null $goal */
         $goal = Goal::query()->where('id', $id)->first();
         if (null === $goal) {
             throw new GoalNotFoundException('Goal not found.');

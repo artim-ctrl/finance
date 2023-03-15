@@ -10,21 +10,20 @@ use App\Models\CalendarMonth;
 use App\Models\MonthRow;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class RowController extends Controller
 {
     /**
      * @throws Exception
      */
-    public function store(StoreData $request, int $monthId): MonthRowResource
+    public function store(StoreData $data, int $monthId): MonthRowResource
     {
         /** @var Calendar $calendar */
         $calendar = Calendar::query()
             ->where('user_id', auth()->id())
             ->first();
 
-        /** @var CalendarMonth $month */
+        /** @var CalendarMonth|null $month */
         $month = CalendarMonth::query()
             ->where('id', $monthId)
             ->where('calendar_id', $calendar->id)
@@ -35,9 +34,9 @@ class RowController extends Controller
 
         $row = MonthRow::create([
             'month_id' => $month->id,
-            'name' => $request->name,
-            'amount' => $request->amount,
-            'currency_id' => $request->currencyId,
+            'name' => $data->name,
+            'amount' => $data->amount,
+            'currency_id' => $data->currencyId,
         ]);
 
         return MonthRowResource::make($row);
@@ -46,14 +45,14 @@ class RowController extends Controller
     /**
      * @throws Exception
      */
-    public function destroy(Request $request, int $monthId, int $id): JsonResponse
+    public function destroy(int $monthId, int $id): JsonResponse
     {
         /** @var Calendar $calendar */
         $calendar = Calendar::query()
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', auth()->id())
             ->first();
 
-        /** @var CalendarMonth $month */
+        /** @var CalendarMonth|null $month */
         $month = CalendarMonth::query()
             ->where('id', $monthId)
             ->where('calendar_id', $calendar->id)
@@ -62,6 +61,7 @@ class RowController extends Controller
             throw new Exception('Month does not exist');
         }
 
+        /** @var MonthRow|null $row */
         $row = MonthRow::query()
             ->where('id', $id)
             ->where('month_id', $month->id)

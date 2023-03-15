@@ -8,15 +8,14 @@ use App\Http\Requests\ExpenseType\StoreData;
 use App\Http\Resources\ExpenseType\ExpenseTypeCollection;
 use App\Http\Resources\ExpenseType\ExpenseTypeResource;
 use App\Models\ExpenseType;
-use Illuminate\Http\Request;
 
 class ExpenseTypeController extends Controller
 {
-    public function index(Request $request): ExpenseTypeCollection
+    public function index(): ExpenseTypeCollection
     {
         $expenseTypes = ExpenseType::query()
             ->whereNull('user_id')
-            ->orWhere('user_id', $request->user()->id)
+            ->orWhere('user_id', auth()->id())
             ->get()->all();
 
         return ExpenseTypeCollection::make($expenseTypes);

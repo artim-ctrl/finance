@@ -28,7 +28,7 @@ class TotalsController extends Controller
         TotalsGettingService      $totalsGettingService,
         DifferencesGettingService $differencesGettingService,
     ): JsonResponse {
-        /** @var Goal $goal */
+        /** @var Goal|null $goal */
         $goal = Goal::query()
             ->where('id', $goalId)
             ->where('user_id', auth()->id())

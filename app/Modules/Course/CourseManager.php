@@ -10,9 +10,13 @@ class CourseManager
     protected const BASE_URI = 'https://api.apilayer.com';
 
     /**
+     * @param array<int, string> $currencies
+     *
+     * @return array<string, float>
+     *
      * @throws GuzzleException
      */
-    public function getCourses(string $sourceCurrency, array $currencies)
+    public function getCourses(string $sourceCurrency, array $currencies): array
     {
         $response = $this->getClient()->get($this->getUri('/currency_data/live', [
             'source' => $sourceCurrency,
@@ -54,7 +58,7 @@ class CourseManager
 
     /**
      * @param string $uri
-     * @param array<int, string|array> $params
+     * @param array<string, string> $params
      * @return string
      */
     protected function getUri(string $uri, array $params): string

@@ -36,7 +36,7 @@ class Exchange extends Model
         'exchanged_at',
     ];
 
-    /** @var array<string> */
+    /** @var array<string, string> */
     protected $casts = [
         'exchanged_at' => 'datetime',
     ];

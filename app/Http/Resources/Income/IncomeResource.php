@@ -15,9 +15,9 @@ class IncomeResource extends JsonResource
      * Transform the resource into an array.
      *
      * @param Request $request
-     * @return array
+     * @return array<string, mixed>
      */
-    public function toArray($request): array
+    public function toArray(Request $request): array
     {
         $nextIncrease = null;
         if (null !== $this->increase_month) {

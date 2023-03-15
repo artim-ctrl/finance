@@ -10,16 +10,15 @@ use App\Http\Resources\Exchange\ExchangeCollection;
 use App\Http\Resources\Exchange\ExchangeResource;
 use App\Models\Balance;
 use App\Models\Exchange;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class ExchangeController extends Controller
 {
-    public function index(Request $request): ExchangeCollection
+    public function index(): ExchangeCollection
     {
         $exchanges = Exchange::query()
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', auth()->id())
             ->get();
 
         return ExchangeCollection::make($exchanges);
@@ -38,20 +37,20 @@ class ExchangeController extends Controller
             // TODO: refactor to services and repositories
             $userId = auth()->id();
 
-            /** @var Balance $balanceFrom */
+            /** @var Balance|null $balanceFrom */
             $balanceFrom = Balance::query()
                 ->where('id', $data->balanceIdFrom)
                 ->where('user_id', $userId)
-                ->get()->first();
+                ->first();
             if (null === $balanceFrom) {
                 throw new BalanceNotFoundException('User\'s balance FROM not found.');
             }
 
-            /** @var Balance $balanceTo */
+            /** @var Balance|null $balanceTo */
             $balanceTo = Balance::query()
                 ->where('id', $data->balanceIdTo)
                 ->where('user_id', $userId)
-                ->get()->first();
+                ->first();
             if (null === $balanceTo) {
                 throw new BalanceNotFoundException('User\'s balance TO not found.');
             }

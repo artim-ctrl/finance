@@ -4,6 +4,7 @@ namespace App\Services\Currency;
 
 use App\Models\Currency;
 use App\Modules\Course\Course;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class GettingCourseService
@@ -13,6 +14,7 @@ class GettingCourseService
 
     public function loadCoursesToCache(): void
     {
+        /** @var Collection<int, string> $currencies */
         $currencies = Currency::query()->select('code')->get('code');
         $currencies->each(function (string $currency) use ($currencies) {
             $courses = Course::getCourses($currency, $currencies->all());

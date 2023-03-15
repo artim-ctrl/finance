@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class LogoutController extends Controller
 {
@@ -20,7 +21,10 @@ class LogoutController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $user->currentAccessToken()->delete();
+        /** @var PersonalAccessToken $personalAccessToken */
+        $personalAccessToken = $user->currentAccessToken();
+
+        $personalAccessToken->delete();
 
         return response()->json([
             'status' => 'ok',

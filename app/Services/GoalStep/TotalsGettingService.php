@@ -10,14 +10,16 @@ use Illuminate\Support\Collection;
 
 class TotalsGettingService
 {
-    public function __construct(protected GettingCourseService $gettingCourseService)
-    {
+    public function __construct(
+        protected GettingCourseService $gettingCourseService,
+    ) {
     }
 
     /**
      * @param Collection<Currency> $currencies
      * @param Goal $goal
      * @param bool $left
+     *
      * @return array<string, float>
      */
     public function getByCurrency(Collection $currencies, Goal $goal, bool $left = false): array
@@ -66,6 +68,12 @@ class TotalsGettingService
         return $totals;
     }
 
+    /**
+     * @param GoalStep $goalStep
+     * @param Currency $currency
+     * @param array<string, array<string, float>> $courses
+     * @return float
+     */
     protected function getCourse(GoalStep $goalStep, Currency $currency, array $courses): float
     {
         $customCourse = $courses[$goalStep->estimatedCurrency->code][$currency->code] ?? null;

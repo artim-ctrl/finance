@@ -8,7 +8,6 @@ use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Sanctum\NewAccessToken;
 
 class LoginController extends Controller
 {
@@ -20,11 +19,11 @@ class LoginController extends Controller
             ], 400);
         }
 
+        /** @var User $user */
         $user = User::query()
             ->where('email', $data->email)
             ->first();
 
-        /** @var NewAccessToken $token */
         $token = $user->createToken($data->tokenName);
 
         return response()->json([

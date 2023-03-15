@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class TokenController extends Controller
 {
@@ -18,9 +19,13 @@ class TokenController extends Controller
 
         $tokens = $user->tokens()->get();
 
+        /** @var PersonalAccessToken $personalAccessToken */
+        $personalAccessToken = $user->currentAccessToken();
+
         return response()->json([
             'data' => [
-                'current_token_id' => $user->currentAccessToken()->id,
+                /** @phpstan-ignore-next-line  */
+                'current_token_id' => $personalAccessToken->id,
                 'tokens' => PersonalAccessTokenResource::collection($tokens),
             ],
         ]);

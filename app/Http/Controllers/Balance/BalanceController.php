@@ -10,21 +10,19 @@ use App\Http\Resources\Balance\BalanceResource;
 use App\Models\Balance;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class BalanceController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
      * @return BalanceCollection
      */
-    public function index(Request $request): BalanceCollection
+    public function index(): BalanceCollection
     {
-        /** @var array<Balance> $balances */
+        /** @var array<int, Balance> $balances */
         $balances = Balance::query()
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', auth()->id())
             ->get()->all();
 
         return BalanceCollection::make($balances);
@@ -71,15 +69,14 @@ class BalanceController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Request $request
      * @param int $id
      * @return JsonResponse
      */
-    public function destroy(Request $request, int $id): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
         /** @var Balance $balance */
         $balance = Balance::findOrFail($id);
-        if ($balance->user_id !== $request->user()->id) {
+        if ($balance->user_id !== auth()->id()) {
             throw (new ModelNotFoundException())->setModel(get_class($balance), $id);
         }
 

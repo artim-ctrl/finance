@@ -19,13 +19,13 @@ class CoursesController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param IndexData $request
+     * @param IndexData $data
      * @return JsonResponse
      */
-    public function __invoke(IndexData $request): JsonResponse
+    public function __invoke(IndexData $data): JsonResponse
     {
-        $currencies = Currency::query()->whereIn('code', $request->currencies)->get()->pluck('code');
-        if (count($request->currencies) !== $currencies->count()) {
+        $currencies = Currency::query()->whereIn('code', $data->currencies)->get()->pluck('code');
+        if (count($data->currencies) !== $currencies->count()) {
             throw new RuntimeException('Currencies don\'t exist');
         }
 

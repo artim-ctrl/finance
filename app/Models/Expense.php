@@ -15,8 +15,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $expense_type_id
  * @property int $balance_id
  * @property float $amount
- * @property Carbon $spent_at
- * @property Carbon $planned_at
+ * @property Carbon|null $spent_at
+ * @property Carbon|null $planned_at
  * @property Carbon $created_at
  *
  * @property User $user

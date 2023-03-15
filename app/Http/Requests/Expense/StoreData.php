@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Expense;
 
-use DateTime;
 use Spatie\LaravelData\Attributes\MapName;
+use Spatie\LaravelData\Attributes\Validation\Date;
 use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Mappers\SnakeCaseMapper;
@@ -19,8 +19,10 @@ class StoreData extends Data
         public int $expenseTypeId,
         public int $balanceId,
         public float $amount,
-        public ?DateTime $spentAt,
-        public ?DateTime $plannedAt,
+        #[Date]
+        public ?string $spentAt,
+        #[Date]
+        public ?string $plannedAt,
         public bool $forHistory,
     ) {
     }

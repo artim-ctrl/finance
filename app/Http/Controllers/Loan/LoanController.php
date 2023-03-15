@@ -8,13 +8,12 @@ use App\Http\Resources\Loan\LoanCollection;
 use App\Http\Resources\Loan\LoanResource;
 use App\Models\Loan;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class LoanController extends Controller
 {
-    public function index(Request $request): LoanCollection
+    public function index(): LoanCollection
     {
-        $loans = Loan::query()->where('user_id', $request->user()->id)->get()->all();
+        $loans = Loan::query()->where('user_id', auth()->id())->get()->all();
 
         return LoanCollection::make($loans);
     }
