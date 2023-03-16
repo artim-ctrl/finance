@@ -5,7 +5,6 @@ namespace App\Services\Currency;
 use App\Models\Currency;
 use App\Modules\Course\Course;
 use Illuminate\Cache\TaggedCache;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class GettingCourseService
