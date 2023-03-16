@@ -2,8 +2,8 @@
 
 namespace App\Modules\Course;
 
-use GuzzleHttp\Client as ClientGuzzle;
-use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Support\Facades\Http;
 
 class CourseManager
 {
@@ -13,8 +13,6 @@ class CourseManager
      * @param array<int, string> $currencies
      *
      * @return array<string, float>
-     *
-     * @throws GuzzleException
      */
     public function getCourses(string $sourceCurrency, array $currencies): array
     {
@@ -23,14 +21,9 @@ class CourseManager
             'currencies' => implode(',', $currencies),
         ]));
 
-        $json = json_decode($response->getBody()->getContents(), true);
-
-        return $json['quotes'];
+        return $response->json('quotes');
     }
 
-    /**
-     * @throws GuzzleException
-     */
     public function getCourse(string $from, string $to): float
     {
         // TODO: crutch
@@ -43,16 +36,13 @@ class CourseManager
             'currencies' => $to,
         ]));
 
-        $json = json_decode($response->getBody()->getContents(), true);
-
-        return $json['quotes'][$from.$to];
+        return $response->json('quotes.'.$from.$to);
     }
 
-    protected function getClient(): ClientGuzzle
+    protected function getClient(): PendingRequest
     {
-        return new ClientGuzzle([
-            'base_uri' => static::BASE_URI,
-            'headers' => ['apiKey' => config('apilayer.key')],
+        return Http::baseUrl(static::BASE_URI)->withHeaders([
+            'apiKey' => config('apilayer.key'),
         ]);
     }
 
