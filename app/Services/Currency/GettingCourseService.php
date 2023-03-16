@@ -4,6 +4,7 @@ namespace App\Services\Currency;
 
 use App\Models\Currency;
 use App\Modules\Course\Course;
+use Illuminate\Cache\TaggedCache;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
@@ -41,19 +42,29 @@ class GettingCourseService
         return $course * $amount;
     }
 
+    public function flush(): void
+    {
+        $this->cache()->flush();
+    }
+
     protected function set(string $key, float $course): void
     {
-        Cache::put($this->getCacheKey($key), $course, static::CACHE_TTL);
+        $this->cache()->put($this->getCacheKey($key), $course, static::CACHE_TTL);
     }
 
     protected function has(string $key): bool
     {
-        return Cache::has($this->getCacheKey($key));
+        return $this->cache()->has($this->getCacheKey($key));
     }
 
     protected function get(string $key): float
     {
-        return Cache::get($this->getCacheKey($key));
+        return $this->cache()->get($this->getCacheKey($key));
+    }
+
+    protected function cache(): TaggedCache
+    {
+        return Cache::tags(['courses']);
     }
 
     protected function getCacheKey(string $fromTo): string
