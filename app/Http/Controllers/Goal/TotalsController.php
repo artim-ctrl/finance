@@ -41,13 +41,13 @@ class TotalsController extends Controller
         $currencies = Currency::all();
 
         $totalsByCurrency = $totalsGettingService->getByCurrency($currencies, $goal);
-        $totalsAll = $totalsGettingService->getAll($currencies, $data->courses, $goal);
+        $totalsAll = $totalsGettingService->getAll($currencies, (array) $data->courses, $goal);
 
         $differencesByCurrency = $differencesGettingService->getByCurrency($currencies, $goal);
-        $differencesAll = $differencesGettingService->getAll($currencies, $data->courses, $goal);
+        $differencesAll = $differencesGettingService->getAll($currencies, (array) $data->courses, $goal);
 
         $leftByCurrency = $totalsGettingService->getByCurrency($currencies, $goal, left: true);
-        $leftAll = $totalsGettingService->getAll($currencies, $data->courses, $goal, left: true);
+        $leftAll = $totalsGettingService->getAll($currencies, (array) $data->courses, $goal, left: true);
 
         return response()->json([
             'data' => [
