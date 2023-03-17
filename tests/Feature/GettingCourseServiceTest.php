@@ -5,14 +5,12 @@ namespace Tests\Feature;
 use App\Models\Currency;
 use App\Services\Currency\GettingCourseService;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class GettingCourseServiceTest extends TestCase
 {
-    use RefreshDatabase;
     use DatabaseMigrations;
     use WithFaker;
 

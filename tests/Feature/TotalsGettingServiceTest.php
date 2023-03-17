@@ -7,17 +7,13 @@ use App\Models\Goal;
 use App\Models\GoalStep;
 use App\Services\Currency\GettingCourseService;
 use App\Services\GoalStep\TotalsGettingService;
-use Database\Factories\GoalFactory;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class TotalsGettingServiceTest extends TestCase
 {
-    use RefreshDatabase;
     use DatabaseMigrations;
     use WithFaker;
 
