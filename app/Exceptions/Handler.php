@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
@@ -97,6 +98,12 @@ class Handler extends ExceptionHandler
             return response()->json([
                 'error' => 'Not found',
             ], 404);
+        }
+
+        if ($e instanceof AuthenticationException) {
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 401);
         }
 
         return response()->json([
