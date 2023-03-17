@@ -19,7 +19,7 @@ class GettingCourseServiceTest extends TestCase
     /**
      * A basic feature test example.
      */
-    public function test_loading_courses(): void
+    public function test_loading_all_courses(): void
     {
         $this->seed();
 
@@ -30,24 +30,43 @@ class GettingCourseServiceTest extends TestCase
         $gettingCourseService = (new GettingCourseService());
         $gettingCourseService->loadCoursesToCache();
 
-        $equals = false;
+        $equals = true;
         foreach ($currencies as $currency) {
             foreach ($currencies as $currencyTo) {
-                if ($gettingCourseService->calcAmount($currency, $currencyTo) === round($courses[$currency.$currencyTo], 2)) {
-                    $equals = true;
+                $course1 = $gettingCourseService->calcAmount($currency, $currencyTo);
+                $course2 = round($courses[$currency.$currencyTo], 5);
+                if ($course1 !== $course2) {
+                    $equals = false;
+
+                    break 2;
                 }
             }
         }
 
         $this->assertTrue($equals);
+    }
+
+    public function test_loading_courses(): void
+    {
+        $this->seed();
+
+        $currencies = Currency::query()->get('code')->pluck('code')->all();
+
+        $gettingCourseService = (new GettingCourseService());
 
         $gettingCourseService->flush();
 
-        $equals = false;
+        $courses = $this->add_fake_courses($currencies);
+
+        $equals = true;
         foreach ($currencies as $currency) {
             foreach ($currencies as $currencyTo) {
-                if ($gettingCourseService->calcAmount($currency, $currencyTo) === round($courses[$currency.$currencyTo], 2)) {
-                    $equals = true;
+                $course1 = $gettingCourseService->calcAmount($currency, $currencyTo);
+                $course2 = round($courses[$currency.$currencyTo], 5);
+                if ($course1 !== $course2) {
+                    $equals = false;
+
+                    break 2;
                 }
             }
         }

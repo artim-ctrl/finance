@@ -19,7 +19,7 @@ class GettingCourseService
             $courses = Course::getCourses($currency, $currencies->all());
             /** @var float $course */
             foreach ($courses as $key => $course) {
-                $this->set($key, $course);
+                $this->set($key, $this->prepareCourse($course));
             }
         });
     }
@@ -34,7 +34,7 @@ class GettingCourseService
             return $this->get($from.$to) * $amount;
         }
 
-        $course = Course::getCourse($from, $to);
+        $course = $this->prepareCourse(Course::getCourse($from, $to));
 
         $this->set($from.$to, $course);
 
@@ -64,6 +64,11 @@ class GettingCourseService
     protected function cache(): TaggedCache
     {
         return Cache::tags(['courses']);
+    }
+
+    protected function prepareCourse(float $course): float
+    {
+        return round($course, 5);
     }
 
     protected function getCacheKey(string $fromTo): string
