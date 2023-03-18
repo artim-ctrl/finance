@@ -15,7 +15,11 @@ class LoginController extends Controller
     {
         if (! Auth::attempt($data->only('email', 'password')->all())) {
             return response()->json([
-                'error' => 'Credentials are wrong',
+                'data' => [
+                    'errors' => [
+                        'email' => ['Email or password is incorrect'],
+                    ],
+                ],
             ], 400);
         }
 
