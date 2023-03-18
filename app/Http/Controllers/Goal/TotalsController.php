@@ -23,9 +23,9 @@ class TotalsController extends Controller
      * @return JsonResponse
      */
     public function __invoke(
-        IndexData                 $data,
-        int                       $goalId,
-        TotalsGettingService      $totalsGettingService,
+        IndexData $data,
+        int $goalId,
+        TotalsGettingService $totalsGettingService,
         DifferencesGettingService $differencesGettingService,
     ): JsonResponse {
         /** @var Goal|null $goal */
