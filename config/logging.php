@@ -1,5 +1,6 @@
 <?php
 
+use Artim\Logger\Logger\File\JsonFormatter;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -55,6 +56,16 @@ return [
             'driver' => 'stack',
             'channels' => ['single'],
             'ignore_exceptions' => false,
+        ],
+
+        'artim' => [
+            'driver' => 'monolog',
+            'level' => env('LOG_LEVEL', 'debug'),
+            'handler' => StreamHandler::class,
+            'formatter' => JsonFormatter::class,
+            'handler_with' => [
+                'stream' => storage_path('logs/laravel-artim.log'),
+            ],
         ],
 
         'single' => [
