@@ -28,5 +28,8 @@ class StoreData extends Data
         public ?string $plannedAt,
         public bool $forHistory,
     ) {
+        if (null === $this->spentAt) {
+            $this->spentAt = now()->format('Y-m-d H:i:s');
+        }
     }
 }

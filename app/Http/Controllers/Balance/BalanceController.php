@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Balance;
 
+use App\Exceptions\Balance\BalanceAlreadyExistsException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Balance\StoreData;
 use App\Http\Requests\Balance\UpdateData;
 use App\Http\Resources\Balance\BalanceCollection;
 use App\Http\Resources\Balance\BalanceResource;
 use App\Models\Balance;
+use App\Repositories\Balance\History\BalanceHistoryRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 
@@ -33,9 +35,19 @@ class BalanceController extends Controller
      *
      * @param StoreData $data
      * @return BalanceResource
+     * @throws BalanceAlreadyExistsException
      */
     public function store(StoreData $data): BalanceResource
     {
+        if (
+            Balance::query()
+                ->where('user_id', auth()->id())
+                ->where('currency_id', $data->currencyId)
+                ->exists()
+        ) {
+            throw new BalanceAlreadyExistsException('Balance already exists');
+        }
+
         $validated = array_merge($data->all(), ['user_id' => auth()->id()]);
 
         /** @var Balance $balance */
@@ -70,9 +82,10 @@ class BalanceController extends Controller
      * Remove the specified resource from storage.
      *
      * @param int $id
+     * @param BalanceHistoryRepository $balanceHistoryRepository
      * @return JsonResponse
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy(int $id, BalanceHistoryRepository $balanceHistoryRepository): JsonResponse
     {
         /** @var Balance $balance */
         $balance = Balance::findOrFail($id);
@@ -81,6 +94,8 @@ class BalanceController extends Controller
         }
 
         $balance->forceDelete();
+
+        $balanceHistoryRepository->forceDeleteByBalanceId($balance->id);
 
         return response()->json([
             'status' => 'ok',

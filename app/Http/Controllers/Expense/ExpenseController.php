@@ -12,6 +12,7 @@ use App\Http\Resources\Expense\ExpenseResource;
 use App\Models\Balance;
 use App\Models\Expense;
 use App\Models\ExpenseType;
+use App\Repositories\Balance\History\BalanceHistoryRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -30,7 +31,7 @@ class ExpenseController extends Controller
     /**
      * @throws Throwable
      */
-    public function store(StoreData $data): ExpenseResource
+    public function store(StoreData $data, BalanceHistoryRepository $balanceHistoryRepository): ExpenseResource
     {
         DB::beginTransaction();
 
@@ -56,12 +57,15 @@ class ExpenseController extends Controller
                 throw new BalanceNotFoundException('User\'s balance not found.'); // TODO: Change to config usage? I mean /lang directory
             }
 
+            $amountFrom = $balance->amount;
+
             $validated = array_merge($data->all(), ['user_id' => $userId]);
-            if (null !== $data->spentAt && ! $data->forHistory) {
+            if (! $data->forHistory) {
                 if ($balance->amount < $data->amount) {
                     throw new BalanceNotEnoughException('There are not enough funds on the balance.');
                 }
 
+                // TODO: refactor to increase method in Eloquent
                 $balance->update([
                     'amount' => $balance->amount - $data->amount,
                 ]);
@@ -69,6 +73,14 @@ class ExpenseController extends Controller
 
             /** @var Expense $expense */
             $expense = Expense::create($validated);
+
+            $balanceHistoryRepository->createByExpense(
+                amountFrom: $amountFrom,
+                amountTo: $balance->amount,
+                balanceId: $balance->id,
+                expenseId: $expense->id,
+                doneAt: $expense->created_at,
+            );
 
             DB::commit();
         } catch (Throwable $exception) {

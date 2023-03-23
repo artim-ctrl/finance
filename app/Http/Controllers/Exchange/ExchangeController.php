@@ -10,6 +10,7 @@ use App\Http\Resources\Exchange\ExchangeCollection;
 use App\Http\Resources\Exchange\ExchangeResource;
 use App\Models\Balance;
 use App\Models\Exchange;
+use App\Repositories\Balance\History\BalanceHistoryRepository;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -26,15 +27,17 @@ class ExchangeController extends Controller
 
     /**
      * @param StoreData $data
+     * @param BalanceHistoryRepository $balanceHistoryRepository
      * @return ExchangeResource
      * @throws Throwable
      */
-    public function store(StoreData $data): ExchangeResource
+    public function store(StoreData $data, BalanceHistoryRepository $balanceHistoryRepository): ExchangeResource
     {
         try {
             DB::beginTransaction();
 
             // TODO: refactor to services and repositories
+            // TODO: refactor to use increase method in Eloquent
             $userId = auth()->id();
 
             /** @var Balance|null $balanceFrom */
@@ -59,6 +62,9 @@ class ExchangeController extends Controller
                 throw new BalanceNotEnoughException('There are not enough funds on the balance.');
             }
 
+            $amountFromMinus = $balanceFrom->amount;
+            $amountFromPlus = $balanceTo->amount;
+
             $balanceFrom->update(['amount' => $balanceFrom->amount - $data->amountFrom]);
             $balanceTo->update(['amount' => $balanceTo->amount + $data->amountTo]);
 
@@ -66,6 +72,20 @@ class ExchangeController extends Controller
 
             /** @var Exchange $exchange */
             $exchange = Exchange::create($validated);
+
+            $balanceHistoryRepository->createByExchangeMinus(
+                balance: $balanceFrom,
+                amountFrom: $amountFromMinus,
+                exchange: $exchange,
+                doneAt: $exchange->exchanged_at,
+            );
+
+            $balanceHistoryRepository->createByExchangePlus(
+                balance: $balanceTo,
+                amountFrom: $amountFromPlus,
+                exchange: $exchange,
+                doneAt: $exchange->exchanged_at,
+            );
 
             DB::commit();
         } catch (Throwable $exception) {

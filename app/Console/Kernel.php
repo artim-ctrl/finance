@@ -2,6 +2,10 @@
 
 namespace App\Console;
 
+use App\Console\Commands\IncreaseIncomes;
+use App\Console\Commands\PayIncomes;
+use App\Console\Commands\PayLoans;
+use App\Console\Commands\UpdateCourses;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -15,8 +19,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('incomes:increase')->daily();
-        $schedule->command('courses:update')->dailyAt('00:00');
+        $schedule->call(UpdateCourses::class)->dailyAt('00:00');
+        $schedule->call(IncreaseIncomes::class)->dailyAt('09:00');
+        $schedule->call(PayIncomes::class)->dailyAt('12:00');
+        $schedule->call(PayLoans::class)->dailyAt('13:00');
     }
 
     /**
