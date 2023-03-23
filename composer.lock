@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "artim/logger",
-            "version": "0.2",
+            "version": "0.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/artim-ctrl/logger.git",
-                "reference": "0568bde128987b3374c4cbc074e30123d45226d3"
+                "reference": "f44660e7481a3f4ea5bec7cea3d03e7d9ccd1361"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/artim-ctrl/logger/zipball/0568bde128987b3374c4cbc074e30123d45226d3",
-                "reference": "0568bde128987b3374c4cbc074e30123d45226d3",
+                "url": "https://api.github.com/repos/artim-ctrl/logger/zipball/f44660e7481a3f4ea5bec7cea3d03e7d9ccd1361",
+                "reference": "f44660e7481a3f4ea5bec7cea3d03e7d9ccd1361",
                 "shasum": ""
             },
             "require": {
@@ -72,9 +72,9 @@
             ],
             "support": {
                 "issues": "https://github.com/artim-ctrl/logger/issues",
-                "source": "https://github.com/artim-ctrl/logger/tree/0.2"
+                "source": "https://github.com/artim-ctrl/logger/tree/0.2.3"
             },
-            "time": "2023-03-18T19:47:17+00:00"
+            "time": "2023-03-23T13:52:58+00:00"
         },
         {
             "name": "brick/math",
