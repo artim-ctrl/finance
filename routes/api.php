@@ -67,10 +67,14 @@ Route::middleware('auth:sanctum')->group(function () { // TODO: split into files
 
     Route::post('goals/{goalId}/totals', TotalsController::class)->whereNumber('goalId');
 
-    Route::get('balances', [BalanceController::class, 'index']);
-    Route::post('balances', [BalanceController::class, 'store']);
-    Route::put('balances/{id}', [BalanceController::class, 'update'])->whereNumber('id');
-    Route::delete('balances/{id}', [BalanceController::class, 'destroy'])->whereNumber('id');
+    Route::prefix('balances')->group(function () {
+        Route::get('/', [BalanceController::class, 'index']);
+        Route::post('/', [BalanceController::class, 'store']);
+        Route::put('/{id}', [BalanceController::class, 'update'])->whereNumber('id');
+        Route::delete('/{id}', [BalanceController::class, 'destroy'])->whereNumber('id');
+
+        Route::get('/{id}', [BalanceController::class, 'show'])->whereNumber('id');
+    });
 
     Route::get('exchanges', [ExchangeController::class, 'index']);
     Route::post('exchanges', [ExchangeController::class, 'store']);

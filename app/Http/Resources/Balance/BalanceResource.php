@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Balance;
 
+use App\Http\Resources\Balance\History\HistoryResource;
 use App\Models\Balance;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -23,6 +24,7 @@ class BalanceResource extends JsonResource
             'id' => $this->id,
             'currency' => $this->currency->code,
             'amount' => $this->amount,
+            'history' => HistoryResource::collection($this->whenLoaded('history')),
         ];
     }
 }

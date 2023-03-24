@@ -2,18 +2,23 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
  * @property int $user_id
  * @property int $currency_id
  * @property float $amount
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  *
  * @property User $user
  * @property Currency $currency
+ * @property BalanceHistory $histories
  */
 class Balance extends Model
 {
@@ -34,5 +39,10 @@ class Balance extends Model
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
+    }
+
+    public function history(): HasMany
+    {
+        return $this->hasMany(BalanceHistory::class);
     }
 }

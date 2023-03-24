@@ -7,6 +7,7 @@ use App\Http\Requests\Income\StoreData;
 use App\Http\Resources\Income\IncomeCollection;
 use App\Http\Resources\Income\IncomeResource;
 use App\Models\Income;
+use App\Repositories\Balance\History\BalanceHistoryRepository;
 use Illuminate\Http\JsonResponse;
 
 class IncomeController extends Controller
@@ -28,12 +29,14 @@ class IncomeController extends Controller
         return IncomeResource::make($income);
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(int $id, BalanceHistoryRepository $balanceHistoryRepository): JsonResponse
     {
         /** @var Income $income */
         $income = Income::findOrFail($id);
 
         $income->forceDelete();
+
+        $balanceHistoryRepository->forceDeleteByIncome($income->id);
 
         return response()->json([
             'status' => 'ok',
