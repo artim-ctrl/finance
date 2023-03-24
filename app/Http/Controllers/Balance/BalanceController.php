@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Balance;
 
 use App\Exceptions\Balance\BalanceAlreadyExistsException;
+use App\Exceptions\Balance\BalanceNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Balance\StoreData;
 use App\Http\Requests\Balance\UpdateData;
@@ -28,6 +29,21 @@ class BalanceController extends Controller
             ->get()->all();
 
         return BalanceCollection::make($balances);
+    }
+
+    public function show(int $id): BalanceResource
+    {
+        /** @var Balance|null $balance */
+        $balance = Balance::query()
+            ->with('history')
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->first();
+        if (null === $balance) {
+            throw new BalanceNotFoundException('Balance not found');
+        }
+
+        return BalanceResource::make($balance);
     }
 
     /**

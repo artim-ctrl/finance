@@ -4,7 +4,6 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Balance\BalanceController;
-use App\Http\Controllers\Balance\History\HistoryController;
 use App\Http\Controllers\Calendar\CalendarController;
 use App\Http\Controllers\Calendar\Month\MonthController;
 use App\Http\Controllers\Calendar\Month\Row\RowController;
@@ -74,7 +73,7 @@ Route::middleware('auth:sanctum')->group(function () { // TODO: split into files
         Route::put('/{id}', [BalanceController::class, 'update'])->whereNumber('id');
         Route::delete('/{id}', [BalanceController::class, 'destroy'])->whereNumber('id');
 
-        Route::get('/{balanceId}/history', [HistoryController::class, 'index'])->whereNumber('balanceId');
+        Route::get('/{id}', [BalanceController::class, 'show'])->whereNumber('id');
     });
 
     Route::get('exchanges', [ExchangeController::class, 'index']);
