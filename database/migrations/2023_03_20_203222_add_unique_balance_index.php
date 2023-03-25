@@ -24,7 +24,11 @@ return new class () extends Migration {
     public function down(): void
     {
         Schema::table('balances', function (Blueprint $table) {
-            $table->dropIndex('user_id-currency_id-unique-index');
+            $table->dropForeign(['user_id']);
+            $table->dropForeign(['currency_id']);
+            $table->dropUnique('user_id-currency_id-unique-index');
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreign('currency_id')->references('id')->on('currencies')->cascadeOnUpdate()->cascadeOnDelete();
         });
     }
 };
