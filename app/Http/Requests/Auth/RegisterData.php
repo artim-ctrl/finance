@@ -5,6 +5,7 @@ namespace App\Http\Requests\Auth;
 use Spatie\LaravelData\Attributes\MapName;
 use Spatie\LaravelData\Attributes\Validation\Confirmed;
 use Spatie\LaravelData\Attributes\Validation\Email;
+use Spatie\LaravelData\Attributes\Validation\Exists;
 use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Attributes\Validation\Min;
 use Spatie\LaravelData\Data;
@@ -15,6 +16,7 @@ class RegisterData extends Data
         #[Max(255)]
         public string $name,
         #[Email]
+        #[Exists('users', 'email')]
         public string $email,
         #[Min(8)]
         #[Confirmed]
