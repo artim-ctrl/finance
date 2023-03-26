@@ -18,7 +18,7 @@ class StoreData extends Data
         public int $estimatedCurrencyId,
         public float $estimatedAmount,
         #[Exists('currencies', 'id')]
-        public int $currencyId,
+        public ?int $currencyId = null,
     ) {
     }
 }
