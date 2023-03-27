@@ -32,7 +32,7 @@ class PayLoans extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): void
+    public function __invoke(): void
     {
         $date = now();
 

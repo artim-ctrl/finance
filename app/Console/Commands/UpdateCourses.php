@@ -30,7 +30,7 @@ class UpdateCourses extends Command
      * @return int
      * @throws BindingResolutionException
      */
-    public function handle(): int
+    public function __invoke(): int
     {
         $attempts = 3;
 

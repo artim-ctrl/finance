@@ -28,7 +28,7 @@ class IncreaseIncomes extends Command
      *
      * @return int
      */
-    public function handle(): int
+    public function __invoke(): int
     {
         $today = now();
         $incomes = Income::query()
