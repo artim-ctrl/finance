@@ -64,6 +64,7 @@ return [
             'formatter' => \Artim\Logger\Logger\File\JsonFormatter::class,
             'handler_with' => [
                 'filename' => storage_path('logs/laravel-artim.log'),
+                'filePermission' => 0766,
             ],
         ],
 
