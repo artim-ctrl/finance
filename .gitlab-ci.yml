@@ -1,0 +1,17 @@
+stages:
+  - deploy
+
+production:
+  stage: deploy
+  before_script:
+  - 'command -v ssh-agent >/dev/null || ( apk add --update openssh )'
+  - eval $(ssh-agent -s)
+  - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - ssh-keyscan $IP_ADDRESS >> ~/.ssh/known_hosts
+  - chmod 644 ~/.ssh/known_hosts
+  script:
+  - ssh $SSH_USER@$IP_ADDRESS "cd /var/www/my-finance-backend && sudo -u artim git add . && sudo -u artim git reset --hard && sudo -u artim git pull && sudo -u artim composer install --optimize-autoloader --no-dev && sudo -u artim php artisan migrate --force && sudo -u artim php artisan optimize:clear && sudo -u artim php artisan optimize && service php8.2-fpm restart"
+  only:
+  - master
