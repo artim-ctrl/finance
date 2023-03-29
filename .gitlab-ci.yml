@@ -18,7 +18,7 @@
 
 image: alpine:latest
 
-pages:
+production:
   stage: deploy
   before_script:
   - 'command -v ssh-agent >/dev/null || ( apk add --update openssh )'
