@@ -1,0 +1,37 @@
+# This file is a template, and might need editing before it works on your project.
+# This is a sample GitLab CI/CD configuration file that should run without any modifications.
+# It demonstrates a basic 3 stage CI/CD pipeline. Instead of real tests or scripts,
+# it uses echo commands to simulate the pipeline execution.
+#
+# A pipeline is composed of independent jobs that run scripts, grouped into stages.
+# Stages run in sequential order, but jobs within stages run in parallel.
+#
+# For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
+#
+# You can copy and paste this template into a new `.gitlab-ci.yml` file.
+# You should not add this template to an existing `.gitlab-ci.yml` file by using the `include:` keyword.
+#
+# To contribute improvements to CI/CD templates, please follow the Development guide at:
+# https://docs.gitlab.com/ee/development/cicd/templates.html
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
+
+image: alpine:latest
+
+pages:
+  stage: deploy
+  before_script:
+  - 'command -v ssh-agent >/dev/null || ( apk add --update openssh )'
+  - eval $(ssh-agent -s)
+  - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - ssh-keyscan $IP_ADDRESS >> ~/.ssh/known_hosts
+  - chmod 644 ~/.ssh/known_hosts
+  script:
+  - ssh $SSH_USER@$IP_ADDRESS "cd /var/www/my-finance-backend && sudo -u artim git add . && sudo -u artim git reset --hard && sudo -u artim git pull && sudo -u artim composer install --optimize-autoloader --no-dev && sudo -u artim php artisan migrate --force && sudo -u artim php artisan optimize:clear && sudo -u artim php artisan optimize && service php8.2-fpm restart"
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
