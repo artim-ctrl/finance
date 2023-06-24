@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * @property User|null $user
  */
-class ExpenseType extends Model
+final class ExpenseType extends Model
 {
     use HasFactory;
 

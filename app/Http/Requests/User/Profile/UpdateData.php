@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Requests\User\Profile;
 
 use Spatie\LaravelData\Attributes\Validation\Max;
+use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Data;
 
-class UpdateData extends Data
+final class UpdateData extends Data
 {
     public function __construct(
+        #[Required]
         #[Max(255)]
         public string $name,
     ) {

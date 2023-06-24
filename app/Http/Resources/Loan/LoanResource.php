@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Resources\Loan;
 
 use App\Models\Loan;
@@ -9,7 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @mixin Loan
  */
-class LoanResource extends JsonResource
+final class LoanResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

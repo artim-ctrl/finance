@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Models;
 
 use App\Enums\BalanceHistory\ActionEnum;
@@ -22,7 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property Balance $balance
  * @property Expense|Exchange|Loan|Income $entity
  */
-class BalanceHistory extends Model
+final class BalanceHistory extends Model
 {
     use HasTimestamps;
 

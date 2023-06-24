@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
@@ -16,7 +18,7 @@ use Illuminate\Support\Collection;
  * @property User $user
  * @property Collection<CalendarMonth> $months
  */
-class Calendar extends Model
+final class Calendar extends Model
 {
     use HasTimestamps;
 

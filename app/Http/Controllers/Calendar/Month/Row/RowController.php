@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Controllers\Calendar\Month\Row;
 
 use App\Http\Controllers\Controller;
@@ -11,26 +13,18 @@ use App\Models\MonthRow;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
-class RowController extends Controller
+final class RowController extends Controller
 {
     /**
      * @throws Exception
      */
     public function store(StoreData $data, int $monthId): MonthRowResource
     {
-        /** @var Calendar $calendar */
-        $calendar = Calendar::query()
-            ->where('user_id', auth()->id())
-            ->first();
+        $calendar = Calendar::whereUserId(auth()->id())->firstOrFail();
 
-        /** @var CalendarMonth|null $month */
-        $month = CalendarMonth::query()
-            ->where('id', $monthId)
-            ->where('calendar_id', $calendar->id)
-            ->first();
-        if (null === $month) {
-            throw new Exception('Month does not exist');
-        }
+        $month = CalendarMonth::whereId($monthId)
+            ->whereCalendarId($calendar->id)
+            ->firstOrFail();
 
         $row = MonthRow::create([
             'month_id' => $month->id,
@@ -47,28 +41,16 @@ class RowController extends Controller
      */
     public function destroy(int $monthId, int $id): JsonResponse
     {
-        /** @var Calendar $calendar */
-        $calendar = Calendar::query()
-            ->where('user_id', auth()->id())
-            ->first();
+        $calendar = Calendar::whereUserId(auth()->id())->firstOrFail();
 
-        /** @var CalendarMonth|null $month */
         $month = CalendarMonth::query()
-            ->where('id', $monthId)
-            ->where('calendar_id', $calendar->id)
-            ->first();
-        if (null === $month) {
-            throw new Exception('Month does not exist');
-        }
+            ->whereId($monthId)
+            ->whereCalendarId($calendar->id)
+            ->firstOrFail();
 
-        /** @var MonthRow|null $row */
-        $row = MonthRow::query()
-            ->where('id', $id)
-            ->where('month_id', $month->id)
-            ->first();
-        if (null === $row) {
-            throw new Exception('Row does not exist');
-        }
+        $row = MonthRow::whereId($id)
+            ->whereMonthId($month->id)
+            ->firstOrFail();
 
         $row->forceDelete();
 

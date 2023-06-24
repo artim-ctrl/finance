@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
@@ -17,7 +19,7 @@ use Illuminate\Support\Collection;
  * @property User $user
  * @property Collection<GoalStep> $steps
  */
-class Goal extends Model
+final class Goal extends Model
 {
     use HasTimestamps;
     use HasFactory;

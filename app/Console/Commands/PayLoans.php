@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Console\Commands;
 
 use App\Models\Balance;
@@ -8,7 +10,7 @@ use App\Repositories\Balance\History\BalanceHistoryRepository;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 
-class PayLoans extends Command
+final class PayLoans extends Command
 {
     /**
      * The name and signature of the console command.
@@ -24,11 +26,6 @@ class PayLoans extends Command
      */
     protected $description = 'Pay loans';
 
-    public function __construct(protected BalanceHistoryRepository $balanceHistoryRepository)
-    {
-        parent::__construct();
-    }
-
     /**
      * Execute the console command.
      */
@@ -36,22 +33,20 @@ class PayLoans extends Command
     {
         $date = now();
 
-        $query = Loan::query()
-            ->where('DAYOFMONTH("first_payment")', $date->day)
+        $query = Loan::where('DAYOFMONTH("first_payment")', $date->day)
             ->orderBy('id');
 
-        $query->chunk(10000, function (Collection $chunk) {
-            $chunk->each(function (Loan $loan) {
-                /** @var Balance $balance */
-                $balance = Balance::query()
-                    ->where('user_id', $loan->user_id)
-                    ->where('currency_id', $loan->currency_id);
+        $query->chunk(10000, static function (Collection $chunk) {
+            $chunk->each(static function (Loan $loan) {
+                $balance = Balance::whereUserId($loan->user_id)
+                    ->whereCurrencyId($loan->currency_id)
+                    ->firstOrFail();
 
                 $amountFrom = $balance->amount;
 
                 $balance->update(['amount' => $balance->amount - $loan->amount]);
 
-                $this->balanceHistoryRepository->createByLoan(
+                app(abstract: BalanceHistoryRepository::class)->createByLoan(
                     balance: $balance,
                     amountFrom: $amountFrom,
                     loan: $loan,

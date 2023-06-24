@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
@@ -16,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property CalendarMonth $month
  * @property Currency $currency
  */
-class MonthRow extends Model
+final class MonthRow extends Model
 {
     use HasTimestamps;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Resources\Exchange;
 
 use App\Http\Resources\Balance\BalanceResource;
@@ -10,7 +12,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @mixin Exchange
  */
-class ExchangeResource extends JsonResource
+final class ExchangeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

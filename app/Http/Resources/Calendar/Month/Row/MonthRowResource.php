@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Resources\Calendar\Month\Row;
 
 use App\Models\MonthRow;
@@ -9,7 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @mixin MonthRow
  */
-class MonthRowResource extends JsonResource
+final class MonthRowResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

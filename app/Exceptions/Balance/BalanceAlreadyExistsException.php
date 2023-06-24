@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Exceptions\Balance;
 
 use Exception;
 
-class BalanceAlreadyExistsException extends Exception
+final class BalanceAlreadyExistsException extends Exception
 {
 }

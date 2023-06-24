@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http;
 
 use App\Http\Middleware\Authenticate;
@@ -27,7 +29,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
-class Kernel extends HttpKernel
+final class Kernel extends HttpKernel
 {
     /**
      * The application's global HTTP middleware stack.

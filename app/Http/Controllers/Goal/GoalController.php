@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Controllers\Goal;
 
-use App\Exceptions\Goal\GoalNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Goal\StoreData;
 use App\Http\Resources\Goal\GoalCollection;
@@ -10,19 +11,13 @@ use App\Http\Resources\Goal\GoalResource;
 use App\Models\Goal;
 use Illuminate\Http\JsonResponse;
 
-class GoalController extends Controller
+final class GoalController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return GoalCollection
-     */
     public function index(): GoalCollection
     {
-        $goals = Goal::query()
-            ->where('user_id', auth()->id())
-            ->with('steps')
-            ->get()->all();
+        $goals = Goal::whereUserId(auth()->id())
+            ->with(relations: 'steps')
+            ->get();
 
         return GoalCollection::make($goals);
     }
@@ -30,47 +25,26 @@ class GoalController extends Controller
     public function show(int $id): GoalResource
     {
         /** @var Goal|null $goal */
-        $goal = Goal::query()
-            ->where('id', $id)
-            ->where('user_id', auth()->id())
-            ->with('steps')
-            ->first();
-        if (null === $goal) {
-            throw new GoalNotFoundException('Goal not found.');
-        }
+        $goal = Goal::whereId($id)
+            ->whereUserId(auth()->id())
+            ->with(relations: 'steps')
+            ->firstOrFail();
 
         return GoalResource::make($goal);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param StoreData $data
-     * @return GoalResource
-     */
     public function store(StoreData $data): GoalResource
     {
-        $validated = array_merge($data->all(), ['user_id' => auth()->id()]);
-
-        /** @var Goal $goal */
-        $goal = Goal::create($validated);
+        $goal = Goal::create(
+            attributes: $data->additional(['user_id' => auth()->id()])->all(),
+        );
 
         return GoalResource::make($goal);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return JsonResponse
-     */
     public function destroy(int $id): JsonResponse
     {
-        /** @var Goal|null $goal */
-        $goal = Goal::query()->where('id', $id)->first();
-        if (null === $goal) {
-            throw new GoalNotFoundException('Goal not found.');
-        }
+        $goal = Goal::findOrFail($id);
 
         $goal->forceDelete();
 

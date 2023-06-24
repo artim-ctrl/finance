@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Services\GoalStep;
 
 use App\Models\Currency;
@@ -8,10 +10,10 @@ use App\Models\GoalStep;
 use App\Services\Currency\GettingCourseService;
 use Illuminate\Support\Collection;
 
-class DifferencesGettingService
+final readonly class DifferencesGettingService
 {
     public function __construct(
-        protected GettingCourseService $gettingCourseService,
+        private GettingCourseService $gettingCourseService,
     ) {
     }
 

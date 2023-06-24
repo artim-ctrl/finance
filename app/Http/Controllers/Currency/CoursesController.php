@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Controllers\Currency;
 
 use App\Http\Controllers\Controller;
@@ -9,24 +11,18 @@ use App\Services\Currency\GettingCourseService;
 use Illuminate\Http\JsonResponse;
 use RuntimeException;
 
-class CoursesController extends Controller
+final class CoursesController extends Controller
 {
     public function __construct(
         protected GettingCourseService $gettingCourseService,
     ) {
     }
 
-    /**
-     * Handle the incoming request.
-     *
-     * @param IndexData $data
-     * @return JsonResponse
-     */
     public function __invoke(IndexData $data): JsonResponse
     {
-        $currencies = Currency::query()->whereIn('code', $data->currencies)->get()->pluck('code');
+        $currencies = Currency::query()->whereIn(column: 'code', values: $data->currencies)->get()->pluck('code');
         if (count($data->currencies) !== $currencies->count()) {
-            throw new RuntimeException('Currencies don\'t exist');
+            throw new RuntimeException(message: 'Currencies don\'t exist');
         }
 
         $courses = [];

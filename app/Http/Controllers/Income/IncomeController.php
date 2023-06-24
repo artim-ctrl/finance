@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Controllers\Income;
 
 use App\Http\Controllers\Controller;
@@ -10,28 +12,26 @@ use App\Models\Income;
 use App\Repositories\Balance\History\BalanceHistoryRepository;
 use Illuminate\Http\JsonResponse;
 
-class IncomeController extends Controller
+final class IncomeController extends Controller
 {
     public function index(): IncomeCollection
     {
-        $incomes = Income::query()->where('user_id', auth()->id())->get()->all();
+        $incomes = Income::whereUserId(auth()->id())->get();
 
         return IncomeCollection::make($incomes);
     }
 
     public function store(StoreData $data): IncomeResource
     {
-        $validated = array_merge($data->all(), ['user_id' => auth()->id()]);
-
-        /** @var Income $income */
-        $income = Income::create($validated);
+        $income = Income::create(
+            attributes: $data->additional(['user_id' => auth()->id()])->all(),
+        );
 
         return IncomeResource::make($income);
     }
 
     public function destroy(int $id, BalanceHistoryRepository $balanceHistoryRepository): JsonResponse
     {
-        /** @var Income $income */
         $income = Income::findOrFail($id);
 
         $income->forceDelete();

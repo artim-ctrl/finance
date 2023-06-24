@@ -1,23 +1,21 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\User\PersonalAccessTokenResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\PersonalAccessToken;
 
-class TokenController extends Controller
+final class TokenController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(): JsonResponse
     {
         /** @var User $user */
-        $user = $request->user();
-
-        $tokens = $user->tokens()->get();
+        $user = auth()->user();
 
         /** @var PersonalAccessToken $personalAccessToken */
         $personalAccessToken = $user->currentAccessToken();
@@ -25,7 +23,7 @@ class TokenController extends Controller
         return response()->json([
             'data' => [
                 'current_token_id' => $personalAccessToken->id,
-                'tokens' => PersonalAccessTokenResource::collection($tokens),
+                'tokens' => PersonalAccessTokenResource::collection($user->tokens),
             ],
         ]);
     }
@@ -33,9 +31,9 @@ class TokenController extends Controller
     public function delete(int $id): JsonResponse
     {
         /** @var User $user */
-        $user = Auth::user();
+        $user = auth()->user();
 
-        $user->tokens()->where('id', $id)->delete();
+        $user->tokens()->whereId($id)->delete();
 
         return response()->json([
             'status' => 'ok',

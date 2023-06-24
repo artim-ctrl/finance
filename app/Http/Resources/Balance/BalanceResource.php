@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Resources\Balance;
 
 use App\Http\Resources\Balance\History\HistoryResource;
@@ -10,7 +12,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @mixin Balance
  */
-class BalanceResource extends JsonResource
+final class BalanceResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Repositories\Balance\History;
 
 use App\Enums\BalanceHistory\ActionEnum;
@@ -11,7 +13,7 @@ use App\Models\Income;
 use App\Models\Loan;
 use Carbon\Carbon;
 
-class BalanceHistoryRepository
+final readonly class BalanceHistoryRepository
 {
     public function createByExpense(
         float $amountFrom,
@@ -20,10 +22,6 @@ class BalanceHistoryRepository
         int $expenseId,
         ?Carbon $doneAt = null,
     ): BalanceHistory {
-        if (null === $doneAt) {
-            $doneAt = now();
-        }
-
         return BalanceHistory::create([
             'action' => ActionEnum::MINUS,
             'balance_id' => $balanceId,
@@ -31,7 +29,7 @@ class BalanceHistoryRepository
             'amount_to' => $amountTo,
             'entity_type' => EntityTypeEnum::EXPENSES,
             'entity_id' => $expenseId,
-            'done_at' => $doneAt,
+            'done_at' => $doneAt ?? now(),
         ]);
     }
 
@@ -41,10 +39,6 @@ class BalanceHistoryRepository
         Income $income,
         ?Carbon $doneAt = null,
     ): BalanceHistory {
-        if (null === $doneAt) {
-            $doneAt = now();
-        }
-
         return BalanceHistory::create([
             'action' => ActionEnum::PLUS,
             'balance_id' => $balance->id,
@@ -52,7 +46,7 @@ class BalanceHistoryRepository
             'amount_to' => $balance->amount,
             'entity_type' => EntityTypeEnum::INCOMES,
             'entity_id' => $income->id,
-            'done_at' => $doneAt,
+            'done_at' => $doneAt ?? now(),
         ]);
     }
 
@@ -62,10 +56,6 @@ class BalanceHistoryRepository
         Exchange $exchange,
         ?Carbon $doneAt = null,
     ): BalanceHistory {
-        if (null === $doneAt) {
-            $doneAt = now();
-        }
-
         return BalanceHistory::create([
             'action' => ActionEnum::MINUS,
             'balance_id' => $balance->id,
@@ -73,7 +63,7 @@ class BalanceHistoryRepository
             'amount_to' => $balance->amount,
             'entity_type' => EntityTypeEnum::EXCHANGES,
             'entity_id' => $exchange->id,
-            'done_at' => $doneAt,
+            'done_at' => $doneAt ?? now(),
         ]);
     }
 
@@ -83,10 +73,6 @@ class BalanceHistoryRepository
         Exchange $exchange,
         ?Carbon $doneAt = null,
     ): BalanceHistory {
-        if (null === $doneAt) {
-            $doneAt = now();
-        }
-
         return BalanceHistory::create([
             'action' => ActionEnum::PLUS,
             'balance_id' => $balance->id,
@@ -94,7 +80,7 @@ class BalanceHistoryRepository
             'amount_to' => $balance->amount,
             'entity_type' => EntityTypeEnum::EXCHANGES,
             'entity_id' => $exchange->id,
-            'done_at' => $doneAt,
+            'done_at' => $doneAt ?? now(),
         ]);
     }
 
@@ -104,10 +90,6 @@ class BalanceHistoryRepository
         Loan $loan,
         ?Carbon $doneAt = null,
     ): BalanceHistory {
-        if (null === $doneAt) {
-            $doneAt = now();
-        }
-
         return BalanceHistory::create([
             'action' => ActionEnum::MINUS,
             'balance_id' => $balance->id,
@@ -115,13 +97,13 @@ class BalanceHistoryRepository
             'amount_to' => $balance->amount,
             'entity_type' => EntityTypeEnum::LOANS,
             'entity_id' => $loan->id,
-            'done_at' => $doneAt,
+            'done_at' => $doneAt ?? now(),
         ]);
     }
 
     public function forceDeleteByBalanceId(int $balanceId): bool
     {
-        $deleted = BalanceHistory::query()->where('balance_id', $balanceId)->forceDelete();
+        $deleted = BalanceHistory::whereBalanceId($balanceId)->forceDelete();
 
         return 0 !== $deleted;
     }
@@ -129,8 +111,8 @@ class BalanceHistoryRepository
     public function forceDeleteByIncome(int $incomeId): bool
     {
         $deleted = BalanceHistory::query()
-            ->where('entity_type', EntityTypeEnum::INCOMES)
-            ->where('entity_id', $incomeId)
+            ->whereEntityType(EntityTypeEnum::INCOMES)
+            ->whereEntityId($incomeId)
             ->forceDelete();
 
         return 0 !== $deleted;
@@ -139,8 +121,8 @@ class BalanceHistoryRepository
     public function forceDeleteByLoan(int $loanId): bool
     {
         $deleted = BalanceHistory::query()
-            ->where('entity_type', EntityTypeEnum::LOANS)
-            ->where('entity_id', $loanId)
+            ->whereEntityType(EntityTypeEnum::LOANS)
+            ->whereEntityId($loanId)
             ->forceDelete();
 
         return 0 !== $deleted;

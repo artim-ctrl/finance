@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Resources\Expense;
 
 use App\Http\Resources\Balance\BalanceResource;
@@ -11,7 +13,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @mixin Expense
  */
-class ExpenseResource extends JsonResource
+final class ExpenseResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

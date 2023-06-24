@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,7 +19,7 @@ use Laravel\Sanctum\HasApiTokens;
  *
  * @property Collection<Balance> $balances
  */
-class User extends Authenticatable
+final class User extends Authenticatable
 {
     use HasApiTokens;
     use HasFactory;

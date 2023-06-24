@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Exceptions\Balance;
 
 use RuntimeException;
 
-class BalanceNotEnoughException extends RuntimeException
+final class BalanceNotEnoughException extends RuntimeException
 {
 }

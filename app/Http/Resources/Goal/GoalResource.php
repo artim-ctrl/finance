@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Resources\Goal;
 
 use App\Http\Resources\GoalStep\GoalStepResource;
@@ -10,7 +12,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @mixin Goal
  */
-class GoalResource extends JsonResource
+final class GoalResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Controllers\Calendar\Month;
 
 use App\Http\Controllers\Controller;
@@ -10,26 +12,21 @@ use App\Models\CalendarMonth;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
-class MonthController extends Controller
+final class MonthController extends Controller
 {
     /**
      * @throws Exception
      */
     public function store(StoreData $data): CalendarMonthResource
     {
-        /** @var Calendar $calendar */
-        $calendar = Calendar::query()
-            ->where('user_id', auth()->id())
-            ->first();
+        $calendar = Calendar::whereUserId(auth()->id())->firstOrFail();
 
         // TODO: change to enum ?
         if ('left' === $data->to) {
-            /** @var CalendarMonth $firstMonth */
-            $firstMonth = CalendarMonth::query()
-                ->where('calendar_id', $calendar->id)
+            $firstMonth = CalendarMonth::whereCalendarId($calendar->id)
                 ->orderBy('year')
                 ->orderBy('month')
-                ->first();
+                ->firstOrFail();
 
             if (1 === $firstMonth->month) {
                 $year = $firstMonth->year - 1;
@@ -40,11 +37,10 @@ class MonthController extends Controller
             }
         } elseif ('right' === $data->to) {
             /** @var CalendarMonth $lastMonth */
-            $lastMonth = CalendarMonth::query()
-                ->where('calendar_id', $calendar->id)
+            $lastMonth = CalendarMonth::whereCalendarId($calendar->id)
                 ->orderByDesc('year')
                 ->orderByDesc('month')
-                ->first();
+                ->firstOrFail();
 
             if (12 === $lastMonth->month) {
                 $year = $lastMonth->year + 1;
@@ -54,7 +50,8 @@ class MonthController extends Controller
                 $month = $lastMonth->month + 1;
             }
         } else {
-            if (CalendarMonth::query()->where('calendar_id', $calendar->id)->exists()) {
+            if (CalendarMonth::whereCalendarId($calendar->id)->exists()) {
+                // TODO: change this to validation error or replace to validation rule
                 throw new Exception('Months already exist');
             }
 
@@ -64,39 +61,31 @@ class MonthController extends Controller
             $month = $now->month;
         }
 
-        /** @var CalendarMonth $month */
         $month = CalendarMonth::create([
             'calendar_id' => $calendar->id,
             'year' => $year,
             'month' => $month,
         ]);
 
-        $month->load(['rows']);
+        $month->load(relations: 'rows');
 
         return CalendarMonthResource::make($month);
     }
 
     public function destroy(string $to): JsonResponse
     {
-        /** @var Calendar $calendar */
-        $calendar = Calendar::query()
-            ->where('user_id', auth()->id())
-            ->first();
+        $calendar = Calendar::whereUserId(auth()->id())->firstOrFail();
 
         if ('left' === $to) {
-            /** @var CalendarMonth $month */
-            $month = CalendarMonth::query()
-                ->where('calendar_id', $calendar->id)
+            $month = CalendarMonth::whereCalendarId($calendar->id)
                 ->orderBy('year')
                 ->orderBy('month')
-                ->first();
+                ->firstOrFail();
         } else {
-            /** @var CalendarMonth $month */
-            $month = CalendarMonth::query()
-                ->where('calendar_id', $calendar->id)
+            $month = CalendarMonth::whereCalendarId($calendar->id)
                 ->orderByDesc('year')
                 ->orderByDesc('month')
-                ->first();
+                ->firstOrFail();
         }
 
         $month->forceDelete();

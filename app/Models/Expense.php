@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Models;
 
 use Carbon\Carbon;
@@ -23,7 +25,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property ExpenseType $type
  * @property Balance $balance
  */
-class Expense extends Model
+final class Expense extends Model
 {
     use HasFactory;
 

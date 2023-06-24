@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Modules\Course;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
-class CourseManager
+final readonly class CourseManager
 {
     protected const BASE_URI = 'https://api.apilayer.com';
 
@@ -41,7 +43,7 @@ class CourseManager
 
     protected function getClient(): PendingRequest
     {
-        return Http::baseUrl(static::BASE_URI)->withHeaders([
+        return Http::baseUrl(self::BASE_URI)->withHeaders([
             'apiKey' => config('apilayer.key'),
         ]);
     }

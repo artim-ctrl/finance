@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -9,14 +11,8 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 
-class RegisterController extends Controller
+final class RegisterController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     *
-     * @param RegisterData $data
-     * @return JsonResponse
-     */
     public function __invoke(RegisterData $data): JsonResponse
     {
         /** @var User $user */
@@ -27,6 +23,7 @@ class RegisterController extends Controller
 
         $token = $user->createToken($data->tokenName);
 
+        // TODO: use "additional" method
         return response()->json([
             'token' => $token->plainTextToken,
             'user' => UserResource::make($user),

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Console\Commands;
 
 use App\Models\Balance;
@@ -8,7 +10,7 @@ use App\Repositories\Balance\History\BalanceHistoryRepository;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 
-class PayIncomes extends Command
+final class PayIncomes extends Command
 {
     /**
      * The name and signature of the console command.
@@ -24,11 +26,6 @@ class PayIncomes extends Command
      */
     protected $description = 'Pay users\'s incomes';
 
-    public function __construct(protected BalanceHistoryRepository $balanceHistoryRepository)
-    {
-        parent::__construct();
-    }
-
     /**
      * Execute the console command.
      */
@@ -36,23 +33,19 @@ class PayIncomes extends Command
     {
         $date = now();
 
-        $query = Income::query()
-            ->where('day_receiving', $date->day)
-            ->orderBy('id');
+        $query = Income::whereDayReceiving($date->day)->orderBy('id');
 
-        $query->chunk(10000, function (Collection $chunk) {
-            $chunk->each(function (Income $income) {
-                /** @var Balance $balance */
-                $balance = Balance::query()
-                    ->where('user_id', $income->user_id)
-                    ->where('currency_id', $income->currency_id)
-                    ->first();
+        $query->chunk(10000, static function (Collection $chunk) {
+            $chunk->each(static function (Income $income) {
+                $balance = Balance::whereUserId($income->user_id)
+                    ->whereCurrencyId($income->currency_id)
+                    ->firstOrFail();
 
                 $amountFrom = $balance->amount;
 
                 $balance->update(['amount' => $balance->amount + $income->amount]);
 
-                $this->balanceHistoryRepository->createByIncome(
+                app(abstract: BalanceHistoryRepository::class)->createByIncome(
                     balance: $balance,
                     amountFrom: $amountFrom,
                     income: $income,

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Resources\User;
 
 use Illuminate\Http\Request;
@@ -15,7 +17,7 @@ use Laravel\Sanctum\PersonalAccessToken;
  *
  * @mixin PersonalAccessToken
  */
-class PersonalAccessTokenResource extends JsonResource
+final class PersonalAccessTokenResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

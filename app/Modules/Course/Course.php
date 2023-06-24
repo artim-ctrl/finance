@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Modules\Course;
 
 use Illuminate\Support\Facades\Facade;
@@ -10,7 +12,7 @@ use Illuminate\Support\Facades\Facade;
  *
  * @see CourseManager
  */
-class Course extends Facade
+final class Course extends Facade
 {
     protected static function getFacadeAccessor(): string
     {

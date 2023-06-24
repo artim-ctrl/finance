@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Controllers\Loan;
 
 use App\Http\Controllers\Controller;
@@ -10,28 +12,26 @@ use App\Models\Loan;
 use App\Repositories\Balance\History\BalanceHistoryRepository;
 use Illuminate\Http\JsonResponse;
 
-class LoanController extends Controller
+final class LoanController extends Controller
 {
     public function index(): LoanCollection
     {
-        $loans = Loan::query()->where('user_id', auth()->id())->get()->all();
+        $loans = Loan::whereUserId(auth()->id())->get();
 
         return LoanCollection::make($loans);
     }
 
     public function store(StoreData $data): LoanResource
     {
-        $validated = array_merge($data->all(), ['user_id' => auth()->id()]);
-
-        /** @var Loan $loan */
-        $loan = Loan::create($validated);
+        $loan = Loan::create(
+            attributes: $data->additional(['user_id' => auth()->id()])->all(),
+        );
 
         return LoanResource::make($loan);
     }
 
     public function destroy(int $id, BalanceHistoryRepository $balanceHistoryRepository): JsonResponse
     {
-        /** @var Loan $loan */
         $loan = Loan::findOrFail($id);
 
         $loan->forceDelete();

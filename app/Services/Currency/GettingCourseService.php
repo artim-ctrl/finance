@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Services\Currency;
 
 use App\Models\Currency;
@@ -7,14 +9,14 @@ use App\Modules\Course\Course;
 use Illuminate\Cache\TaggedCache;
 use Illuminate\Support\Facades\Cache;
 
-class GettingCourseService
+final readonly class GettingCourseService
 {
-    protected const CACHE_PREFIX = 'currency';
-    protected const CACHE_TTL = 24 * 60 * 60;
+    private const CACHE_PREFIX = 'currency';
+    private const CACHE_TTL = 24 * 60 * 60;
 
     public function loadCoursesToCache(): void
     {
-        $currencies = Currency::query()->select('code')->pluck('code');
+        $currencies = Currency::select('code')->pluck('code');
         $currencies->each(function (string $currency) use ($currencies) {
             $courses = Course::getCourses($currency, $currencies->all());
             /** @var float $course */
@@ -48,7 +50,7 @@ class GettingCourseService
 
     protected function set(string $key, float $course): void
     {
-        $this->cache()->put($this->getCacheKey($key), $course, static::CACHE_TTL);
+        $this->cache()->put($this->getCacheKey($key), $course, self::CACHE_TTL);
     }
 
     protected function has(string $key): bool
@@ -73,6 +75,6 @@ class GettingCourseService
 
     protected function getCacheKey(string $fromTo): string
     {
-        return static::CACHE_PREFIX.'_'.$fromTo;
+        return self::CACHE_PREFIX.'_'.$fromTo;
     }
 }

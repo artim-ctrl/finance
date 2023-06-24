@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Controllers\Expense;
 
 use App\Exceptions\Balance\BalanceNotEnoughException;
-use App\Exceptions\Balance\BalanceNotFoundException;
 use App\Exceptions\ExpenseType\ExpenseTypeNotExistsException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Expense\StoreData;
@@ -17,13 +18,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class ExpenseController extends Controller
+final class ExpenseController extends Controller
 {
     public function index(): ExpenseCollection
     {
-        $expenses = Expense::query()
-            ->where('user_id', auth()->id())
-            ->get()->all();
+        $expenses = Expense::whereUserId(auth()->id())->get();
 
         return ExpenseCollection::make($expenses);
     }
@@ -39,30 +38,23 @@ class ExpenseController extends Controller
             $userId = auth()->id();
 
             if (
-                ! ExpenseType::query()
-                    ->where('id', $data->expenseTypeId)
+                ! ExpenseType::whereId($data->expenseTypeId)
                     /** @phpstan-ignore-next-line */
-                    ->where(fn (Builder $query) => $query->whereNull('user_id')->orWhere('user_id', $userId))
+                    ->where(fn (Builder $query) => $query->whereNull(columns: 'user_id')->orWhere(column: 'user_id', operator: $userId))
                     ->exists()
             ) {
-                throw new ExpenseTypeNotExistsException('Expense type not found.');
+                throw new ExpenseTypeNotExistsException(message: 'Expense type not found.');
             }
 
-            /** @var Balance|null $balance */
-            $balance = Balance::query()
-                ->where('id', $data->balanceId)
-                ->where('user_id', $userId)
-                ->first();
-            if (null === $balance) {
-                throw new BalanceNotFoundException('User\'s balance not found.'); // TODO: Change to config usage? I mean /lang directory
-            }
+            $balance = Balance::whereId($data->balanceId)
+                ->whereUserId($userId)
+                ->firstOrFail();
 
             $amountFrom = $balance->amount;
 
-            $validated = array_merge($data->all(), ['user_id' => $userId]);
             if (! $data->forHistory) {
                 if ($balance->amount < $data->amount) {
-                    throw new BalanceNotEnoughException('There are not enough funds on the balance.');
+                    throw new BalanceNotEnoughException(message: 'There are not enough funds on the balance.');
                 }
 
                 // TODO: refactor to increase method in Eloquent
@@ -71,8 +63,7 @@ class ExpenseController extends Controller
                 ]);
             }
 
-            /** @var Expense $expense */
-            $expense = Expense::create($validated);
+            $expense = Expense::create(attributes: $data->additional(['user_id' => $userId])->all());
 
             $balanceHistoryRepository->createByExpense(
                 amountFrom: $amountFrom,

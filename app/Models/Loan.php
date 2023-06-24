@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
@@ -19,7 +21,7 @@ use Illuminate\Support\Carbon;
  * @property Currency $currency
  * @property User $user
  */
-class Loan extends Model
+final class Loan extends Model
 {
     use HasTimestamps;
 

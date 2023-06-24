@@ -1,14 +1,15 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Console\Commands;
 
 use App\Services\Currency\GettingCourseService;
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 
-class UpdateCourses extends Command
+final class UpdateCourses extends Command
 {
     /**
      * The name and signature of the console command.
@@ -28,14 +29,12 @@ class UpdateCourses extends Command
      * Execute the console command.
      *
      * @return int
-     * @throws BindingResolutionException
      */
     public function __invoke(): int
     {
         $attempts = 3;
 
-        /** @var GettingCourseService $gettingCourseService */
-        $gettingCourseService = app()->make(GettingCourseService::class);
+        $gettingCourseService = app(GettingCourseService::class);
 
         while (0 !== $attempts) {
             try {

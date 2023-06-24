@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -8,28 +10,24 @@ use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
-class LoginController extends Controller
+final class LoginController extends Controller
 {
     public function __invoke(LoginData $data): JsonResponse
     {
         if (! Auth::attempt($data->only('email', 'password')->all())) {
-            return response()->json([
-                'data' => [
-                    'errors' => [
-                        'email' => ['Email or password is incorrect'],
-                    ],
-                ],
-            ], 400);
+            throw ValidationException::withMessages([
+                'email' => ['Email or password is incorrect'],
+            ]);
         }
 
         /** @var User $user */
-        $user = User::query()
-            ->where('email', $data->email)
-            ->first();
+        $user = auth()->user();
 
         $token = $user->createToken($data->tokenName);
 
+        // TODO: use "additional" method
         return response()->json([
             'token' => $token->plainTextToken,
             'user' => UserResource::make($user),

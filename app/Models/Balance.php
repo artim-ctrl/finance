@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Models;
 
 use Carbon\Carbon;
@@ -20,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Currency $currency
  * @property BalanceHistory $histories
  */
-class Balance extends Model
+final class Balance extends Model
 {
     use HasTimestamps;
 
