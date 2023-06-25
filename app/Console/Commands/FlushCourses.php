@@ -31,7 +31,7 @@ final class FlushCourses extends Command
      */
     public function handle(): int
     {
-        app(GettingCourseService::class)->flush();
+        app(abstract: GettingCourseService::class)->flush();
 
         return BaseCommand::SUCCESS;
     }

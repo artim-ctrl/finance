@@ -8,13 +8,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginData;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 final class LoginController extends Controller
 {
-    public function __invoke(LoginData $data): JsonResponse
+    public function __invoke(LoginData $data): UserResource
     {
         if (! Auth::attempt($data->only('email', 'password')->all())) {
             throw ValidationException::withMessages([
@@ -27,10 +26,8 @@ final class LoginController extends Controller
 
         $token = $user->createToken($data->tokenName);
 
-        // TODO: use "additional" method
-        return response()->json([
+        return UserResource::make($user)->additional(['data' => [
             'token' => $token->plainTextToken,
-            'user' => UserResource::make($user),
-        ]);
+        ]]);
     }
 }

@@ -4,6 +4,9 @@ declare(strict_types = 1);
 
 namespace App\Providers;
 
+use App\Models\Balance;
+use App\Models\User;
+use Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 final class AuthServiceProvider extends ServiceProvider
@@ -23,5 +26,9 @@ final class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::define(
+            ability: 'own-balance',
+            callback: static fn (User $user, Balance $balance) => $user->id === $balance->user_id,
+        );
     }
 }

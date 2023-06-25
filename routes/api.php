@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -67,13 +69,18 @@ Route::middleware('auth:sanctum')->group(function () { // TODO: split into files
 
     Route::post('goals/{goalId}/totals', TotalsController::class)->whereNumber('goalId');
 
-    Route::prefix('balances')->group(function () {
-        Route::get('/', [BalanceController::class, 'index']);
-        Route::post('/', [BalanceController::class, 'store']);
-        Route::put('/{id}', [BalanceController::class, 'update'])->whereNumber('id');
-        Route::delete('/{id}', [BalanceController::class, 'destroy'])->whereNumber('id');
-
-        Route::get('/{id}', [BalanceController::class, 'show'])->whereNumber('id');
+    Route::prefix('balances')->as('balances.')->group(static function () {
+        Route::get('/', [BalanceController::class, 'index'])->name('index');
+        Route::post('/', [BalanceController::class, 'store'])->name('store');
+        Route::get('/{balance}', [BalanceController::class, 'show'])
+            ->can('own-balance', 'balance')
+            ->name('show');
+        Route::put('/{balance}', [BalanceController::class, 'update'])
+            ->can('own-balance', 'balance')
+            ->name('update');
+        Route::delete('/{balance}', [BalanceController::class, 'destroy'])
+            ->can('own-balance', 'balance')
+            ->name('destroy');
     });
 
     Route::get('exchanges', [ExchangeController::class, 'index']);
