@@ -30,7 +30,7 @@ return (new PhpCsFixer\Config())
         'declare_equal_normalize' => ['space' => 'single'],
         'include' => true,
         'full_opening_tag' => true,
-        'function_typehint_space' => true,
+        'type_declaration_spaces' => true,
         'phpdoc_single_line_var_spacing' => true,
         'phpdoc_var_without_name' => true,
         'method_argument_space' => [

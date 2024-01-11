@@ -19,7 +19,6 @@ final class StoreData extends Data
         #[Required]
         #[Exists('currencies', 'id')]
         public int $currencyId,
-
         #[Required]
         public float $amount,
     ) {

@@ -1,0 +1,81 @@
+version: '3.8'
+
+volumes:
+  postgres:
+  elasticsearch-data:
+  elasticsearch-plugins:
+
+services:
+  backend:
+    build: docker/backend
+    volumes:
+      - .:/var/www
+    depends_on:
+      - postgres
+      - redis
+
+  nginx:
+    image: nginx:alpine
+    environment:
+      - VIRTUAL_HOST=backend.fin
+    volumes:
+      - .:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d
+    depends_on:
+      - backend
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - '80:80'
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  postgres:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    volumes:
+      - postgres:/var/lib/postgresql/data:rw
+
+  redis:
+    image: redis:alpine
+
+  elasticsearch:
+    image: elasticsearch:8.11.3
+    ports:
+      - '9200:9200'
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xmx512m -Xms512m
+      - xpack.security.enabled=false
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+      - elasticsearch-plugins:/usr/share/elasticsearch/plugins
+
+  kibana:
+    image: kibana:8.11.3
+    environment:
+      - VIRTUAL_HOST=kibana.fin
+      - VIRTUAL_PORT=5601
+    depends_on:
+      - elasticsearch
+
+  logstash:
+    image: logstash:8.11.3
+    expose:
+      - 12201
+    environment:
+      - LS_JAVA_OPTS=-Xmx512m -Xms512m
+    volumes:
+      - ./docker/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    depends_on:
+      - elasticsearch
+
+  smtp:
+    image: gessnerfl/fake-smtp-server:2.1.4
+    environment:
+      - VIRTUAL_HOST=smtp.fin
+      - VIRTUAL_PORT=8080

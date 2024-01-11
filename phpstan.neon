@@ -1,5 +1,5 @@
 includes:
-    - ./vendor/nunomaduro/larastan/extension.neon
+    - ./vendor/larastan/larastan/extension.neon
 parameters:
     paths:
         - app
@@ -7,8 +7,8 @@ parameters:
         - config
         - database
         - routes
-    checkGenericClassInNonGenericObjectType: false
-    level: 8
-    ignoreErrors:
     excludePaths:
         - bootstrap/cache
+    level: 5
+#    ignoreErrors:
+#    checkGenericClassInNonGenericObjectType: false

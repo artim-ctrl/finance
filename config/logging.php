@@ -57,15 +57,11 @@ return [
             'ignore_exceptions' => false,
         ],
 
-        'artim' => [
-            'driver' => 'monolog',
-            'level' => env('LOG_LEVEL', 'debug'),
-            'handler' => \Monolog\Handler\RotatingFileHandler::class,
-            'formatter' => \Artim\Logger\Logger\File\JsonFormatter::class,
-            'handler_with' => [
-                'filename' => storage_path('logs/laravel-artim.log'),
-                'filePermission' => 0766,
-            ],
+        'logstash' => [
+            'driver' => 'custom',
+            'via' => \App\Services\LogstashLogger::class,
+            'host' => env('LOGSTASH_HOST', '127.0.0.1'),
+            'port' => env('LOGSTASH_PORT', 4718),
         ],
 
         'single' => [
