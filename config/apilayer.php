@@ -1,6 +1,5 @@
 <?php
 
-// TODO: проставить везде
 declare(strict_types = 1);
 
 return [

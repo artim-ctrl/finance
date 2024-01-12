@@ -6,16 +6,16 @@ up:
 	$(DC) up -d
 
 update:
-	$(DC) exec -it backend /bin/sh -c 'composer install && php artisan key:generate'
+	$(DC) exec -it app /bin/sh -c 'composer install && npm install && php artisan key:generate'
 
 test:
-	$(DC) exec -it backend php artisan test
+	$(DC) exec -it app php artisan test
 
 cs-fix:
-	$(DC) exec -it backend composer lint
+	$(DC) exec -it app composer lint
 
 phpstan:
-	$(DC) exec -it backend composer analyse
+	$(DC) exec -it app composer analyse
 
 down:
 	$(DC) down
