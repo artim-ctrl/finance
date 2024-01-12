@@ -1,4 +1,4 @@
-FROM php:8.3-fpm-alpine
+FROM php:8.3-cli-alpine
 
 # Install system dependencies
 RUN apk update && apk add --update --no-cache curl \

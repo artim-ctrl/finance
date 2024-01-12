@@ -6,23 +6,18 @@ volumes:
   elasticsearch-plugins:
 
 services:
-  backend:
-    build: docker/backend
+  app:
+    build: docker/app
+    environment:
+      - VIRTUAL_HOST=app.fin
+      - VIRTUAL_PORT=8000
+    ports:
+      - '3000:3000'
     volumes:
       - .:/var/www
     depends_on:
       - postgres
       - redis
-
-  nginx:
-    image: nginx:alpine
-    environment:
-      - VIRTUAL_HOST=backend.fin
-    volumes:
-      - .:/var/www
-      - ./docker/nginx:/etc/nginx/conf.d
-    depends_on:
-      - backend
 
   nginx-proxy:
     image: jwilder/nginx-proxy
