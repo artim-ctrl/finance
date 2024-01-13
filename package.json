@@ -1,7 +1,8 @@
 {
     "scripts": {
         "dev": "vite --host",
-        "build": "vite build"
+        "build": "vite build",
+        "prettier": "prettier --write \"resources/**/*.{js,jsx,ts}\" --ignore-path .gitignore"
     },
     "type": "module",
     "devDependencies": {
@@ -9,10 +10,10 @@
         "laravel-vite-plugin": "^1.0.1",
         "lodash": "^4.17.21",
         "postcss": "^8.4.3",
+        "prettier": "^3.2.1",
         "vite": "^5.0.1"
     },
     "dependencies": {
-        "@inertiajs/inertia-react": "^0.8.1",
         "@inertiajs/react": "^1.0.14",
         "@vitejs/plugin-react": "^4.2.1",
         "react": "^18.2.0",

@@ -1,9 +1,12 @@
-import React from 'react';
+import React from 'react'
+import { Head } from '@inertiajs/react'
 
-const Test = () => {
+export default () => {
     return (
-        <h1>This is test component</h1>
+        <>
+            <Head title={'Main'} />
+
+            <h1>This is test component</h1>
+        </>
     )
 }
-
-export default Test
