@@ -13,4 +13,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::inertia('/test', 'Test');
+Route::inertia('/', 'Test');

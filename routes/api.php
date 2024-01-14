@@ -2,25 +2,25 @@
 
 declare(strict_types = 1);
 
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\LogoutController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Balance\BalanceController;
-use App\Http\Controllers\Calendar\CalendarController;
-use App\Http\Controllers\Calendar\Month\MonthController;
-use App\Http\Controllers\Calendar\Month\Row\RowController;
-use App\Http\Controllers\Currency\CoursesController;
-use App\Http\Controllers\Currency\CurrencyController;
-use App\Http\Controllers\Exchange\ExchangeController;
-use App\Http\Controllers\Expense\ExpenseController;
-use App\Http\Controllers\ExpenseType\ExpenseTypeController;
-use App\Http\Controllers\Goal\GoalController;
-use App\Http\Controllers\Goal\TotalsController;
-use App\Http\Controllers\GoalStep\GoalStepController;
-use App\Http\Controllers\Income\IncomeController;
-use App\Http\Controllers\Loan\LoanController;
-use App\Http\Controllers\User\ProfileController;
-use App\Http\Controllers\User\TokenController;
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\LogoutController;
+use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\Balance\BalanceController;
+use App\Http\Controllers\Api\Calendar\CalendarController;
+use App\Http\Controllers\Api\Calendar\Month\MonthController;
+use App\Http\Controllers\Api\Calendar\Month\Row\RowController;
+use App\Http\Controllers\Api\Currency\CoursesController;
+use App\Http\Controllers\Api\Currency\CurrencyController;
+use App\Http\Controllers\Api\Exchange\ExchangeController;
+use App\Http\Controllers\Api\Expense\ExpenseController;
+use App\Http\Controllers\Api\ExpenseType\ExpenseTypeController;
+use App\Http\Controllers\Api\Goal\GoalController;
+use App\Http\Controllers\Api\Goal\TotalsController;
+use App\Http\Controllers\Api\GoalStep\GoalStepController;
+use App\Http\Controllers\Api\Income\IncomeController;
+use App\Http\Controllers\Api\Loan\LoanController;
+use App\Http\Controllers\Api\User\ProfileController;
+use App\Http\Controllers\Api\User\TokenController;
 use Illuminate\Support\Facades\Route;
 
 /*
