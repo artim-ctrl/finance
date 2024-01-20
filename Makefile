@@ -1,4 +1,4 @@
-DC = docker compose --env-file .env-docker
+DC = docker compose --env-file docker.env
 
 build: up update
 

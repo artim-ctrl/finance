@@ -1,4 +1,4 @@
-export default function ApplicationLogo(props) {
+export default (props) => {
     return (
         <svg
             {...props}

@@ -6,7 +6,7 @@ import PrimaryButton from '@/Components/PrimaryButton'
 import TextInput from '@/Components/TextInput'
 import { Head, useForm } from '@inertiajs/react'
 
-export default function ConfirmPassword() {
+export default () => {
     const { data, setData, post, processing, errors, reset } = useForm({
         password: '',
     })

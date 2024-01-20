@@ -1,9 +1,4 @@
-export default function PrimaryButton({
-    className = '',
-    disabled,
-    children,
-    ...props
-}) {
+export default ({ className = '', disabled, children, ...props }) => {
     return (
         <button
             {...props}

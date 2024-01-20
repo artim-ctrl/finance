@@ -1,13 +1,13 @@
 import { Fragment } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 
-export default function Modal({
+export default ({
     children,
     show = false,
     maxWidth = '2xl',
     closeable = true,
     onClose = () => {},
-}) {
+}) => {
     const close = () => {
         if (closeable) {
             onClose()

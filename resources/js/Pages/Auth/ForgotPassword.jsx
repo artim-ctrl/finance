@@ -4,7 +4,7 @@ import PrimaryButton from '@/Components/PrimaryButton'
 import TextInput from '@/Components/TextInput'
 import { Head, useForm } from '@inertiajs/react'
 
-export default function ForgotPassword({ status }) {
+export default ({ status }) => {
     const { data, setData, post, processing, errors } = useForm({
         email: '',
     })

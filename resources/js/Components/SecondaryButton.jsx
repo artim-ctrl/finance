@@ -1,10 +1,10 @@
-export default function SecondaryButton({
+export default ({
     type = 'button',
     className = '',
     disabled,
     children,
     ...props
-}) {
+}) => {
     return (
         <button
             {...props}
