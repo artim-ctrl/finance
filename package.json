@@ -2,7 +2,7 @@
     "scripts": {
         "dev": "vite --host",
         "build": "vite build",
-        "prettier": "prettier --write \"resources/**/*.{js,jsx,ts}\" --ignore-path .gitignore"
+        "prettier": "prettier --write \"resources/**/*.{js,jsx,ts,tsx}\" --ignore-path .gitignore"
     },
     "type": "module",
     "devDependencies": {

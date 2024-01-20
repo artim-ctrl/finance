@@ -27,7 +27,7 @@ final readonly class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                return to_route(RouteServiceProvider::HOME_ROUTE);
             }
         }
 
