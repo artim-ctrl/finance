@@ -4,14 +4,9 @@ declare(strict_types = 1);
 
 namespace App\Exceptions;
 
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 final class Handler extends ExceptionHandler
@@ -68,48 +63,6 @@ final class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $e): Response
     {
-        if (str_contains($request->getUri(), '/api')) {
-            return $this->renderJson($e);
-        }
-
         return parent::render($request, $e);
-    }
-
-    protected function renderJson(Throwable $e): JsonResponse
-    {
-        if ($e instanceof ModelNotFoundException) {
-            return response()->json([
-                'error' => sprintf(
-                    'Models [%s] with ids %s not found.',
-                    $e->getModel(),
-                    implode(', ', $e->getIds()),
-                ),
-            ], 404);
-        }
-
-        if ($e instanceof ValidationException) {
-            return response()->json([
-                'error' => 'Wrong data',
-                'data' => [
-                    'errors' => $e->errors(),
-                ],
-            ], 400);
-        }
-
-        if ($e instanceof NotFoundHttpException) {
-            return response()->json([
-                'error' => 'Not found',
-            ], 404);
-        }
-
-        if ($e instanceof AuthenticationException) {
-            return response()->json([
-                'error' => $e->getMessage(),
-            ], 401);
-        }
-
-        return response()->json([
-            'error' => $e->getMessage(),
-        ], 500);
     }
 }

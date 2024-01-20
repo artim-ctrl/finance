@@ -11,7 +11,6 @@ use App\Http\Resources\Balance\BalanceResource;
 use App\Models\Balance;
 use App\Repositories\Balance\History\BalanceHistoryRepository;
 use Illuminate\Http\JsonResponse;
-use Response;
 
 final readonly class BalanceController
 {
@@ -50,6 +49,6 @@ final readonly class BalanceController
         // TODO: do I need this ?
         $balanceHistoryRepository->forceDeleteByBalanceId($balance->id);
 
-        return Response::jsonNoContent();
+        return response()->json(status: 204);
     }
 }

@@ -2,9 +2,6 @@
 
 declare(strict_types = 1);
 
-use App\Http\Controllers\Api\Auth\LoginController;
-use App\Http\Controllers\Api\Auth\LogoutController;
-use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Balance\BalanceController;
 use App\Http\Controllers\Api\Calendar\CalendarController;
 use App\Http\Controllers\Api\Calendar\Month\MonthController;
@@ -34,19 +31,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('login', LoginController::class);
-Route::post('register', RegisterController::class);
-
 Route::middleware('auth:sanctum')->group(function () { // TODO: split into files
-    Route::get('profile', [ProfileController::class, 'show']);
-    Route::put('profile', [ProfileController::class, 'update']);
-
-    Route::get('tokens', [TokenController::class, 'index']);
-
-    Route::post('logout', LogoutController::class);
-
-    Route::delete('tokens/{id}', [TokenController::class, 'delete'])->whereNumber('id');
-
     Route::get('loans', [LoanController::class, 'index']);
     Route::post('loans', [LoanController::class, 'store']);
     Route::delete('loans/{id}', [LoanController::class, 'destroy'])->whereNumber('id');

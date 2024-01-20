@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Http\Controllers\Web\Auth;
 
-use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Web\Auth\LoginRequest;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
