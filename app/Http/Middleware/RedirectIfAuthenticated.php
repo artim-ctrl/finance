@@ -21,13 +21,13 @@ final readonly class RedirectIfAuthenticated
      * @param  string|null  ...$guards
      * @return Response|RedirectResponse
      */
-    public function handle(Request $request, Closure $next, ...$guards): Response|RedirectResponse
+    public function handle(Request $request, Closure $next, ...$guards)
     {
         $guards = empty($guards) ? [null] : $guards;
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return to_route(RouteServiceProvider::HOME_ROUTE);
+                return redirect(RouteServiceProvider::HOME);
             }
         }
 
