@@ -26,7 +26,7 @@ jobs:
       - name: Run ESLint
         run: |
           cd frontend
-          yarn eslint .
+          yarn lint
 
   typescript:
     runs-on: ubuntu-latest
