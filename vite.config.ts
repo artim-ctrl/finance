@@ -9,11 +9,11 @@ export default defineConfig({
         alias: [
             {
                 find: /^Containers/,
-                replacement: path.resolve(__dirname, 'src/Containers'),
+                replacement: path.resolve(__dirname, 'frontend/Containers'),
             },
             {
                 find: /^Components/,
-                replacement: path.resolve(__dirname, 'src/Components'),
+                replacement: path.resolve(__dirname, 'frontend/Components'),
             },
         ],
     },

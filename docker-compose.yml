@@ -1,13 +1,11 @@
 version: '3.8'
 
 services:
-  frontend:
-    image: node:23-alpine
-    volumes:
-      - ./frontend:/app/frontend
-    command:
-      - yarn
-      - dev
-    working_dir: /app/frontend
-    ports:
-      - '3000:5173'
+    frontend:
+        image: node:23-alpine
+        volumes:
+            - ./:/app
+        command: sh -c 'yarn install && yarn dev'
+        working_dir: /app
+        ports:
+            - '3000:5173'
