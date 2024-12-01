@@ -1,4 +1,4 @@
-name: ESLint
+name: Front checks
 
 on:
   pull_request:
@@ -27,3 +27,24 @@ jobs:
         run: |
           cd frontend
           yarn eslint .
+
+  typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '23'
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          yarn install
+
+      - name: Run TypeScript check
+        run: |
+          cd frontend
+          yarn tsc -b
