@@ -7,5 +7,8 @@ down:
 eslint:
 	docker compose exec frontend /bin/sh -c 'yarn eslint'
 
+prettier:
+	docker compose exec frontend /bin/sh -c 'yarn format'
+
 yarn-build:
 	docker compose exec frontend /bin/sh -c 'yarn build'
