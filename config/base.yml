@@ -1,0 +1,11 @@
+logger:
+  level: debug
+  encoding: json
+  enable_caller: true
+  sampling:
+    initial: 100
+    thereafter: 100
+
+database:
+  dsn: postgres://user:user@localhost:5600/finance?sslmode=disable
+  debug: false
