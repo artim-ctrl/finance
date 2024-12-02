@@ -1,0 +1,5 @@
+logger:
+  encoding: console
+
+database:
+  debug: true
