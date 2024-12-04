@@ -7,5 +7,11 @@ logger:
     thereafter: 100
 
 database:
-  dsn: postgres://user:user@localhost:5600/finance?sslmode=disable
   debug: false
+
+auth:
+  access_secret_key:
+  refresh_secret_key:
+
+frontend:
+  base_url:

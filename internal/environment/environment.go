@@ -5,6 +5,7 @@ import "flag"
 const (
 	Base = "base"
 	Dev  = "dev"
+	Prod = "prod"
 )
 
 type Variables struct {
@@ -17,4 +18,8 @@ func New() Variables {
 	return Variables{
 		Env: *env,
 	}
+}
+
+func (v *Variables) IsProd() bool {
+	return v.Env == Prod
 }

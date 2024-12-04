@@ -16,6 +16,8 @@ const configPath = "./config"
 type Config struct {
 	Database Database `yaml:"database"`
 	Logger   Logger   `yaml:"logger"`
+	Auth     Auth     `yaml:"auth"`
+	Frontend Frontend `yaml:"frontend"`
 }
 
 type Database struct {
@@ -30,6 +32,15 @@ type Logger struct {
 	Sampling     zap.SamplingConfig `yaml:"sampling"`  // Warn: initial: 0, thereafter: 0 - disables logging.
 	UseDiode     bool               `yaml:"use_diode"` // Use github.com/propellerads/logdiode writer. Need for small amount of particular cases
 	EnableCaller bool               `yaml:"enable_caller"`
+}
+
+type Auth struct {
+	AccessSecretKey  string `yaml:"access_secret_key"`
+	RefreshSecretKey string `yaml:"refresh_secret_key"`
+}
+
+type Frontend struct {
+	BaseUrl string `yaml:"base_url"`
 }
 
 func New(env environment.Variables) (Config, error) {

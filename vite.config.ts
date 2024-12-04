@@ -15,6 +15,22 @@ export default defineConfig({
                 find: /^Components/,
                 replacement: path.resolve(__dirname, 'frontend/Components'),
             },
+            {
+                find: /^Services/,
+                replacement: path.resolve(__dirname, 'frontend/Services'),
+            },
+            {
+                find: /^Constants/,
+                replacement: path.resolve(__dirname, 'frontend/Constants'),
+            },
+            {
+                find: /^Hooks/,
+                replacement: path.resolve(__dirname, 'frontend/Hooks'),
+            },
+            {
+                find: /^Contexts/,
+                replacement: path.resolve(__dirname, 'frontend/Contexts'),
+            },
         ],
     },
 })

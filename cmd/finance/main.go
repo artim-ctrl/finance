@@ -10,6 +10,7 @@ import (
 	"go.uber.org/fx/fxevent"
 	"go.uber.org/zap"
 
+	"github.com/artim-ctrl/finance/internal/auth"
 	"github.com/artim-ctrl/finance/internal/config"
 	"github.com/artim-ctrl/finance/internal/database"
 	"github.com/artim-ctrl/finance/internal/database/postgres"
@@ -20,6 +21,7 @@ import (
 
 var opts = []fx.Option{
 	database.Module,
+	auth.Module,
 	servers.Module,
 	fx.Provide(
 		environment.New,
