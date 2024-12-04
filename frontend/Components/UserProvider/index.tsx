@@ -10,7 +10,9 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        AuthApi.profile().finally(() => setIsLoading(false))
+        AuthApi.profile()
+            .then((user) => setUser(user))
+            .finally(() => setIsLoading(false))
     }, [])
 
     const login = (user: User) => {
