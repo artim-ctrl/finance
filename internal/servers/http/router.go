@@ -3,24 +3,32 @@ package http
 import (
 	"github.com/gofiber/fiber/v2"
 
-	htest "github.com/artim-ctrl/finance/internal/servers/http/handlers/test"
-	mtest "github.com/artim-ctrl/finance/internal/servers/http/mappers/test"
+	"github.com/artim-ctrl/finance/internal/auth/handlers"
 )
 
 type Router struct {
-	handler *htest.Handler
-	mapper  *mtest.Mapper
+	authHandler *handlers.Handler
 }
 
-func NewRouter(handler *htest.Handler, mapper *mtest.Mapper) *Router {
+func NewRouter(
+	authHandler *handlers.Handler,
+) *Router {
 	return &Router{
-		handler: handler,
-		mapper:  mapper,
+		authHandler: authHandler,
 	}
 }
 
 func (r *Router) Setup(app *fiber.App) {
-	group := app.Group("/v1")
+	apiGroup := app.Group("/v1")
 
-	group.Get("/test", r.mapper.Map, r.handler.Handle)
+	authGroup := apiGroup.Group("/auth")
+
+	authGroup.Post("/register", r.authHandler.RegisterMapper, r.authHandler.Register)
+	authGroup.Post("/login", r.authHandler.LoginMapper, r.authHandler.Login)
+	authGroup.Post("/logout", r.authHandler.Logout)
+	authGroup.Post("/refresh", r.authHandler.Refresh)
+	authGroup.Get("/profile", r.authHandler.GetProfile)
+
+	//securedGroup := apiGroup.Group("/", r.authHandler.AuthMiddleware())
+	//securedGroup.Get("/profile", r.authHandler.GetProfile)
 }

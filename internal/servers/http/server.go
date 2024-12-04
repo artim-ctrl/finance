@@ -8,11 +8,13 @@ import (
 	"runtime/debug"
 	"time"
 
-	"go.uber.org/zap"
-
 	"github.com/gofiber/contrib/fiberzap/v2"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"go.uber.org/zap"
+
+	"github.com/artim-ctrl/finance/internal/config"
 )
 
 type Server struct {
@@ -20,7 +22,7 @@ type Server struct {
 	logger *zap.Logger
 }
 
-func New(router *Router, logger *zap.Logger) *Server {
+func New(router *Router, logger *zap.Logger, config config.Config) *Server {
 	serverName := "http"
 
 	logger = logger.With(zap.String("server", serverName))
@@ -42,6 +44,11 @@ func New(router *Router, logger *zap.Logger) *Server {
 		Logger:   logger,
 		Messages: []string{"server error", "client error", "success"},
 		Fields:   []string{"status", "method", "url", "body", "ua", "queryParams", "error"},
+	}))
+	server.Use(cors.New(cors.Config{
+		AllowOrigins:     config.Frontend.BaseUrl,
+		AllowHeaders:     "Origin, X-Requested-With, Content-Type, Accept",
+		AllowCredentials: true,
 	}))
 
 	router.Setup(server)
