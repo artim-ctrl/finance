@@ -1,13 +1,14 @@
 import { FC, useEffect, useState } from 'react'
 import {
     Container,
-    Title,
-    Table,
-    Text,
     NumberInput,
     Select,
+    Table,
+    Text,
+    Title,
 } from '@mantine/core'
-import { format, getDaysInMonth, addMonths, startOfMonth } from 'date-fns'
+import { addMonths, format, getDaysInMonth, startOfMonth } from 'date-fns'
+import Incomes from './Incomes'
 
 type CategoryType = 'expenses' | 'incomes'
 
@@ -57,6 +58,7 @@ const HomePage: FC = () => {
         month: Date,
     ): { expenses: Category[]; incomes: Category[] } => {
         const storedData = localStorage.getItem(format(month, 'yyyy-MM'))
+
         return storedData ? JSON.parse(storedData) : initialCategories
     }
 
@@ -78,6 +80,7 @@ const HomePage: FC = () => {
 
     useEffect(() => {
         const { expenses, incomes } = getCategoriesDataForMonth(currentMonth)
+
         setExpenseCategoriesData(expenses)
         setIncomeCategoriesData(incomes)
     }, [currentMonth])
@@ -177,64 +180,7 @@ const HomePage: FC = () => {
             <Title order={2} mt="lg">
                 Доходы
             </Title>
-            <Table striped mt="sm">
-                <Table.Thead>
-                    <Table.Tr>
-                        <Table.Th>Категория</Table.Th>
-                        <Table.Th>Сумма (RSD)</Table.Th>
-                    </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                    {incomeCategoriesData.map((category, categoryIndex) => (
-                        <Table.Tr key={categoryIndex}>
-                            <Table.Td>{category.name}</Table.Td>
-                            <Table.Td>
-                                <NumberInput
-                                    value={category.amount}
-                                    onBlur={(event) => {
-                                        const value =
-                                            parseFloat(event.target.value) || 0
-                                        setIncomeCategoriesData(
-                                            (prevCategories) => {
-                                                const updatedCategories = [
-                                                    ...prevCategories,
-                                                ]
-                                                updatedCategories[
-                                                    categoryIndex
-                                                ] = {
-                                                    ...updatedCategories[
-                                                        categoryIndex
-                                                    ],
-                                                    amount: value,
-                                                }
-                                                saveCategoriesDataForMonth(
-                                                    currentMonth,
-                                                    updatedCategories,
-                                                    'incomes',
-                                                )
-                                                return updatedCategories
-                                            },
-                                        )
-                                    }}
-                                    min={0}
-                                    decimalScale={2}
-                                    step={0.01}
-                                />
-                            </Table.Td>
-                        </Table.Tr>
-                    ))}
-                    <Table.Tr>
-                        <Table.Td>
-                            <strong>Общий доход</strong>
-                        </Table.Td>
-                        <Table.Td>
-                            <strong>
-                                {totalPlannedIncome.toLocaleString()} RSD
-                            </strong>
-                        </Table.Td>
-                    </Table.Tr>
-                </Table.Tbody>
-            </Table>
+            <Incomes currentDate={currentMonth} />
 
             <Title order={2} mt="lg">
                 Расходы

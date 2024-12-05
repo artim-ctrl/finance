@@ -15,6 +15,7 @@ import (
 	"github.com/artim-ctrl/finance/internal/database"
 	"github.com/artim-ctrl/finance/internal/database/postgres"
 	"github.com/artim-ctrl/finance/internal/environment"
+	"github.com/artim-ctrl/finance/internal/incomes"
 	"github.com/artim-ctrl/finance/internal/logger"
 	"github.com/artim-ctrl/finance/internal/servers"
 )
@@ -22,6 +23,7 @@ import (
 var opts = []fx.Option{
 	database.Module,
 	auth.Module,
+	incomes.Module,
 	servers.Module,
 	fx.Provide(
 		environment.New,

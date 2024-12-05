@@ -3,18 +3,22 @@ package http
 import (
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/artim-ctrl/finance/internal/auth/handlers"
+	ahandler "github.com/artim-ctrl/finance/internal/auth/handlers"
+	ihandler "github.com/artim-ctrl/finance/internal/incomes/handlers"
 )
 
 type Router struct {
-	authHandler *handlers.Handler
+	authHandler    *ahandler.Handler
+	incomesHandler *ihandler.Handler
 }
 
 func NewRouter(
-	authHandler *handlers.Handler,
+	authHandler *ahandler.Handler,
+	incomesHandler *ihandler.Handler,
 ) *Router {
 	return &Router{
-		authHandler: authHandler,
+		authHandler:    authHandler,
+		incomesHandler: incomesHandler,
 	}
 }
 
@@ -29,6 +33,9 @@ func (r *Router) Setup(app *fiber.App) {
 	authGroup.Post("/refresh", r.authHandler.Refresh)
 	authGroup.Get("/profile", r.authHandler.GetProfile)
 
-	//securedGroup := apiGroup.Group("/", r.authHandler.AuthMiddleware())
-	//securedGroup.Get("/profile", r.authHandler.GetProfile)
+	securedGroup := apiGroup.Group("/", r.authHandler.AuthMiddleware())
+
+	incomesGroup := securedGroup.Group("/incomes")
+	incomesGroup.Get("/:year/:month", r.incomesHandler.GetMapper, r.incomesHandler.Get)
+	incomesGroup.Post("/", r.incomesHandler.CreateMapper, r.incomesHandler.Create)
 }
