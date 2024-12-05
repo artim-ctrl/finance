@@ -8,8 +8,8 @@ import (
 	"github.com/artim-ctrl/finance/internal/auth/tokens"
 )
 
-var Module = fx.Options(
-	fx.Provide(repositories.NewRepository),
-	fx.Provide(tokens.NewTokenManager),
-	fx.Provide(handlers.NewHandler),
-)
+var Module = fx.Module("auth", fx.Provide(
+	repositories.NewRepository,
+	tokens.NewTokenManager,
+	handlers.NewHandler,
+))
