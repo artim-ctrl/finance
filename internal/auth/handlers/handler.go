@@ -55,14 +55,7 @@ func (h *Handler) setAuthCookies(c *fiber.Ctx, accessToken, refreshToken string)
 	c.Cookie(refreshTokenCookie)
 }
 
-func (h *Handler) setExpiredCookies(c *fiber.Ctx) {
-	accessTokenCookie := &fiber.Cookie{
-		Name:     "access_token",
-		Value:    "",
-		Expires:  time.Now().Add(-time.Hour),
-		HTTPOnly: true,
-		Secure:   false,
-	}
+func (h *Handler) setExpiredRefreshToken(c *fiber.Ctx) {
 	refreshTokenCookie := &fiber.Cookie{
 		Name:     "refresh_token",
 		Value:    "",
@@ -72,12 +65,31 @@ func (h *Handler) setExpiredCookies(c *fiber.Ctx) {
 	}
 
 	if h.env.IsProd() {
-		accessTokenCookie.SameSite = "Strict"
-		accessTokenCookie.Secure = true
 		refreshTokenCookie.SameSite = "Strict"
 		refreshTokenCookie.Secure = true
 	}
 
-	c.Cookie(accessTokenCookie)
 	c.Cookie(refreshTokenCookie)
+}
+
+func (h *Handler) setExpiredAccessToken(c *fiber.Ctx) {
+	accessTokenCookie := &fiber.Cookie{
+		Name:     "access_token",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+		Secure:   false,
+	}
+
+	if h.env.IsProd() {
+		accessTokenCookie.SameSite = "Strict"
+		accessTokenCookie.Secure = true
+	}
+
+	c.Cookie(accessTokenCookie)
+}
+
+func (h *Handler) setExpiredCookies(c *fiber.Ctx) {
+	h.setExpiredAccessToken(c)
+	h.setExpiredRefreshToken(c)
 }

@@ -30,12 +30,16 @@ export class Api {
                     try {
                         await this.client.request({
                             ...error.config,
+                            method: 'POST',
                             url: '/v1/auth/refresh',
                         })
 
                         return this.client.request(error.config)
                     } catch {
-                        if (error.config.url !== '/v1/auth/refresh') {
+                        if (
+                            error.config.url !== '/v1/auth/refresh' &&
+                            window.location.pathname !== ROUTES.LOGIN
+                        ) {
                             window.location.href = ROUTES.LOGIN
                         }
                     }

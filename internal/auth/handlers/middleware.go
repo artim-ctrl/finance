@@ -3,34 +3,48 @@ package handlers
 import (
 	"database/sql"
 	"errors"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/keyauth"
 
 	"github.com/artim-ctrl/finance/internal/auth/repositories"
 )
 
-func (h *Handler) AuthMiddleware() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		accessToken := c.Cookies("access_token")
-		if accessToken == "" {
-			return fiber.NewError(fiber.StatusUnauthorized, "Access token not provided")
-		}
-
-		userID, err := h.tokenManager.ValidateAccessToken(accessToken)
-		if err != nil {
-			return fiber.NewError(fiber.StatusUnauthorized, "Invalid or expired access token")
-		}
-
-		var user *repositories.User
-		user, err = h.repo.GetActiveUserByID(c.UserContext(), userID)
-		if errors.Is(err, sql.ErrNoRows) {
-			return fiber.NewError(fiber.StatusUnauthorized, "Invalid or expired access token")
-		} else if err != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, "Error retrieving user")
-		}
-
-		c.Locals("user", user)
-
-		return c.Next()
+func (h *Handler) validateAPIKey(c *fiber.Ctx, accessToken string) (bool, error) {
+	userID, err := h.tokenManager.ValidateAccessToken(accessToken)
+	if err != nil {
+		return false, err
 	}
+
+	var user *repositories.User
+	user, err = h.repo.GetActiveUserByID(c.UserContext(), userID)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	}
+
+	c.Locals("user", user)
+
+	return true, nil
+}
+
+func (h *Handler) authFilter(c *fiber.Ctx) bool {
+	originalUrl := strings.ToLower(c.OriginalURL())
+
+	return strings.HasPrefix(originalUrl, "/v1/auth") && originalUrl != "/v1/auth/profile"
+}
+
+func (h *Handler) AuthMiddleware() fiber.Handler {
+	return keyauth.New(keyauth.Config{
+		Next:      h.authFilter,
+		KeyLookup: "cookie:access_token",
+		Validator: h.validateAPIKey,
+		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			if errors.Is(err, keyauth.ErrMissingOrMalformedAPIKey) {
+				return fiber.NewError(fiber.StatusUnauthorized, "Access token not provided")
+			}
+
+			return fiber.NewError(fiber.StatusUnauthorized, "Invalid or expired access token")
+		},
+	})
 }

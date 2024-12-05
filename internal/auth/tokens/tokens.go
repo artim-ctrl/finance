@@ -38,7 +38,7 @@ func (tm *TokenManager) GenerateTokens(userID int64) (string, string, error) {
 		return "", "", err
 	}
 
-	refreshToken, err = tm.generateToken(userID, RefreshTokenTTL, tm.accessSecretKey)
+	refreshToken, err = tm.generateToken(userID, RefreshTokenTTL, tm.refreshSecretKey)
 	if err != nil {
 		return "", "", err
 	}
@@ -64,10 +64,11 @@ func (tm *TokenManager) ValidateRefreshToken(token string) (int64, error) {
 }
 
 func (tm *TokenManager) validateToken(tokenStr, secretKey string) (int64, error) {
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
+
 		return []byte(secretKey), nil
 	})
 
@@ -76,15 +77,15 @@ func (tm *TokenManager) validateToken(tokenStr, secretKey string) (int64, error)
 	}
 
 	var (
-		claims jwt.MapClaims
+		claims *jwt.RegisteredClaims
 		ok     bool
 	)
-	if claims, ok = token.Claims.(jwt.MapClaims); !ok {
+	if claims, ok = token.Claims.(*jwt.RegisteredClaims); !ok {
 		return 0, fmt.Errorf("invalid token claims")
 	}
 
 	var userID int
-	if userID, err = strconv.Atoi(claims["sub"].(string)); err != nil {
+	if userID, err = strconv.Atoi(claims.Subject); err != nil {
 		return 0, fmt.Errorf("user_id not found in token")
 	}
 
