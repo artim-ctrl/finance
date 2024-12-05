@@ -6,19 +6,19 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/artim-ctrl/finance/internal/auth/repositories"
-	"github.com/artim-ctrl/finance/internal/auth/tokens"
+	"github.com/artim-ctrl/finance/internal/auth/token_manager"
 	"github.com/artim-ctrl/finance/internal/environment"
 )
 
 type Handler struct {
 	repo         *repositories.Repository
-	tokenManager *tokens.TokenManager
+	tokenManager *token_manager.TokenManager
 	env          environment.Variables
 }
 
 func NewHandler(
 	repo *repositories.Repository,
-	tokenManager *tokens.TokenManager,
+	tokenManager *token_manager.TokenManager,
 	env environment.Variables,
 ) *Handler {
 	return &Handler{
@@ -32,14 +32,14 @@ func (h *Handler) setAuthCookies(c *fiber.Ctx, accessToken, refreshToken string)
 	accessTokenCookie := &fiber.Cookie{
 		Name:     "access_token",
 		Value:    accessToken,
-		Expires:  time.Now().Add(tokens.AccessTokenTTL),
+		Expires:  time.Now().Add(token_manager.AccessTokenTTL),
 		HTTPOnly: true,
 		Secure:   false,
 	}
 	refreshTokenCookie := &fiber.Cookie{
 		Name:     "refresh_token",
 		Value:    refreshToken,
-		Expires:  time.Now().Add(tokens.RefreshTokenTTL),
+		Expires:  time.Now().Add(token_manager.RefreshTokenTTL),
 		HTTPOnly: true,
 		Secure:   false,
 	}
@@ -59,7 +59,7 @@ func (h *Handler) setAccessTokenCookie(c *fiber.Ctx, accessToken string) {
 	accessTokenCookie := &fiber.Cookie{
 		Name:     "access_token",
 		Value:    accessToken,
-		Expires:  time.Now().Add(tokens.AccessTokenTTL),
+		Expires:  time.Now().Add(token_manager.AccessTokenTTL),
 		HTTPOnly: true,
 		Secure:   false,
 	}

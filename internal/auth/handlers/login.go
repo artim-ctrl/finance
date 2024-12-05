@@ -39,9 +39,14 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 		})
 	}
 
-	var accessToken, refreshToken string
-	if accessToken, refreshToken, err = h.tokenManager.GenerateTokens(user.ID); err != nil {
+	var accessToken string
+	if accessToken, err = h.tokenManager.GenerateAccessToken(user.ID); err != nil {
 		return response.Error(c, "Couldn't generate access token")
+	}
+
+	var refreshToken string
+	if refreshToken, err = h.tokenManager.GenerateRefreshToken(user.ID); err != nil {
+		return response.Error(c, "Couldn't generate refresh token")
 	}
 
 	h.setAuthCookies(c, accessToken, refreshToken)

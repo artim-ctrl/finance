@@ -44,10 +44,14 @@ func (h *Handler) Register(c *fiber.Ctx) error {
 		return response.Error(c, "Couldn't create a user")
 	}
 
-	var accessToken, refreshToken string
-	accessToken, refreshToken, err = h.tokenManager.GenerateTokens(user.ID)
-	if err != nil {
+	var accessToken string
+	if accessToken, err = h.tokenManager.GenerateAccessToken(user.ID); err != nil {
 		return response.Error(c, "Couldn't generate access token")
+	}
+
+	var refreshToken string
+	if refreshToken, err = h.tokenManager.GenerateRefreshToken(user.ID); err != nil {
+		return response.Error(c, "Couldn't generate refresh token")
 	}
 
 	h.setAuthCookies(c, accessToken, refreshToken)

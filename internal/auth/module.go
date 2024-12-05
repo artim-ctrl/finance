@@ -5,11 +5,11 @@ import (
 
 	"github.com/artim-ctrl/finance/internal/auth/handlers"
 	"github.com/artim-ctrl/finance/internal/auth/repositories"
-	"github.com/artim-ctrl/finance/internal/auth/tokens"
+	"github.com/artim-ctrl/finance/internal/auth/token_manager"
 )
 
 var Module = fx.Module("auth", fx.Provide(
 	repositories.NewRepository,
-	tokens.NewTokenManager,
+	token_manager.NewTokenManager,
 	handlers.NewHandler,
 ))
