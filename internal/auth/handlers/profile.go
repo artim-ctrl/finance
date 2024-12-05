@@ -13,7 +13,7 @@ func (h *Handler) GetProfile(c *fiber.Ctx) error {
 		return response.JSON(c, nil)
 	}
 
-	userID, err := h.tokenManager.ValidateAccessToken(accessToken)
+	userID, err := h.tokenManager.ParseAccessToken(accessToken)
 	if err != nil {
 		return response.JSON(c, nil)
 	}

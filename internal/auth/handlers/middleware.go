@@ -12,7 +12,7 @@ import (
 )
 
 func (h *Handler) validateAPIKey(c *fiber.Ctx, accessToken string) (bool, error) {
-	userID, err := h.tokenManager.ValidateAccessToken(accessToken)
+	userID, err := h.tokenManager.ParseAccessToken(accessToken)
 	if err != nil {
 		return false, err
 	}
@@ -28,7 +28,7 @@ func (h *Handler) validateAPIKey(c *fiber.Ctx, accessToken string) (bool, error)
 	return true, nil
 }
 
-func (h *Handler) authFilter(c *fiber.Ctx) bool {
+func (h *Handler) filterIsPublic(c *fiber.Ctx) bool {
 	originalUrl := strings.ToLower(c.OriginalURL())
 
 	return strings.HasPrefix(originalUrl, "/v1/auth") && originalUrl != "/v1/auth/profile"
@@ -36,7 +36,7 @@ func (h *Handler) authFilter(c *fiber.Ctx) bool {
 
 func (h *Handler) AuthMiddleware() fiber.Handler {
 	return keyauth.New(keyauth.Config{
-		Next:      h.authFilter,
+		Next:      h.filterIsPublic,
 		KeyLookup: "cookie:access_token",
 		Validator: h.validateAPIKey,
 		ErrorHandler: func(c *fiber.Ctx, err error) error {

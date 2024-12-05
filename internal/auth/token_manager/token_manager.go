@@ -1,4 +1,4 @@
-package tokens
+package token_manager
 
 import (
 	"fmt"
@@ -27,27 +27,12 @@ func NewTokenManager(config config.Config) *TokenManager {
 	}
 }
 
-func (tm *TokenManager) GenerateTokens(userID int64) (string, string, error) {
-	var (
-		accessToken, refreshToken string
-		err                       error
-	)
-
-	accessToken, err = tm.generateToken(userID, AccessTokenTTL, tm.accessSecretKey)
-	if err != nil {
-		return "", "", err
-	}
-
-	refreshToken, err = tm.generateToken(userID, RefreshTokenTTL, tm.refreshSecretKey)
-	if err != nil {
-		return "", "", err
-	}
-
-	return accessToken, refreshToken, nil
-}
-
 func (tm *TokenManager) GenerateAccessToken(userID int64) (string, error) {
 	return tm.generateToken(userID, AccessTokenTTL, tm.accessSecretKey)
+}
+
+func (tm *TokenManager) GenerateRefreshToken(userID int64) (string, error) {
+	return tm.generateToken(userID, RefreshTokenTTL, tm.refreshSecretKey)
 }
 
 func (tm *TokenManager) generateToken(userID int64, ttl time.Duration, secretKey string) (string, error) {
@@ -59,16 +44,16 @@ func (tm *TokenManager) generateToken(userID int64, ttl time.Duration, secretKey
 	return token.SignedString([]byte(secretKey))
 }
 
-func (tm *TokenManager) ValidateAccessToken(token string) (int64, error) {
-	return tm.validateToken(token, tm.accessSecretKey)
+func (tm *TokenManager) ParseAccessToken(accessToken string) (int64, error) {
+	return tm.parseToken(accessToken, tm.accessSecretKey)
 }
 
-func (tm *TokenManager) ValidateRefreshToken(token string) (int64, error) {
-	return tm.validateToken(token, tm.refreshSecretKey)
+func (tm *TokenManager) ParseRefreshToken(refreshToken string) (int64, error) {
+	return tm.parseToken(refreshToken, tm.refreshSecretKey)
 }
 
-func (tm *TokenManager) validateToken(tokenStr, secretKey string) (int64, error) {
-	token, err := jwt.ParseWithClaims(tokenStr, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
+func (tm *TokenManager) parseToken(token, secretKey string) (int64, error) {
+	jwtToken, err := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
@@ -76,7 +61,7 @@ func (tm *TokenManager) validateToken(tokenStr, secretKey string) (int64, error)
 		return []byte(secretKey), nil
 	})
 
-	if err != nil || !token.Valid {
+	if err != nil || !jwtToken.Valid {
 		return 0, err
 	}
 
@@ -84,7 +69,7 @@ func (tm *TokenManager) validateToken(tokenStr, secretKey string) (int64, error)
 		claims *jwt.RegisteredClaims
 		ok     bool
 	)
-	if claims, ok = token.Claims.(*jwt.RegisteredClaims); !ok {
+	if claims, ok = jwtToken.Claims.(*jwt.RegisteredClaims); !ok {
 		return 0, fmt.Errorf("invalid token claims")
 	}
 
