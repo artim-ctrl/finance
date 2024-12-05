@@ -7,6 +7,7 @@ import (
 
 	authrepo "github.com/artim-ctrl/finance/internal/auth/repositories"
 	"github.com/artim-ctrl/finance/internal/incomes/repositories"
+	"github.com/artim-ctrl/finance/internal/servers/http/response"
 )
 
 type CreateRequest struct {
@@ -18,9 +19,7 @@ type CreateRequest struct {
 func (h *Handler) CreateMapper(c *fiber.Ctx) error {
 	var req CreateRequest
 	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Couldn't parse request body: " + err.Error(),
-		})
+		return response.Error(c, "Couldn't parse request body: "+err.Error())
 	}
 
 	c.Locals("req", req)
@@ -42,9 +41,7 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 
 		err := h.repo.CreateCategory(c.UserContext(), category)
 		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error": "Couldn't create category: " + err.Error(),
-			})
+			return response.Error(c, "Couldn't create category: "+err.Error())
 		}
 
 		categoryId = category.ID
@@ -60,10 +57,8 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 
 	err := h.repo.CreateIncome(c.UserContext(), income)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Couldn't create income: " + err.Error(),
-		})
+		return response.Error(c, "Couldn't create income: "+err.Error())
 	}
 
-	return c.SendStatus(fiber.StatusCreated)
+	return response.Created(c)
 }
