@@ -4,7 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/artim-ctrl/finance/internal/auth/repositories"
+	"github.com/artim-ctrl/finance/internal/models"
 	"github.com/artim-ctrl/finance/internal/servers/http/response"
 )
 
@@ -33,7 +33,7 @@ func (h *Handler) Register(c *fiber.Ctx) error {
 		return response.Error(c, "Couldn't hash password")
 	}
 
-	user := &repositories.User{
+	user := &models.User{
 		Name:     req.Name,
 		Email:    req.Email,
 		Password: string(hashedPassword),

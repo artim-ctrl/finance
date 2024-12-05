@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/artim-ctrl/finance/internal/database/postgres"
+	"github.com/artim-ctrl/finance/internal/models"
 )
 
 type Repository struct {
@@ -14,14 +15,14 @@ func NewRepository(db *postgres.Conn) *Repository {
 	return &Repository{db: db}
 }
 
-func (r *Repository) CreateUser(ctx context.Context, user *User) error {
+func (r *Repository) CreateUser(ctx context.Context, user *models.User) error {
 	_, err := r.db.NewInsert().Model(user).Exec(ctx)
 
 	return err
 }
 
-func (r *Repository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
-	user := &User{}
+func (r *Repository) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
+	user := &models.User{}
 	err := r.db.NewSelect().Model(user).
 		Where("u.email = ?", email).
 		Where("u.deleted_at IS NULL").
@@ -33,8 +34,8 @@ func (r *Repository) GetUserByEmail(ctx context.Context, email string) (*User, e
 	return user, err
 }
 
-func (r *Repository) GetActiveUserByID(ctx context.Context, userID int64) (*User, error) {
-	user := &User{}
+func (r *Repository) GetActiveUserByID(ctx context.Context, userID int64) (*models.User, error) {
+	user := &models.User{}
 	err := r.db.NewSelect().Model(user).
 		Where("u.id = ?", userID).
 		Where("u.deleted_at IS NULL").

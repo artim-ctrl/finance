@@ -3,7 +3,7 @@ package handlers
 import (
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/artim-ctrl/finance/internal/auth/repositories"
+	"github.com/artim-ctrl/finance/internal/models"
 	"github.com/artim-ctrl/finance/internal/servers/http/response"
 )
 
@@ -18,7 +18,7 @@ func (h *Handler) GetProfile(c *fiber.Ctx) error {
 		return response.JSON(c, nil)
 	}
 
-	var user *repositories.User
+	var user *models.User
 	user, err = h.repo.GetActiveUserByID(c.UserContext(), userID)
 	if err != nil {
 		return response.JSON(c, nil)

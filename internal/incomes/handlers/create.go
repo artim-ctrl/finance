@@ -5,8 +5,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	authrepo "github.com/artim-ctrl/finance/internal/auth/repositories"
 	"github.com/artim-ctrl/finance/internal/incomes/repositories"
+	"github.com/artim-ctrl/finance/internal/models"
 	"github.com/artim-ctrl/finance/internal/servers/http/response"
 )
 
@@ -30,7 +30,7 @@ func (h *Handler) CreateMapper(c *fiber.Ctx) error {
 func (h *Handler) Create(c *fiber.Ctx) error {
 	req := c.Locals("req").(CreateRequest)
 
-	user := c.Locals("user").(*authrepo.User)
+	user := c.Locals("user").(*models.User)
 
 	var categoryId int64
 	if req.CategoryId == nil {
