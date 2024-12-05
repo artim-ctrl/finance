@@ -46,6 +46,10 @@ func (tm *TokenManager) GenerateTokens(userID int64) (string, string, error) {
 	return accessToken, refreshToken, nil
 }
 
+func (tm *TokenManager) GenerateAccessToken(userID int64) (string, error) {
+	return tm.generateToken(userID, AccessTokenTTL, tm.accessSecretKey)
+}
+
 func (tm *TokenManager) generateToken(userID int64, ttl time.Duration, secretKey string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
 		Subject:   strconv.Itoa(int(userID)),

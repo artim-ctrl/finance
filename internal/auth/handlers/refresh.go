@@ -17,15 +17,15 @@ func (h *Handler) Refresh(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
-	var newAccessToken, newRefreshToken string
-	newAccessToken, newRefreshToken, err = h.tokenManager.GenerateTokens(userID)
+	var newAccessToken string
+	newAccessToken, err = h.tokenManager.GenerateAccessToken(userID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Couldn't generate access token",
 		})
 	}
 
-	h.setAuthCookies(c, newAccessToken, newRefreshToken)
+	h.setAccessTokenCookie(c, newAccessToken)
 
 	return c.SendStatus(fiber.StatusNoContent)
 }
