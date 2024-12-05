@@ -177,9 +177,6 @@ const HomePage: FC = () => {
                 allowDeselect={false}
             />
 
-            <Title order={2} mt="lg">
-                Доходы
-            </Title>
             <Incomes currentDate={currentMonth} />
 
             <Title order={2} mt="lg">
