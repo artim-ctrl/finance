@@ -5,7 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	authrepo "github.com/artim-ctrl/finance/internal/auth/repositories"
+	"github.com/artim-ctrl/finance/internal/models"
 	"github.com/artim-ctrl/finance/internal/servers/http/response"
 )
 
@@ -41,7 +41,7 @@ func (h *Handler) GetMapper(c *fiber.Ctx) error {
 func (h *Handler) Get(c *fiber.Ctx) error {
 	req := c.Locals("req").(GetRequest)
 
-	user := c.Locals("user").(*authrepo.User)
+	user := c.Locals("user").(*models.User)
 
 	incomes, err := h.repo.GetByDate(c.UserContext(), user.ID, req.Date)
 	if err != nil {

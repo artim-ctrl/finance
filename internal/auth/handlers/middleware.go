@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/keyauth"
 
-	"github.com/artim-ctrl/finance/internal/auth/repositories"
+	"github.com/artim-ctrl/finance/internal/models"
 )
 
 func (h *Handler) validateAPIKey(c *fiber.Ctx, accessToken string) (bool, error) {
@@ -17,7 +17,7 @@ func (h *Handler) validateAPIKey(c *fiber.Ctx, accessToken string) (bool, error)
 		return false, err
 	}
 
-	var user *repositories.User
+	var user *models.User
 	user, err = h.repo.GetActiveUserByID(c.UserContext(), userID)
 	if errors.Is(err, sql.ErrNoRows) {
 		return false, nil
