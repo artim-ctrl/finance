@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	authrepo "github.com/artim-ctrl/finance/internal/auth/repositories"
+	"github.com/artim-ctrl/finance/internal/servers/http/response"
 )
 
 type GetRequest struct {
@@ -20,16 +21,12 @@ func (h *Handler) GetMapper(c *fiber.Ctx) error {
 
 	year, err = c.ParamsInt("year")
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Couldn't parse year: " + err.Error(),
-		})
+		return response.Error(c, "Couldn't parse year: "+err.Error())
 	}
 
 	month, err = c.ParamsInt("month")
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Couldn't parse month: " + err.Error(),
-		})
+		return response.Error(c, "Couldn't parse month: "+err.Error())
 	}
 
 	req := GetRequest{
@@ -48,10 +45,8 @@ func (h *Handler) Get(c *fiber.Ctx) error {
 
 	incomes, err := h.repo.GetByDate(c.UserContext(), user.ID, req.Date)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Couldn't get income categories: " + err.Error(),
-		})
+		return response.Error(c, "Couldn't get income categories: "+err.Error())
 	}
 
-	return c.JSON(incomes)
+	return response.JSON(c, incomes)
 }

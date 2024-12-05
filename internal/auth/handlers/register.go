@@ -5,6 +5,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/artim-ctrl/finance/internal/auth/repositories"
+	"github.com/artim-ctrl/finance/internal/servers/http/response"
 )
 
 type RegisterRequest struct {
@@ -16,9 +17,7 @@ type RegisterRequest struct {
 func (h *Handler) RegisterMapper(c *fiber.Ctx) error {
 	var req RegisterRequest
 	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Couldn't parse request body",
-		})
+		return response.Error(c, "Couldn't parse request body")
 	}
 
 	c.Locals("req", req)
@@ -31,9 +30,7 @@ func (h *Handler) Register(c *fiber.Ctx) error {
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Couldn't hash password",
-		})
+		return response.Error(c, "Couldn't hash password")
 	}
 
 	user := &repositories.User{
@@ -44,17 +41,13 @@ func (h *Handler) Register(c *fiber.Ctx) error {
 
 	err = h.repo.CreateUser(c.UserContext(), user)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Couldn't create a user",
-		})
+		return response.Error(c, "Couldn't create a user")
 	}
 
 	var accessToken, refreshToken string
 	accessToken, refreshToken, err = h.tokenManager.GenerateTokens(user.ID)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Couldn't generate access token",
-		})
+		return response.Error(c, "Couldn't generate access token")
 	}
 
 	h.setAuthCookies(c, accessToken, refreshToken)

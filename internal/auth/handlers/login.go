@@ -3,6 +3,8 @@ package handlers
 import (
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/artim-ctrl/finance/internal/servers/http/response"
 )
 
 type LoginRequest struct {
@@ -13,9 +15,7 @@ type LoginRequest struct {
 func (h *Handler) LoginMapper(c *fiber.Ctx) error {
 	var req LoginRequest
 	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Couldn't parse request body: " + err.Error(),
-		})
+		return response.Error(c, "Couldn't parse request body: "+err.Error())
 	}
 
 	c.Locals("req", req)
@@ -28,25 +28,23 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 
 	user, err := h.repo.GetUserByEmail(c.UserContext(), req.Email)
 	if err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
-			"email": []string{"Email or password is incorrect"},
+		return response.ValidationError(c, map[string][]string{
+			"email": {"Email or password is incorrect"},
 		})
 	}
 
 	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
-			"email": []string{"Email or password is incorrect"},
+		return response.ValidationError(c, map[string][]string{
+			"email": {"Email or password is incorrect"},
 		})
 	}
 
 	var accessToken, refreshToken string
 	if accessToken, refreshToken, err = h.tokenManager.GenerateTokens(user.ID); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Couldn't generate access token",
-		})
+		return response.Error(c, "Couldn't generate access token")
 	}
 
 	h.setAuthCookies(c, accessToken, refreshToken)
 
-	return c.JSON(user)
+	return response.JSON(c, user)
 }
