@@ -12,6 +12,8 @@ func (h *Handler) Refresh(c *fiber.Ctx) error {
 
 	userID, err := h.tokenManager.ValidateRefreshToken(refreshToken)
 	if err != nil {
+		h.setExpiredRefreshToken(c)
+
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 

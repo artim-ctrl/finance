@@ -14,6 +14,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"go.uber.org/zap"
 
+	"github.com/artim-ctrl/finance/internal/auth/handlers"
 	"github.com/artim-ctrl/finance/internal/config"
 )
 
@@ -22,7 +23,7 @@ type Server struct {
 	logger *zap.Logger
 }
 
-func New(router *Router, logger *zap.Logger, config config.Config) *Server {
+func New(router *Router, logger *zap.Logger, config config.Config, authHandler *handlers.Handler) *Server {
 	serverName := "http"
 
 	logger = logger.With(zap.String("server", serverName))
@@ -50,6 +51,7 @@ func New(router *Router, logger *zap.Logger, config config.Config) *Server {
 		AllowHeaders:     "Origin, X-Requested-With, Content-Type, Accept",
 		AllowCredentials: true,
 	}))
+	server.Use(authHandler.AuthMiddleware())
 
 	router.Setup(server)
 
