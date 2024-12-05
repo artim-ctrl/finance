@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/keyauth"
 
+	"github.com/artim-ctrl/finance/internal/auth/cookie_manager"
 	"github.com/artim-ctrl/finance/internal/models"
 )
 
@@ -37,7 +38,7 @@ func (h *Handler) filterIsPublic(c *fiber.Ctx) bool {
 func (h *Handler) AuthMiddleware() fiber.Handler {
 	return keyauth.New(keyauth.Config{
 		Next:      h.filterIsPublic,
-		KeyLookup: "cookie:access_token",
+		KeyLookup: "cookie:" + cookie_manager.AccessTokenName,
 		Validator: h.validateAPIKey,
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			if errors.Is(err, keyauth.ErrMissingOrMalformedAPIKey) {

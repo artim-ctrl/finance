@@ -1,20 +1,24 @@
 package handlers
 
 import (
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/artim-ctrl/finance/internal/auth/cookie_manager"
+	"github.com/artim-ctrl/finance/internal/auth/token_manager"
 	"github.com/artim-ctrl/finance/internal/servers/http/response"
 )
 
 func (h *Handler) Refresh(c *fiber.Ctx) error {
-	refreshToken := c.Cookies("refresh_token")
+	refreshToken := c.Cookies(cookie_manager.RefreshTokenName)
 	if refreshToken == "" {
 		return response.Unauthorized(c)
 	}
 
 	userID, err := h.tokenManager.ParseRefreshToken(refreshToken)
 	if err != nil {
-		h.setExpiredRefreshToken(c)
+		h.cookieManager.SetCookie(c, cookie_manager.RefreshTokenName, "", -time.Second)
 
 		return response.Unauthorized(c)
 	}
@@ -25,7 +29,7 @@ func (h *Handler) Refresh(c *fiber.Ctx) error {
 		return response.Error(c, "Couldn't generate access token")
 	}
 
-	h.setAccessTokenCookie(c, newAccessToken)
+	h.cookieManager.SetCookie(c, cookie_manager.AccessTokenName, newAccessToken, token_manager.AccessTokenTTL)
 
 	return response.NoContent(c)
 }

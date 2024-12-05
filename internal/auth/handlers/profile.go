@@ -3,12 +3,13 @@ package handlers
 import (
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/artim-ctrl/finance/internal/auth/cookie_manager"
 	"github.com/artim-ctrl/finance/internal/models"
 	"github.com/artim-ctrl/finance/internal/servers/http/response"
 )
 
 func (h *Handler) GetProfile(c *fiber.Ctx) error {
-	accessToken := c.Cookies("access_token")
+	accessToken := c.Cookies(cookie_manager.AccessTokenName)
 	if accessToken == "" {
 		return response.JSON(c, nil)
 	}
