@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"time"
-
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 
@@ -38,14 +36,10 @@ func (h *Handler) Register(c *fiber.Ctx) error {
 		})
 	}
 
-	now := time.Now()
-
 	user := &repositories.User{
-		Name:      req.Name,
-		Email:     req.Email,
-		Password:  string(hashedPassword),
-		CreatedAt: now,
-		UpdatedAt: now,
+		Name:     req.Name,
+		Email:    req.Email,
+		Password: string(hashedPassword),
 	}
 
 	err = h.repo.CreateUser(c.UserContext(), user)
