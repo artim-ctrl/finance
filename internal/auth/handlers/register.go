@@ -4,6 +4,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 
+	"github.com/artim-ctrl/finance/internal/auth/cookie_manager"
+	"github.com/artim-ctrl/finance/internal/auth/token_manager"
 	"github.com/artim-ctrl/finance/internal/models"
 	"github.com/artim-ctrl/finance/internal/servers/http/response"
 )
@@ -54,7 +56,8 @@ func (h *Handler) Register(c *fiber.Ctx) error {
 		return response.Error(c, "Couldn't generate refresh token")
 	}
 
-	h.setAuthCookies(c, accessToken, refreshToken)
+	h.cookieManager.SetCookie(c, cookie_manager.AccessTokenName, accessToken, token_manager.AccessTokenTTL)
+	h.cookieManager.SetCookie(c, cookie_manager.RefreshTokenName, refreshToken, token_manager.RefreshTokenTTL)
 
 	return c.JSON(user)
 }
