@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react'
-import { Button, Table } from '@mantine/core'
+import { Button, Table, Title, Flex } from '@mantine/core'
 import CreateIncome from './CreateIncome'
 import IncomeApi from 'Services/IncomeApi'
 
@@ -51,13 +51,15 @@ const Incomes: FC<IncomesProps> = ({ currentDate }) => {
 
     return (
         <div>
-            <Button
-                onClick={() => setIsCreateIncomeModalOpen(true)}
-                mb="md"
-                loading={isLoading && isCreateIncomeModalOpen}
-            >
-                Добавить доход
-            </Button>
+            <Flex justify="space-between" align="center" mt="md">
+                <Title order={2}>Доходы</Title>
+                <Button
+                    onClick={() => setIsCreateIncomeModalOpen(true)}
+                    loading={isLoading && isCreateIncomeModalOpen}
+                >
+                    Добавить доход
+                </Button>
+            </Flex>
             <Table striped mt="sm">
                 <Table.Thead>
                     <Table.Tr>
