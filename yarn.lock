@@ -456,6 +456,13 @@
     react-textarea-autosize "8.5.5"
     type-fest "^4.27.0"
 
+"@mantine/dates@^7.14.3":
+  version "7.14.3"
+  resolved "https://registry.yarnpkg.com/@mantine/dates/-/dates-7.14.3.tgz#64fc1298dec3b36db843b76b6d14a82356e15747"
+  integrity sha512-vE+eCbGkas4h1DP6og9nnatL/cBJUvDu0v5+ZH4YdI8mBpjuxmabvbGrpLoWuKocQOFdyCzrlYFQF8ai0jXABg==
+  dependencies:
+    clsx "^2.1.1"
+
 "@mantine/form@^7.14.3":
   version "7.14.3"
   resolved "https://registry.yarnpkg.com/@mantine/form/-/form-7.14.3.tgz#cf5f9ee4b605c698ac8994a4153486cc27a1132f"
@@ -927,6 +934,11 @@ date-fns@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-4.1.0.tgz#64b3d83fff5aa80438f5b1a633c2e83b8a1c2d14"
   integrity sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==
+
+dayjs@^1.11.13:
+  version "1.11.13"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.13.tgz#92430b0139055c3ebb60150aa13e860a4b5a366c"
+  integrity sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==
 
 debug@^4.1.0, debug@^4.3.1, debug@^4.3.2, debug@^4.3.4:
   version "4.3.7"
