@@ -18,6 +18,7 @@ import (
 	"github.com/artim-ctrl/finance/internal/incomes"
 	"github.com/artim-ctrl/finance/internal/logger"
 	"github.com/artim-ctrl/finance/internal/servers"
+	"github.com/artim-ctrl/finance/internal/validator"
 )
 
 var opts = []fx.Option{
@@ -29,6 +30,7 @@ var opts = []fx.Option{
 		environment.New,
 		config.New,
 		logger.New,
+		validator.New,
 	),
 	fx.Invoke(
 		func(

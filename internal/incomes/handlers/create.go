@@ -11,15 +11,20 @@ import (
 )
 
 type CreateRequest struct {
-	CategoryId *int64  `json:"category_id,omitempty"`
-	Name       *string `json:"name,omitempty"`
-	Amount     float64 `json:"amount"`
+	CategoryId   *int64  `json:"categoryId,omitempty" validate:"required_without=CategoryName"`
+	CategoryName *string `json:"categoryName,omitempty" validate:"required_without=CategoryId"`
+	Amount       float64 `json:"amount" validate:"required,gte=0.01"`
 }
 
 func (h *Handler) CreateMapper(c *fiber.Ctx) error {
 	var req CreateRequest
 	if err := c.BodyParser(&req); err != nil {
 		return response.Error(c, "Couldn't parse request body: "+err.Error())
+	}
+
+	errs := h.validator.ValidateStruct(req)
+	if errs != nil {
+		return response.ValidationError(c, errs)
 	}
 
 	c.Locals("req", req)
@@ -36,7 +41,7 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 	if req.CategoryId == nil {
 		category := &repositories.IncomeCategory{
 			UserID: user.ID,
-			Name:   *req.Name,
+			Name:   *req.CategoryName,
 		}
 
 		err := h.repo.CreateCategory(c.UserContext(), category)

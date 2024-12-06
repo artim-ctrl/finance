@@ -10,14 +10,19 @@ import (
 )
 
 type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" validate:"required,email,max=255"`
+	Password string `json:"password" validate:"required,min=8"`
 }
 
 func (h *Handler) LoginMapper(c *fiber.Ctx) error {
 	var req LoginRequest
 	if err := c.BodyParser(&req); err != nil {
 		return response.Error(c, "Couldn't parse request body: "+err.Error())
+	}
+
+	errs := h.validator.ValidateStruct(req)
+	if errs != nil {
+		return response.ValidationError(c, errs)
 	}
 
 	c.Locals("req", req)

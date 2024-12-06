@@ -7,11 +7,12 @@ import {
     Text,
     Notification,
 } from '@mantine/core'
-import { useForm } from '@mantine/form'
+import { FormErrors, useForm } from '@mantine/form'
 import AuthApi from 'Services/AuthApi'
 import ROUTES from 'Constants/routes'
 import { Link } from 'react-router'
 import useUser from 'Hooks/useUser'
+import { AxiosError } from 'axios'
 
 const Registration = () => {
     const { register } = useUser()
@@ -32,7 +33,15 @@ const Registration = () => {
         try {
             register(await AuthApi.register(values))
         } catch (error) {
-            setError((error as Error).message || 'Registration failed')
+            if (
+                error instanceof AxiosError &&
+                error.status === 422 &&
+                error.response !== undefined
+            ) {
+                form.setErrors(error.response.data as FormErrors)
+            } else {
+                setError((error as Error).message || 'Registration failed')
+            }
         }
     }
 

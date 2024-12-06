@@ -7,11 +7,12 @@ import {
     Text,
     Notification,
 } from '@mantine/core'
-import { useForm } from '@mantine/form'
+import { FormErrors, useForm } from '@mantine/form'
 import AuthApi from 'Services/AuthApi'
 import ROUTES from 'Constants/routes'
 import { Link } from 'react-router'
 import useUser from 'Hooks/useUser'
+import { AxiosError } from 'axios'
 
 const Login = () => {
     const { login } = useUser()
@@ -30,14 +31,22 @@ const Login = () => {
         try {
             login(await AuthApi.login(values))
         } catch (error) {
-            setError((error as Error).message || 'Login failed')
+            if (
+                error instanceof AxiosError &&
+                error.status === 422 &&
+                error.response !== undefined
+            ) {
+                form.setErrors(error.response.data as FormErrors)
+            } else {
+                setError((error as Error).message || 'Login failed')
+            }
         }
     }
 
     return (
         <Container size="xs" style={{ maxWidth: 400 }}>
             <h2>Login</h2>
-            {error && (
+            {error !== null && (
                 <Notification color="red" onClose={() => setError(null)}>
                     {error}
                 </Notification>
