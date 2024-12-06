@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, Table, Title, Flex } from '@mantine/core'
 import CreateIncome from './CreateIncome'
 import IncomeApi from 'Services/IncomeApi'
@@ -13,7 +13,7 @@ interface IncomeCategory {
     incomes?: { amount: number }[]
 }
 
-const Incomes: FC<IncomesProps> = ({ currentDate }) => {
+const Incomes = ({ currentDate }: IncomesProps) => {
     const [incomes, setIncomes] = useState<{ name: string; amount: number }[]>(
         [],
     )

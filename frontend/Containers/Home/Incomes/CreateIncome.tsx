@@ -45,6 +45,8 @@ const CreateIncome = ({
     onIncomeCreated,
 }: CreateIncomeProps) => {
     const [error, setError] = useState<string | null>(null)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+
     const categoryOptions = useMemo<CategoryOption[]>(
         () =>
             existingCategories.map(({ id, name }) => ({
@@ -78,10 +80,14 @@ const CreateIncome = ({
     })
 
     const handleCreate = async (values: typeof form.values) => {
+        setIsLoading(true)
+        setError(null)
+
         const { amount, categoryType, categoryId, categoryName } = values
         const parsedAmount = Number(amount)
 
         if (isNaN(parsedAmount)) {
+            setIsLoading(false)
             return
         }
 
@@ -94,12 +100,14 @@ const CreateIncome = ({
         } else if (categoryType === 'new' && categoryName.trim() !== '') {
             createData.categoryName = categoryName.trim()
         } else {
+            setIsLoading(false)
             return
         }
 
         try {
             await IncomeApi.create(createData)
 
+            form.reset()
             onIncomeCreated()
         } catch (error) {
             if (
@@ -111,6 +119,8 @@ const CreateIncome = ({
             } else {
                 setError((error as Error).message || 'Creation failed')
             }
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -127,10 +137,7 @@ const CreateIncome = ({
                     <Select
                         label="Category Type"
                         data={[
-                            {
-                                value: 'existing',
-                                label: 'Existing Category',
-                            },
+                            { value: 'existing', label: 'Existing Category' },
                             { value: 'new', label: 'New Category' },
                         ]}
                         {...form.getInputProps('categoryType')}
@@ -145,19 +152,27 @@ const CreateIncome = ({
                     ) : (
                         <TextInput
                             label="New Category Name"
+                            placeholder="Enter new category name"
                             {...form.getInputProps('categoryName')}
                         />
                     )}
 
                     <NumberInput
                         label="Amount"
+                        placeholder="0.00"
                         min={0}
                         decimalScale={2}
                         step={0.01}
                         {...form.getInputProps('amount')}
                     />
 
-                    <Button type="submit">Create</Button>
+                    <Button
+                        type="submit"
+                        loading={isLoading}
+                        disabled={isLoading}
+                    >
+                        Create
+                    </Button>
                 </Stack>
             </form>
         </Modal>

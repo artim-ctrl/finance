@@ -17,10 +17,26 @@ import { AxiosError } from 'axios'
 const Login = () => {
     const { login } = useUser()
     const [error, setError] = useState<string | null>(null)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+
     const form = useForm({
         initialValues: {
             email: '',
             password: '',
+        },
+        validate: {
+            email: (value) =>
+                !value.trim()
+                    ? 'Please enter your email'
+                    : !/^\S+@\S+\.\S+$/.test(value)
+                      ? 'Please enter a valid email address'
+                      : null,
+            password: (value) =>
+                !value.trim()
+                    ? 'Please enter your password'
+                    : value.trim().length < 6
+                      ? 'Password should be at least 6 characters long'
+                      : null,
         },
     })
 
@@ -28,6 +44,9 @@ const Login = () => {
         email: string
         password: string
     }) => {
+        setIsLoading(true)
+        setError(null)
+
         try {
             login(await AuthApi.login(values))
         } catch (error) {
@@ -40,6 +59,8 @@ const Login = () => {
             } else {
                 setError((error as Error).message || 'Login failed')
             }
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -56,19 +77,23 @@ const Login = () => {
                 <TextInput
                     label="Email"
                     placeholder="Your email"
-                    key={form.key('email')}
                     {...form.getInputProps('email')}
                     required
                 />
                 <PasswordInput
                     label="Password"
                     placeholder="Your password"
-                    key={form.key('password')}
                     {...form.getInputProps('password')}
                     required
                     style={{ marginTop: 20 }}
                 />
-                <Button type="submit" fullWidth style={{ marginTop: 20 }}>
+                <Button
+                    type="submit"
+                    fullWidth
+                    style={{ marginTop: 20 }}
+                    loading={isLoading}
+                    disabled={isLoading}
+                >
                     Log In
                 </Button>
             </form>

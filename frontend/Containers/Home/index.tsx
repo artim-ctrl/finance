@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     Container,
     NumberInput,
@@ -19,23 +19,27 @@ interface Category {
 }
 
 const initialExpenseCategories: Category[] = [
-    { name: 'Бытовые нужды', amount: 4000, dailyExpenses: {} },
-    { name: 'Гигиена и здоровье', amount: 5000, dailyExpenses: {} },
-    { name: 'Квартплата', amount: 88000, dailyExpenses: {} },
-    { name: 'Одежда и косметика', amount: 5000, dailyExpenses: {} },
-    { name: 'Поездки (транспорт, такси)', amount: 800, dailyExpenses: {} },
-    { name: 'Продукты питания', amount: 50000, dailyExpenses: {} },
-    { name: 'Развлечения и подарки', amount: 5000, dailyExpenses: {} },
-    { name: 'Связь (телефон, интернет)', amount: 2000, dailyExpenses: {} },
-    { name: 'Спортзал', amount: 0, dailyExpenses: {} },
-    { name: 'Коллекционирование', amount: 0, dailyExpenses: {} },
-    { name: 'Коты', amount: 9000, dailyExpenses: {} },
-    { name: 'Медицина', amount: 0, dailyExpenses: {} },
+    { name: 'Household needs', amount: 4000, dailyExpenses: {} },
+    { name: 'Hygiene and health', amount: 5000, dailyExpenses: {} },
+    { name: 'Utilities', amount: 88000, dailyExpenses: {} },
+    { name: 'Clothes and cosmetics', amount: 5000, dailyExpenses: {} },
+    { name: 'Travel (transportation, taxi)', amount: 800, dailyExpenses: {} },
+    { name: 'Groceries', amount: 50000, dailyExpenses: {} },
+    { name: 'Entertainment and gifts', amount: 5000, dailyExpenses: {} },
+    {
+        name: 'Communication (phone, internet)',
+        amount: 2000,
+        dailyExpenses: {},
+    },
+    { name: 'Gym', amount: 0, dailyExpenses: {} },
+    { name: 'Collecting', amount: 0, dailyExpenses: {} },
+    { name: 'Cats', amount: 9000, dailyExpenses: {} },
+    { name: 'Medical', amount: 0, dailyExpenses: {} },
 ]
 
 const initialIncomeCategories: Category[] = [
-    { name: 'Зарплата', amount: 320000, dailyExpenses: {} },
-    { name: 'Остаток с предыдущего месяца', amount: 80000, dailyExpenses: {} },
+    { name: 'Salary', amount: 320000, dailyExpenses: {} },
+    { name: 'Remainder from previous month', amount: 80000, dailyExpenses: {} },
 ]
 
 const initialCategories = {
@@ -43,7 +47,7 @@ const initialCategories = {
     incomes: initialIncomeCategories,
 }
 
-const HomePage: FC = () => {
+const HomePage = () => {
     const [expenseCategoriesData, setExpenseCategoriesData] = useState<
         Category[]
     >(initialCategories.expenses)
@@ -156,11 +160,11 @@ const HomePage: FC = () => {
     return (
         <Container size="xl" mt="md">
             <Title order={1} ta="center">
-                Расходы бюджета
+                Budget Expenses
             </Title>
             <Text size="lg" c="dimmed" mt="sm" ta="center">
-                В этом разделе отображаются все ваши категории расходов по дням
-                месяца, а также категории доходов по месяцам.
+                This section displays your expenses by day of the month and your
+                incomes by month.
             </Text>
 
             <Select
@@ -172,7 +176,7 @@ const HomePage: FC = () => {
                     setCurrentMonth(new Date(year, month - 1, 1))
                 }}
                 data={monthOptions}
-                label="Выберите месяц и год"
+                label="Select a month and year"
                 mt="lg"
                 allowDeselect={false}
             />
@@ -180,18 +184,18 @@ const HomePage: FC = () => {
             <Incomes currentDate={currentMonth} />
 
             <Title order={2} mt="lg">
-                Расходы
+                Expenses
             </Title>
             <Table.ScrollContainer minWidth={100}>
                 <Table striped mt="lg">
                     <Table.Thead>
                         <Table.Tr>
-                            <Table.Th>Категория</Table.Th>
-                            <Table.Th>Предполагаемые расходы (RSD)</Table.Th>
-                            <Table.Th>Фактические расходы (RSD)</Table.Th>
-                            <Table.Th>Отклонение от плана (RSD)</Table.Th>
+                            <Table.Th>Category</Table.Th>
+                            <Table.Th>Planned expenses (RSD)</Table.Th>
+                            <Table.Th>Actual expenses (RSD)</Table.Th>
+                            <Table.Th>Deviation from plan (RSD)</Table.Th>
                             {daysInMonth.map((day) => (
-                                <Table.Th key={day}>День {day}</Table.Th>
+                                <Table.Th key={day}>Day {day}</Table.Th>
                             ))}
                         </Table.Tr>
                     </Table.Thead>
@@ -247,7 +251,7 @@ const HomePage: FC = () => {
                                                     )
                                                 }}
                                                 style={{ width: '100px' }}
-                                                placeholder="Расходы"
+                                                placeholder="Expenses"
                                                 min={0}
                                                 decimalScale={2}
                                                 step={0.01}
@@ -259,7 +263,7 @@ const HomePage: FC = () => {
                         )}
                         <Table.Tr>
                             <Table.Td>
-                                <strong>Итоги</strong>
+                                <strong>Totals</strong>
                             </Table.Td>
                             <Table.Td>
                                 <strong>
@@ -296,26 +300,26 @@ const HomePage: FC = () => {
             </Table.ScrollContainer>
 
             <Title order={2} mt="lg">
-                Отчет
+                Report
             </Title>
             <Table striped mt="sm">
                 <Table.Thead>
                     <Table.Tr>
-                        <Table.Th>Описание</Table.Th>
-                        <Table.Th>Значение (RSD)</Table.Th>
+                        <Table.Th>Description</Table.Th>
+                        <Table.Th>Value (RSD)</Table.Th>
                     </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
                     <Table.Tr>
-                        <Table.Td>Бюджет на месяц</Table.Td>
+                        <Table.Td>Monthly budget</Table.Td>
                         <Table.Td>{totalPlannedIncome.toFixed(2)}</Table.Td>
                     </Table.Tr>
                     <Table.Tr>
-                        <Table.Td>Расходы за месяц</Table.Td>
+                        <Table.Td>Monthly expenses</Table.Td>
                         <Table.Td>{totalActualExpenses.toFixed(2)}</Table.Td>
                     </Table.Tr>
                     <Table.Tr>
-                        <Table.Td>Сальдо (разница)</Table.Td>
+                        <Table.Td>Balance (difference)</Table.Td>
                         <Table.Td
                             style={{ color: saldo < 0 ? 'red' : 'green' }}
                         >
@@ -323,19 +327,19 @@ const HomePage: FC = () => {
                         </Table.Td>
                     </Table.Tr>
                     <Table.Tr>
-                        <Table.Td>Расходы без накоплений</Table.Td>
+                        <Table.Td>Expenses without savings</Table.Td>
                         <Table.Td>{totalActualExpenses.toFixed(2)}</Table.Td>
                     </Table.Tr>
                     <Table.Tr>
-                        <Table.Td>План расходов</Table.Td>
+                        <Table.Td>Expense plan</Table.Td>
                         <Table.Td>{totalPlannedExpenses.toFixed(2)}</Table.Td>
                     </Table.Tr>
                     <Table.Tr>
-                        <Table.Td>Отход от плана</Table.Td>
+                        <Table.Td>Deviation from plan</Table.Td>
                         <Table.Td>{totalDeviation.toFixed(2)}</Table.Td>
                     </Table.Tr>
                     <Table.Tr>
-                        <Table.Td>Ожидаемый остаток</Table.Td>
+                        <Table.Td>Expected remainder</Table.Td>
                         <Table.Td>{expectedBalance.toFixed(2)}</Table.Td>
                     </Table.Tr>
                 </Table.Tbody>

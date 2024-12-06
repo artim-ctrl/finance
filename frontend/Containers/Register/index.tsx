@@ -17,11 +17,28 @@ import { AxiosError } from 'axios'
 const Registration = () => {
     const { register } = useUser()
     const [error, setError] = useState<string | null>(null)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+
     const form = useForm({
         initialValues: {
             name: '',
             email: '',
             password: '',
+        },
+        validate: {
+            name: (value) => (!value.trim() ? 'Please enter your name' : null),
+            email: (value) =>
+                !value.trim()
+                    ? 'Please enter your email'
+                    : !/^\S+@\S+\.\S+$/.test(value)
+                      ? 'Please enter a valid email address'
+                      : null,
+            password: (value) =>
+                !value.trim()
+                    ? 'Please enter a password'
+                    : value.trim().length < 6
+                      ? 'Password should be at least 6 characters long'
+                      : null,
         },
     })
 
@@ -30,6 +47,9 @@ const Registration = () => {
         email: string
         password: string
     }) => {
+        setIsLoading(true)
+        setError(null)
+
         try {
             register(await AuthApi.register(values))
         } catch (error) {
@@ -42,13 +62,15 @@ const Registration = () => {
             } else {
                 setError((error as Error).message || 'Registration failed')
             }
+        } finally {
+            setIsLoading(false)
         }
     }
 
     return (
         <Container size="xs" style={{ maxWidth: 400 }}>
             <h2>Sign Up</h2>
-            {error && (
+            {error !== null && (
                 <Notification color="red" onClose={() => setError(null)}>
                     {error}
                 </Notification>
@@ -75,7 +97,13 @@ const Registration = () => {
                     required
                     style={{ marginTop: 20 }}
                 />
-                <Button type="submit" fullWidth style={{ marginTop: 20 }}>
+                <Button
+                    type="submit"
+                    fullWidth
+                    style={{ marginTop: 20 }}
+                    loading={isLoading}
+                    disabled={isLoading}
+                >
                     Sign Up
                 </Button>
             </form>
