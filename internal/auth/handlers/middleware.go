@@ -22,6 +22,8 @@ func (h *Handler) validateAPIKey(c *fiber.Ctx, accessToken string) (bool, error)
 	user, err = h.repo.GetActiveUserByID(c.UserContext(), userID)
 	if errors.Is(err, sql.ErrNoRows) {
 		return false, nil
+	} else if err != nil {
+		return false, err
 	}
 
 	c.Locals("user", user)

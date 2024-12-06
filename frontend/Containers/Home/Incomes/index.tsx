@@ -52,19 +52,19 @@ const Incomes = ({ currentDate }: IncomesProps) => {
     return (
         <div>
             <Flex justify="space-between" align="center" mt="md">
-                <Title order={2}>Доходы</Title>
+                <Title order={2}>Incomes</Title>
                 <Button
                     onClick={() => setIsCreateIncomeModalOpen(true)}
                     loading={isLoading && isCreateIncomeModalOpen}
                 >
-                    Добавить доход
+                    Add Income
                 </Button>
             </Flex>
             <Table striped mt="sm">
                 <Table.Thead>
                     <Table.Tr>
-                        <Table.Th>Категория</Table.Th>
-                        <Table.Th>Сумма (RSD)</Table.Th>
+                        <Table.Th>Category</Table.Th>
+                        <Table.Th>Amount (RSD)</Table.Th>
                     </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>

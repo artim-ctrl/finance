@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -21,6 +23,15 @@ func (h *Handler) Refresh(c *fiber.Ctx) error {
 		h.cookieManager.SetCookie(c, cookie_manager.RefreshTokenName, "", -time.Second)
 
 		return response.Unauthorized(c)
+	}
+
+	_, err = h.repo.GetActiveUserByID(c.UserContext(), userID)
+	if errors.Is(err, sql.ErrNoRows) {
+		h.cookieManager.SetCookie(c, cookie_manager.RefreshTokenName, "", -time.Second)
+
+		return response.Unauthorized(c)
+	} else if err != nil {
+		return response.Error(c, "Couldn't find active user by the refresh token")
 	}
 
 	var newAccessToken string

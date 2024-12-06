@@ -1,4 +1,4 @@
-CREATE TABLE income_categories
+CREATE TABLE expense_categories
 (
     id         BIGSERIAL PRIMARY KEY,
     user_id    BIGINT                                             NOT NULL,
@@ -9,4 +9,4 @@ CREATE TABLE income_categories
     CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
-CREATE UNIQUE INDEX unique_income_categories_user_id_name ON income_categories (user_id, LOWER(name));
+CREATE UNIQUE INDEX unique_expense_categories_user_id_name ON expense_categories (user_id, LOWER(name));
