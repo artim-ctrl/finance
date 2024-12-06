@@ -11,15 +11,20 @@ import (
 )
 
 type RegisterRequest struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Name     string `json:"name" validate:"required,min=6,max=255"`
+	Email    string `json:"email" validate:"required,email,max=255"`
+	Password string `json:"password" validate:"required,min=8,max=32"`
 }
 
 func (h *Handler) RegisterMapper(c *fiber.Ctx) error {
 	var req RegisterRequest
 	if err := c.BodyParser(&req); err != nil {
 		return response.Error(c, "Couldn't parse request body")
+	}
+
+	errs := h.validator.ValidateStruct(req)
+	if errs != nil {
+		return response.ValidationError(c, errs)
 	}
 
 	c.Locals("req", req)

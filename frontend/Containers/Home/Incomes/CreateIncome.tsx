@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
     Modal,
     Button,
@@ -6,8 +6,11 @@ import {
     NumberInput,
     TextInput,
     Stack,
+    Notification,
 } from '@mantine/core'
+import { FormErrors, useForm } from '@mantine/form'
 import IncomeApi from 'Services/IncomeApi'
+import { AxiosError } from 'axios'
 
 interface CreateIncomeProps {
     isOpen: boolean
@@ -17,8 +20,8 @@ interface CreateIncomeProps {
 }
 
 export interface CreateIncomeData {
-    name?: string
-    category_id?: number
+    categoryName?: string
+    categoryId?: number
     amount: number
 }
 
@@ -35,12 +38,13 @@ const getDefaultCategoryId = (options: CategoryOption[]): string | null => {
     return options[0].value
 }
 
-const CreateIncome: FC<CreateIncomeProps> = ({
+const CreateIncome = ({
     isOpen,
     onClose,
     existingCategories,
     onIncomeCreated,
-}) => {
+}: CreateIncomeProps) => {
+    const [error, setError] = useState<string | null>(null)
     const categoryOptions = useMemo<CategoryOption[]>(
         () =>
             existingCategories.map(({ id, name }) => ({
@@ -50,78 +54,112 @@ const CreateIncome: FC<CreateIncomeProps> = ({
         [existingCategories],
     )
 
-    const [categoryType, setCategoryType] = useState<'existing' | 'new'>(
-        'existing',
-    )
-    const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-        getDefaultCategoryId(categoryOptions),
-    )
-    const [newCategoryName, setNewCategoryName] = useState<string>('')
-    const [amount, setAmount] = useState<number | string>('')
+    const form = useForm({
+        initialValues: {
+            categoryType: 'existing' as 'existing' | 'new',
+            categoryId: getDefaultCategoryId(categoryOptions),
+            categoryName: '',
+            amount: '',
+        },
+        validate: {
+            amount: (value) =>
+                isNaN(Number(value)) || Number(value) <= 0
+                    ? 'Please enter a valid amount'
+                    : null,
+            categoryName: (value, values) =>
+                values.categoryType === 'new' && !value.trim()
+                    ? 'Please provide a name for the new category'
+                    : null,
+            categoryId: (value, values) =>
+                values.categoryType === 'existing' && !value
+                    ? 'Please select an existing category'
+                    : null,
+        },
+    })
 
-    const handleCreate = async () => {
-        if (isNaN(Number(amount))) {
+    const handleCreate = async (values: typeof form.values) => {
+        const { amount, categoryType, categoryId, categoryName } = values
+        const parsedAmount = Number(amount)
+
+        if (isNaN(parsedAmount)) {
             return
         }
 
         const createData: CreateIncomeData = {
-            amount: Number(amount),
+            amount: parsedAmount,
         }
 
-        if (categoryType === 'existing' && selectedCategoryId !== null) {
-            createData.category_id = Number(selectedCategoryId)
-        } else if (categoryType === 'new' && newCategoryName !== '') {
-            createData.name = newCategoryName
+        if (categoryType === 'existing' && categoryId !== null) {
+            createData.categoryId = Number(categoryId)
+        } else if (categoryType === 'new' && categoryName.trim() !== '') {
+            createData.categoryName = categoryName.trim()
         } else {
             return
         }
 
-        await IncomeApi.create(createData)
+        try {
+            await IncomeApi.create(createData)
 
-        onIncomeCreated()
+            onIncomeCreated()
+        } catch (error) {
+            if (
+                error instanceof AxiosError &&
+                error.status === 422 &&
+                error.response !== undefined
+            ) {
+                form.setErrors(error.response.data as FormErrors)
+            } else {
+                setError((error as Error).message || 'Creation failed')
+            }
+        }
     }
 
     return (
-        <Modal opened={isOpen} onClose={onClose} title="Добавить доход">
-            <Stack>
-                <Select
-                    label="Тип категории"
-                    value={categoryType}
-                    onChange={(value) =>
-                        setCategoryType(value as 'existing' | 'new')
-                    }
-                    data={[
-                        { value: 'existing', label: 'Существующая категория' },
-                        { value: 'new', label: 'Новая категория' },
-                    ]}
-                />
-                {categoryType === 'existing' ? (
+        <Modal opened={isOpen} onClose={onClose} title="Add Income">
+            {error !== null && (
+                <Notification color="red" onClose={() => setError(null)}>
+                    {error}
+                </Notification>
+            )}
+
+            <form onSubmit={form.onSubmit(handleCreate)}>
+                <Stack>
                     <Select
-                        label="Выберите существующую категорию"
-                        value={selectedCategoryId}
-                        onChange={(value) => setSelectedCategoryId(value)}
-                        data={categoryOptions}
-                        allowDeselect={false}
+                        label="Category Type"
+                        data={[
+                            {
+                                value: 'existing',
+                                label: 'Existing Category',
+                            },
+                            { value: 'new', label: 'New Category' },
+                        ]}
+                        {...form.getInputProps('categoryType')}
                     />
-                ) : (
-                    <TextInput
-                        label="Название новой категории"
-                        value={newCategoryName}
-                        onChange={(event) =>
-                            setNewCategoryName(event.currentTarget.value)
-                        }
+
+                    {form.values.categoryType === 'existing' ? (
+                        <Select
+                            label="Select Existing Category"
+                            data={categoryOptions}
+                            {...form.getInputProps('categoryId')}
+                        />
+                    ) : (
+                        <TextInput
+                            label="New Category Name"
+                            {...form.getInputProps('categoryName')}
+                        />
+                    )}
+
+                    <NumberInput
+                        label="Amount"
+                        min={0}
+                        decimalScale={2}
+                        step={0.01}
+                        {...form.getInputProps('amount')}
                     />
-                )}
-                <NumberInput
-                    label="Сумма"
-                    value={amount}
-                    onChange={setAmount}
-                    min={0}
-                    decimalScale={2}
-                    step={0.01}
-                />
-                <Button onClick={handleCreate}>Создать</Button>
-            </Stack>
+
+                    <Button type="submit">Create</Button>
+                </Stack>
+            </form>
         </Modal>
     )
 }
