@@ -44,6 +44,10 @@ func (r *Repository) GetByDate(ctx context.Context, userID int64, date time.Time
 				Where("e.date BETWEEN ? AND ?", start, end).
 				Where("e.deleted_at IS NULL")
 		}).
+		Relation("MonthlyExpensePlans", func(query *bun.SelectQuery) *bun.SelectQuery {
+			return query.
+				Where("mep.year = ? AND mep.month = ?", date.Year(), date.Month())
+		}).
 		Where("ec.deleted_at IS NULL").
 		Where("ec.user_id = ?", userID).
 		Scan(ctx)
@@ -54,4 +58,13 @@ func (r *Repository) GetByDate(ctx context.Context, userID int64, date time.Time
 	}
 
 	return categories, nil
+}
+
+func (r *Repository) UpsertPlan(ctx context.Context, plan *MonthlyExpensePlan) error {
+	_, err := r.db.NewInsert().Model(plan).
+		On("CONFLICT (expense_category_id, year, month) DO UPDATE").
+		Set("amount = EXCLUDED.amount, updated_at = CURRENT_TIMESTAMP").
+		Exec(ctx)
+
+	return err
 }

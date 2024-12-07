@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Table, Title, NumberInput, Button, Notification } from '@mantine/core'
+import {
+    Table,
+    Title,
+    NumberInput,
+    Button,
+    Notification,
+    Flex,
+} from '@mantine/core'
 import dayjs from 'dayjs'
 import ExpenseApi from 'Services/ExpenseApi'
 import CreateExpenseModal from './CreateExpenseModal'
@@ -7,7 +14,7 @@ import CreateExpenseModal from './CreateExpenseModal'
 interface ExpenseCategory {
     id: number
     name: string
-    plannedAmount: number
+    monthly_expense_plans?: { amount: number }[]
     expenses?: { date: string; amount: number }[]
 }
 
@@ -22,6 +29,7 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
 
     const fetchCategories = async (currentMonth: Date) => {
         setError(null)
+
         try {
             const data = (await ExpenseApi.getCategories(
                 currentMonth.getFullYear(),
@@ -45,6 +53,7 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
 
     const calculateActualExpenses = (category: ExpenseCategory): number => {
         if (!category.expenses) return 0
+
         return category.expenses.reduce(
             (sum, expense) => sum + expense.amount,
             0,
@@ -73,7 +82,7 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
     }
 
     const totalPlannedExpenses = categories.reduce(
-        (sum, cat) => sum + cat.plannedAmount,
+        (sum, cat) => sum + (cat.monthly_expense_plans?.[0]?.amount || 0),
         0,
     )
     const totalActualExpenses = categories.reduce(
@@ -82,19 +91,36 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
     )
     const totalDeviation = totalActualExpenses - totalPlannedExpenses
 
+    const handleMonthlyExpenseChange = async (
+        categoryId: number,
+        value: number,
+    ) => {
+        try {
+            await ExpenseApi.updatePlan({
+                year: currentMonth.getFullYear(),
+                month: currentMonth.getMonth() + 1,
+                categoryId: categoryId,
+                amount: value,
+            })
+
+            await fetchCategories(currentMonth)
+        } catch (e) {
+            setError((e as Error).message || 'Failed to update expense plan')
+        }
+    }
+
     const handleDailyExpenseChange = async (
         categoryId: number,
         day: number,
         value: number,
     ) => {
         try {
-            const dateStr = dayjs(currentMonth).date(day).format('YYYY-MM-DD')
-
             await ExpenseApi.create({
-                date: dateStr,
+                date: dayjs(currentMonth).date(day).format('YYYY-MM-DD'),
                 categoryId: categoryId,
                 amount: value,
             })
+
             await fetchCategories(currentMonth)
         } catch (e) {
             setError((e as Error).message || 'Failed to create expense')
@@ -103,7 +129,7 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
 
     return (
         <div style={{ position: 'relative', marginTop: '1rem' }}>
-            {error && (
+            {error !== null && (
                 <Notification
                     color="red"
                     onClose={() => setError(null)}
@@ -113,16 +139,10 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
                 </Notification>
             )}
 
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                }}
-            >
+            <Flex justify="space-between" align="center" mt="md">
                 <Title order={2}>Expenses</Title>
                 <Button onClick={() => setModalOpen(true)}>Add Expense</Button>
-            </div>
+            </Flex>
 
             <CreateExpenseModal
                 isOpen={modalOpen}
@@ -148,7 +168,25 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
                             <Table.Tr key={category.id}>
                                 <Table.Td>{category.name}</Table.Td>
                                 <Table.Td>
-                                    {category.plannedAmount?.toLocaleString()}
+                                    <NumberInput
+                                        value={
+                                            category.monthly_expense_plans?.[0]
+                                                ?.amount || ''
+                                        }
+                                        onBlur={(event) =>
+                                            handleMonthlyExpenseChange(
+                                                category.id,
+                                                parseFloat(
+                                                    event.target.value,
+                                                ) || 0,
+                                            )
+                                        }
+                                        style={{ width: '100px' }}
+                                        placeholder="0.00"
+                                        min={0}
+                                        decimalScale={2}
+                                        step={0.01}
+                                    />
                                 </Table.Td>
                                 <Table.Td>
                                     {calculateActualExpenses(
@@ -161,7 +199,10 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
                                             color:
                                                 calculateActualExpenses(
                                                     category,
-                                                ) > category.plannedAmount
+                                                ) >
+                                                (category
+                                                    .monthly_expense_plans?.[0]
+                                                    ?.amount || 0)
                                                     ? 'red'
                                                     : 'green',
                                             fontWeight: 'bold',
@@ -169,7 +210,8 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
                                     >
                                         {(
                                             calculateActualExpenses(category) -
-                                            category.plannedAmount
+                                            (category.monthly_expense_plans?.[0]
+                                                ?.amount || 0)
                                         ).toFixed(2)}
                                     </span>
                                 </Table.Td>
@@ -204,7 +246,7 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
                                                     }
                                                 }}
                                                 style={{ width: '100px' }}
-                                                placeholder="Expenses"
+                                                placeholder="0.00"
                                                 min={0}
                                                 decimalScale={2}
                                                 step={0.01}
