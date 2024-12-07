@@ -1,16 +1,15 @@
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 import { Navigate, useLocation } from 'react-router'
 import useUser from 'Hooks/useUser'
-import { Loader } from '@mantine/core'
 import ROUTES from 'Constants/routes'
-import Navbar from 'Components/Navbar'
+import { Loader } from '@mantine/core'
 
 interface AuthGuardProps {
     children: ReactNode
     isAuthRequired: boolean
 }
 
-const AuthGuard: FC<AuthGuardProps> = ({ children, isAuthRequired }) => {
+const AuthGuard = ({ children, isAuthRequired }: AuthGuardProps) => {
     const { user, isLoading } = useUser()
     const location = useLocation()
 
@@ -19,7 +18,7 @@ const AuthGuard: FC<AuthGuardProps> = ({ children, isAuthRequired }) => {
             <Loader
                 type="dots"
                 size="lg"
-                style={{ width: '100%', height: '100%' }}
+                style={{ width: '100%', height: '100%', background: 'white' }}
             />
         )
     }
@@ -34,12 +33,7 @@ const AuthGuard: FC<AuthGuardProps> = ({ children, isAuthRequired }) => {
         return <Navigate to={ROUTES.HOME} state={{ from: location }} />
     }
 
-    return (
-        <>
-            {isAuthenticated && <Navbar />}
-            {children}
-        </>
-    )
+    return children
 }
 
 export default AuthGuard

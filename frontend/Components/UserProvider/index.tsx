@@ -1,17 +1,17 @@
-import { useState, useEffect, FC, ReactNode } from 'react'
+import { useState, useEffect, ReactNode } from 'react'
 import AuthApi from 'Services/AuthApi'
 import { useNavigate } from 'react-router'
 import ROUTES from 'Constants/routes'
 import { UserContext, User } from 'Contexts'
 
-export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const navigate = useNavigate()
 
     useEffect(() => {
         AuthApi.profile()
-            .then((user) => setUser(user))
+            .then(setUser)
             .finally(() => setIsLoading(false))
     }, [])
 

@@ -1,9 +1,8 @@
-import { FC } from 'react'
 import { Container, Group, Button } from '@mantine/core'
 import AuthApi from 'Services/AuthApi'
 import useUser from 'Hooks/useUser'
 
-const Navbar: FC = () => {
+const Navbar = () => {
     const { logout } = useUser()
 
     const handleLogout = async () => {
