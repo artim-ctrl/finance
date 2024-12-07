@@ -10,7 +10,7 @@ import {
 import { DateInput } from '@mantine/dates'
 import { useForm } from '@mantine/form'
 import ExpenseApi from 'Services/ExpenseApi'
-import { format } from 'date-fns'
+import dayjs from 'dayjs'
 
 interface CreateExpenseModalProps {
     isOpen: boolean
@@ -60,7 +60,7 @@ const CreateExpenseModal = ({
         }
 
         const createData: CreateExpenseData = {
-            date: format(date, 'yyyy-MM-dd'),
+            date: dayjs(date).format('YYYY-MM-DD'),
             amount: parsedAmount,
             categoryName: categoryName.trim(),
         }

@@ -1,22 +1,25 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Container, Select, Text, Title } from '@mantine/core'
-import { addMonths, format, startOfMonth } from 'date-fns'
+import dayjs from 'dayjs'
+import advancedFormat from 'dayjs/plugin/advancedFormat'
 import Incomes from './Incomes'
 import ExpensesTable from './ExpensesTable'
 
+dayjs.extend(advancedFormat)
+
 const HomePage = () => {
-    const [currentMonth, setCurrentMonth] = useState<Date>(
-        startOfMonth(new Date()),
-    )
+    const [currentMonth, setCurrentMonth] = useState(dayjs().startOf('month'))
 
-    const monthOptions = Array.from({ length: 7 }, (_, i) => {
-        const date = addMonths(currentMonth, i - 3)
+    const monthOptions = useMemo(() => {
+        return Array.from({ length: 7 }, (_, i) => {
+            const date = currentMonth.add(i - 3, 'month')
 
-        return {
-            value: format(date, 'yyyy-MM'),
-            label: format(date, 'MMMM yyyy'),
-        }
-    })
+            return {
+                value: date.format('YYYY-MM'),
+                label: date.format('MMMM YYYY'),
+            }
+        })
+    }, [currentMonth])
 
     return (
         <Container size="xl" mt="md">
@@ -29,22 +32,22 @@ const HomePage = () => {
             </Text>
 
             <Select
-                value={format(currentMonth, 'yyyy-MM')}
+                value={currentMonth.format('YYYY-MM')}
                 onChange={(value) => {
-                    const [year, month] = (value as string)
-                        .split('-')
-                        .map(Number)
-                    setCurrentMonth(new Date(year, month - 1, 1))
+                    if (!value) return
+
+                    setCurrentMonth(dayjs(value, 'YYYY-MM').startOf('month'))
                 }}
                 data={monthOptions}
                 label="Select a month and year"
                 mt="lg"
                 allowDeselect={false}
+                aria-label="Select a month"
             />
 
-            <Incomes currentDate={currentMonth} />
+            <Incomes currentDate={currentMonth.toDate()} />
 
-            <ExpensesTable currentMonth={currentMonth} />
+            <ExpensesTable currentMonth={currentMonth.toDate()} />
         </Container>
     )
 }
