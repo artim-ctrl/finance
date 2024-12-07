@@ -5,6 +5,7 @@ import Login from 'Containers/Login'
 import Register from 'Containers/Register'
 import AuthGuard from 'Components/AuthGuard'
 import ROUTES from 'Constants/routes'
+import NavbarProvider from './Components/NavbarProvider'
 
 const routesConfig = [
     {
@@ -39,7 +40,9 @@ const RoutesConfig = () => {
                         path={path}
                         element={
                             <AuthGuard isAuthRequired={isAuthRequired}>
-                                <Component />
+                                <NavbarProvider>
+                                    <Component />
+                                </NavbarProvider>
                             </AuthGuard>
                         }
                     />

@@ -6,6 +6,8 @@ import {
     Button,
     Notification,
     Flex,
+    Box,
+    LoadingOverlay,
 } from '@mantine/core'
 import dayjs from 'dayjs'
 import ExpenseApi from 'Services/ExpenseApi'
@@ -23,11 +25,13 @@ interface ExpensesTableProps {
 }
 
 const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
+    const [isLoading, setIsLoading] = useState(true)
     const [categories, setCategories] = useState<ExpenseCategory[]>([])
     const [error, setError] = useState<string | null>(null)
     const [modalOpen, setModalOpen] = useState(false)
 
     const fetchCategories = async (currentMonth: Date) => {
+        setIsLoading(true)
         setError(null)
 
         try {
@@ -39,6 +43,8 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
             setCategories(data)
         } catch (e) {
             setError((e as Error).message || 'Failed to fetch categories')
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -150,149 +156,164 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
                 onExpenseCreated={() => fetchCategories(currentMonth)}
             />
 
-            <Table.ScrollContainer minWidth={1000}>
-                <Table striped mt="lg">
-                    <Table.Thead>
-                        <Table.Tr>
-                            <Table.Th>Category</Table.Th>
-                            <Table.Th>Planned expenses (RSD)</Table.Th>
-                            <Table.Th>Actual expenses (RSD)</Table.Th>
-                            <Table.Th>Deviation from plan (RSD)</Table.Th>
-                            {daysInMonth.map((day) => (
-                                <Table.Th key={day}>Day {day}</Table.Th>
-                            ))}
-                        </Table.Tr>
-                    </Table.Thead>
-                    <Table.Tbody>
-                        {categories.map((category) => (
-                            <Table.Tr key={category.id}>
-                                <Table.Td>{category.name}</Table.Td>
-                                <Table.Td>
-                                    <NumberInput
-                                        value={
-                                            category.monthly_expense_plans?.[0]
-                                                ?.amount || ''
-                                        }
-                                        onBlur={(event) =>
-                                            handleMonthlyExpenseChange(
-                                                category.id,
-                                                parseFloat(
-                                                    event.target.value,
-                                                ) || 0,
-                                            )
-                                        }
-                                        style={{ width: '100px' }}
-                                        placeholder="0.00"
-                                        min={0}
-                                        decimalScale={2}
-                                        step={0.01}
-                                    />
-                                </Table.Td>
-                                <Table.Td>
-                                    {calculateActualExpenses(
-                                        category,
-                                    ).toLocaleString()}
-                                </Table.Td>
-                                <Table.Td>
-                                    <span
-                                        style={{
-                                            color:
+            <Box>
+                <LoadingOverlay
+                    visible={isLoading}
+                    zIndex={1000}
+                    overlayProps={{ radius: 'sm', blur: 2 }}
+                />
+
+                <Table.ScrollContainer minWidth={1000}>
+                    <Table striped mt="lg">
+                        <Table.Thead>
+                            <Table.Tr>
+                                <Table.Th>Category</Table.Th>
+                                <Table.Th>Planned expenses (RSD)</Table.Th>
+                                <Table.Th>Actual expenses (RSD)</Table.Th>
+                                <Table.Th>Deviation from plan (RSD)</Table.Th>
+                                {daysInMonth.map((day) => (
+                                    <Table.Th key={day}>Day {day}</Table.Th>
+                                ))}
+                            </Table.Tr>
+                        </Table.Thead>
+                        <Table.Tbody>
+                            {categories.map((category) => (
+                                <Table.Tr key={category.id}>
+                                    <Table.Td>{category.name}</Table.Td>
+                                    <Table.Td>
+                                        <NumberInput
+                                            value={
+                                                category
+                                                    .monthly_expense_plans?.[0]
+                                                    ?.amount || ''
+                                            }
+                                            onBlur={(event) =>
+                                                handleMonthlyExpenseChange(
+                                                    category.id,
+                                                    parseFloat(
+                                                        event.target.value,
+                                                    ) || 0,
+                                                )
+                                            }
+                                            style={{ width: '100px' }}
+                                            placeholder="0.00"
+                                            min={0}
+                                            decimalScale={2}
+                                            step={0.01}
+                                        />
+                                    </Table.Td>
+                                    <Table.Td>
+                                        {calculateActualExpenses(
+                                            category,
+                                        ).toLocaleString()}
+                                    </Table.Td>
+                                    <Table.Td>
+                                        <span
+                                            style={{
+                                                color:
+                                                    calculateActualExpenses(
+                                                        category,
+                                                    ) >
+                                                    (category
+                                                        .monthly_expense_plans?.[0]
+                                                        ?.amount || 0)
+                                                        ? 'red'
+                                                        : 'green',
+                                                fontWeight: 'bold',
+                                            }}
+                                        >
+                                            {(
                                                 calculateActualExpenses(
                                                     category,
-                                                ) >
+                                                ) -
                                                 (category
                                                     .monthly_expense_plans?.[0]
                                                     ?.amount || 0)
-                                                    ? 'red'
-                                                    : 'green',
-                                            fontWeight: 'bold',
-                                        }}
-                                    >
-                                        {(
-                                            calculateActualExpenses(category) -
-                                            (category.monthly_expense_plans?.[0]
-                                                ?.amount || 0)
-                                        ).toFixed(2)}
-                                    </span>
-                                </Table.Td>
-                                {daysInMonth.map((day) => {
-                                    const dayExpense = calculateExpenseByDay(
-                                        category,
-                                        day,
-                                    )
-                                    return (
-                                        <Table.Td key={day}>
-                                            <NumberInput
-                                                value={
-                                                    dayExpense === 0
-                                                        ? ''
-                                                        : dayExpense
-                                                }
-                                                onBlur={(event) => {
-                                                    const value =
-                                                        parseFloat(
-                                                            event.target.value,
-                                                        ) || 0
-                                                    if (value !== dayExpense) {
-                                                        handleDailyExpenseChange(
-                                                            category.id,
-                                                            day,
-                                                            value -
-                                                                calculateExpenseByDay(
-                                                                    category,
-                                                                    day,
-                                                                ),
-                                                        )
+                                            ).toFixed(2)}
+                                        </span>
+                                    </Table.Td>
+                                    {daysInMonth.map((day) => {
+                                        const dayExpense =
+                                            calculateExpenseByDay(category, day)
+                                        return (
+                                            <Table.Td key={day}>
+                                                <NumberInput
+                                                    value={
+                                                        dayExpense === 0
+                                                            ? ''
+                                                            : dayExpense
                                                     }
-                                                }}
-                                                style={{ width: '100px' }}
-                                                placeholder="0.00"
-                                                min={0}
-                                                decimalScale={2}
-                                                step={0.01}
-                                            />
-                                        </Table.Td>
-                                    )
-                                })}
-                            </Table.Tr>
-                        ))}
-                        <Table.Tr>
-                            <Table.Td>
-                                <strong>Totals</strong>
-                            </Table.Td>
-                            <Table.Td>
-                                <strong>
-                                    {totalPlannedExpenses.toLocaleString()}
-                                </strong>
-                            </Table.Td>
-                            <Table.Td>
-                                <strong>
-                                    {totalActualExpenses.toLocaleString()}
-                                </strong>
-                            </Table.Td>
-                            <Table.Td>
-                                <strong
-                                    style={{
-                                        color:
-                                            totalDeviation > 0
-                                                ? 'red'
-                                                : 'green',
-                                    }}
-                                >
-                                    {totalDeviation.toFixed(2)}
-                                </strong>
-                            </Table.Td>
-                            {daysInMonth.map((day) => (
-                                <Table.Td key={day}>
+                                                    onBlur={(event) => {
+                                                        const value =
+                                                            parseFloat(
+                                                                event.target
+                                                                    .value,
+                                                            ) || 0
+                                                        if (
+                                                            value !== dayExpense
+                                                        ) {
+                                                            handleDailyExpenseChange(
+                                                                category.id,
+                                                                day,
+                                                                value -
+                                                                    calculateExpenseByDay(
+                                                                        category,
+                                                                        day,
+                                                                    ),
+                                                            )
+                                                        }
+                                                    }}
+                                                    style={{ width: '100px' }}
+                                                    placeholder="0.00"
+                                                    min={0}
+                                                    decimalScale={2}
+                                                    step={0.01}
+                                                />
+                                            </Table.Td>
+                                        )
+                                    })}
+                                </Table.Tr>
+                            ))}
+                            <Table.Tr>
+                                <Table.Td>
+                                    <strong>Totals</strong>
+                                </Table.Td>
+                                <Table.Td>
                                     <strong>
-                                        {calculateDailyTotal(day).toFixed(2)}
+                                        {totalPlannedExpenses.toLocaleString()}
                                     </strong>
                                 </Table.Td>
-                            ))}
-                        </Table.Tr>
-                    </Table.Tbody>
-                </Table>
-            </Table.ScrollContainer>
+                                <Table.Td>
+                                    <strong>
+                                        {totalActualExpenses.toLocaleString()}
+                                    </strong>
+                                </Table.Td>
+                                <Table.Td>
+                                    <strong
+                                        style={{
+                                            color:
+                                                totalDeviation > 0
+                                                    ? 'red'
+                                                    : 'green',
+                                        }}
+                                    >
+                                        {totalDeviation.toFixed(2)}
+                                    </strong>
+                                </Table.Td>
+                                {daysInMonth.map((day) => (
+                                    <Table.Td key={day}>
+                                        <strong>
+                                            {calculateDailyTotal(day).toFixed(
+                                                2,
+                                            )}
+                                        </strong>
+                                    </Table.Td>
+                                ))}
+                            </Table.Tr>
+                        </Table.Tbody>
+                    </Table>
+                </Table.ScrollContainer>
+            </Box>
         </div>
     )
 }

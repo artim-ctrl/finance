@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Button, Table, Title, Flex } from '@mantine/core'
+import { Button, Table, Title, Flex, Box, LoadingOverlay } from '@mantine/core'
 import CreateIncome from './CreateIncome'
 import IncomeApi from 'Services/IncomeApi'
 
@@ -60,36 +60,43 @@ const Incomes = ({ currentDate }: IncomesProps) => {
                     Add Income
                 </Button>
             </Flex>
-            <Table striped mt="sm">
-                <Table.Thead>
-                    <Table.Tr>
-                        <Table.Th>Category</Table.Th>
-                        <Table.Th>Amount (RSD)</Table.Th>
-                    </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                    {incomes.map((income, index) => (
-                        <Table.Tr key={index}>
-                            <Table.Td>{income.name}</Table.Td>
-                            <Table.Td>
-                                {income.amount.toLocaleString()}
-                            </Table.Td>
-                        </Table.Tr>
-                    ))}
-                </Table.Tbody>
-            </Table>
-            {!isLoading && (
-                <CreateIncome
-                    isOpen={isCreateIncomeModalOpen}
-                    onClose={() => setIsCreateIncomeModalOpen(false)}
-                    existingCategories={categories}
-                    onIncomeCreated={() => {
-                        loadCategories(currentDate)
-
-                        setIsCreateIncomeModalOpen(false)
-                    }}
+            <Box pos="relative">
+                <LoadingOverlay
+                    visible={isLoading}
+                    zIndex={1000}
+                    overlayProps={{ radius: 'sm', blur: 2 }}
                 />
-            )}
+
+                <Table striped mt="sm">
+                    <Table.Thead>
+                        <Table.Tr>
+                            <Table.Th>Category</Table.Th>
+                            <Table.Th>Amount (RSD)</Table.Th>
+                        </Table.Tr>
+                    </Table.Thead>
+                    <Table.Tbody>
+                        {incomes.map((income, index) => (
+                            <Table.Tr key={index}>
+                                <Table.Td>{income.name}</Table.Td>
+                                <Table.Td>
+                                    {income.amount.toLocaleString()}
+                                </Table.Td>
+                            </Table.Tr>
+                        ))}
+                    </Table.Tbody>
+                </Table>
+            </Box>
+
+            <CreateIncome
+                isOpen={isCreateIncomeModalOpen}
+                onClose={() => setIsCreateIncomeModalOpen(false)}
+                existingCategories={categories}
+                onIncomeCreated={() => {
+                    loadCategories(currentDate)
+
+                    setIsCreateIncomeModalOpen(false)
+                }}
+            />
         </div>
     )
 }
