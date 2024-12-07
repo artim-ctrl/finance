@@ -16,7 +16,6 @@
         "@mantine/form": "^7.14.3",
         "@mantine/hooks": "^7.14.3",
         "axios": "^1.7.9",
-        "date-fns": "^4.1.0",
         "dayjs": "^1.11.13",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",

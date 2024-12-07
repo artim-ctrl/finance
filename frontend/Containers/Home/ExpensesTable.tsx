@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Table, Title, NumberInput, Button, Notification } from '@mantine/core'
-import { format, getDaysInMonth } from 'date-fns'
+import dayjs from 'dayjs'
 import ExpenseApi from 'Services/ExpenseApi'
 import CreateExpenseModal from './CreateExpenseModal'
 
@@ -39,7 +39,7 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
     }, [currentMonth])
 
     const daysInMonth = Array.from(
-        { length: getDaysInMonth(currentMonth) },
+        { length: dayjs(currentMonth).daysInMonth() },
         (_, i) => i + 1,
     )
 
@@ -53,11 +53,11 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
 
     const calculateExpenseByDay = (category: ExpenseCategory, day: number) => {
         if (!category.expenses) return 0
-        const dayStr = day < 10 ? `0${day}` : String(day)
-        const dateStr = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${dayStr}`
+
+        const dateStr = dayjs(currentMonth).date(day).format('YYYY-MM-DD')
 
         return category.expenses.reduce((acc, expense) => {
-            if (format(expense.date, 'yyyy-MM-dd') !== dateStr) {
+            if (dayjs(expense.date).format('YYYY-MM-DD') !== dateStr) {
                 return acc
             }
 
@@ -88,7 +88,8 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
         value: number,
     ) => {
         try {
-            const dateStr = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+            const dateStr = dayjs(currentMonth).date(day).format('YYYY-MM-DD')
+
             await ExpenseApi.create({
                 date: dateStr,
                 categoryId: categoryId,
