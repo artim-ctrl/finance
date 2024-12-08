@@ -14,6 +14,7 @@ type RegisterRequest struct {
 	Name     string `json:"name" validate:"required,min=6,max=255"`
 	Email    string `json:"email" validate:"required,email,max=255"`
 	Password string `json:"password" validate:"required,min=8,max=32"`
+	Currency string `json:"currency" validate:"required,oneof=USD EUR RSD"`
 }
 
 func (h *Handler) RegisterMapper(c *fiber.Ctx) error {
@@ -50,6 +51,18 @@ func (h *Handler) Register(c *fiber.Ctx) error {
 	if err != nil {
 		return response.Error(c, "Couldn't create a user")
 	}
+
+	currency := &models.UserCurrency{
+		UserID:   user.ID,
+		Currency: req.Currency,
+	}
+
+	err = h.repo.CreateCurrency(c.UserContext(), currency)
+	if err != nil {
+		return response.Error(c, "Couldn't create a currency")
+	}
+
+	user.Currency = *currency
 
 	var accessToken string
 	if accessToken, err = h.tokenManager.GenerateAccessToken(user.ID); err != nil {

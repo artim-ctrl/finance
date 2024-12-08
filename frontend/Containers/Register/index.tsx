@@ -6,6 +6,7 @@ import {
     Container,
     Text,
     Notification,
+    Select,
 } from '@mantine/core'
 import { FormErrors, useForm } from '@mantine/form'
 import AuthApi from 'Services/AuthApi'
@@ -22,11 +23,13 @@ const Registration = () => {
     const form = useForm({
         initialValues: {
             name: '',
+            currency: 'EUR',
             email: '',
             password: '',
         },
         validate: {
             name: (value) => (!value.trim() ? 'Please enter your name' : null),
+            currency: (value) => (!value ? 'Please select a currency' : null),
             email: (value) =>
                 !value.trim()
                     ? 'Please enter your email'
@@ -44,6 +47,7 @@ const Registration = () => {
 
     const handleSubmit = async (values: {
         name: string
+        currency: string
         email: string
         password: string
     }) => {
@@ -82,6 +86,14 @@ const Registration = () => {
                     placeholder="Your name"
                     {...form.getInputProps('name')}
                     required
+                />
+                <Select
+                    label="Currency"
+                    data={['USD', 'EUR', 'RSD']}
+                    {...form.getInputProps('currency')}
+                    required
+                    style={{ marginTop: 20 }}
+                    allowDeselect={false}
                 />
                 <TextInput
                     label="Email"

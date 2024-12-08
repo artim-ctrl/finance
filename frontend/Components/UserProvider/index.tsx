@@ -29,9 +29,19 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         navigate(ROUTES.LOGIN)
     }
 
+    const updateCurrency = (currency: string) => {
+        setUser((prevUser) => {
+            if (prevUser === null) {
+                return null
+            }
+
+            return { ...prevUser, currency: { currency } }
+        })
+    }
+
     return (
         <UserContext.Provider
-            value={{ user, isLoading, login, register, logout }}
+            value={{ user, isLoading, login, register, logout, updateCurrency }}
         >
             {children}
         </UserContext.Provider>
