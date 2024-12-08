@@ -13,7 +13,9 @@ type Variables struct {
 }
 
 func New() Variables {
-	var env = flag.String("env", "dev", "environment")
+	env := flag.String("env", "dev", "environment")
+
+	flag.Parse()
 
 	return Variables{
 		Env: *env,
