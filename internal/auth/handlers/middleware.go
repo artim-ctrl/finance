@@ -33,8 +33,11 @@ func (h *Handler) validateAPIKey(c *fiber.Ctx, accessToken string) (bool, error)
 
 func (h *Handler) filterIsPublic(c *fiber.Ctx) bool {
 	originalUrl := strings.ToLower(c.OriginalURL())
+	if originalUrl == "/v1/auth/profile" {
+		return false
+	}
 
-	return strings.HasPrefix(originalUrl, "/v1/auth") && originalUrl != "/v1/auth/profile"
+	return strings.HasPrefix(originalUrl, "/v1/auth")
 }
 
 func (h *Handler) AuthMiddleware() fiber.Handler {

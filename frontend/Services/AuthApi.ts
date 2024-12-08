@@ -6,6 +6,10 @@ class AuthApi extends Api {
         super(baseURL)
     }
 
+    async update(data: { currency: string }) {
+        return await this.put('/v1/auth/profile', data)
+    }
+
     async register(data: { name: string; email: string; password: string }) {
         return await this.post<User>('/v1/auth/register', data)
     }

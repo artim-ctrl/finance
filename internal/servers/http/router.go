@@ -36,6 +36,7 @@ func (r *Router) Setup(app *fiber.App) {
 	authGroup.Post("/logout", r.authHandler.Logout)
 	authGroup.Post("/refresh", r.authHandler.Refresh)
 	authGroup.Get("/profile", r.authHandler.GetProfile)
+	authGroup.Put("/profile", r.authHandler.UpdateMapper, r.authHandler.Update)
 
 	incomesGroup := apiGroup.Group("/incomes")
 	incomesGroup.Get("/:year/:month", r.incomesHandler.GetMapper, r.incomesHandler.Get)
