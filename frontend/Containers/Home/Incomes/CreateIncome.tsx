@@ -148,6 +148,7 @@ const CreateIncome = ({
                             label="Select Existing Category"
                             data={categoryOptions}
                             {...form.getInputProps('categoryId')}
+                            allowDeselect={false}
                         />
                     ) : (
                         <TextInput

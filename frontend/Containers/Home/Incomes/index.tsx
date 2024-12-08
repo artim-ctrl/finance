@@ -87,16 +87,18 @@ const Incomes = ({ currentDate }: IncomesProps) => {
                 </Table>
             </Box>
 
-            <CreateIncome
-                isOpen={isCreateIncomeModalOpen}
-                onClose={() => setIsCreateIncomeModalOpen(false)}
-                existingCategories={categories}
-                onIncomeCreated={() => {
-                    loadCategories(currentDate)
+            {!isLoading && (
+                <CreateIncome
+                    isOpen={isCreateIncomeModalOpen}
+                    onClose={() => setIsCreateIncomeModalOpen(false)}
+                    existingCategories={categories}
+                    onIncomeCreated={() => {
+                        loadCategories(currentDate)
 
-                    setIsCreateIncomeModalOpen(false)
-                }}
-            />
+                        setIsCreateIncomeModalOpen(false)
+                    }}
+                />
+            )}
         </div>
     )
 }
