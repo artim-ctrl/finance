@@ -1,0 +1,13 @@
+logger:
+  encoding: console
+
+database:
+  dsn: postgres://user:user@postgres:5432/finance?sslmode=disable
+  debug: true
+
+auth:
+  access_secret_key: KNeEmRLejF65YhWjMz64
+  refresh_secret_key: pBCCOYZAXdwvpy7pg553
+
+frontend:
+  base_url: http://192.168.0.31

@@ -3,6 +3,7 @@ import AuthApi from 'Services/AuthApi'
 import useUser from 'Hooks/useUser'
 import { User, UserContextProps } from 'Contexts'
 import { useState } from 'react'
+import CURRENCIES from 'Constants/currencies'
 
 const Navbar = () => {
     const [isLoading, setIsLoading] = useState(false)
@@ -48,7 +49,7 @@ const Navbar = () => {
                 <Select
                     value={user?.currency.currency}
                     onChange={(value) => handleChangeCurrency(value as string)}
-                    data={['USD', 'EUR', 'RSD']}
+                    data={CURRENCIES}
                     allowDeselect={false}
                     aria-label="Select a currency"
                     disabled={isLoading}

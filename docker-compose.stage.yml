@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: node:23-alpine
+    volumes:
+      - ./:/app
+    command: sh -c 'yarn install && yarn stage'
+    working_dir: /app
+    ports:
+      - '80:5173'
+
+  postgres:
+    image: postgres:17-alpine
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=user
+      - POSTGRES_USER=user
+      - POSTGRES_DB=finance
+
+  go:
+    image: golang:1.23.4-alpine
+    volumes:
+      - ./:/app
+    command: go run cmd/finance/main.go -env stage
+    working_dir: /app
+    ports:
+      - '81:8080'
+
+volumes:
+  db:

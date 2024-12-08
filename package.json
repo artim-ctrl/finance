@@ -5,6 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite --host",
+        "stage": "vite --host --mode staging",
         "build": "tsc -b && vite build",
         "lint": "eslint frontend/**/*.{ts,tsx}",
         "format": "prettier --write frontend/**/*.{ts,tsx}",
