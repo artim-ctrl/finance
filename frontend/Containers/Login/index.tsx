@@ -6,6 +6,7 @@ import {
     Container,
     Text,
     Notification,
+    Title,
 } from '@mantine/core'
 import { FormErrors, useForm } from '@mantine/form'
 import AuthApi from 'Services/AuthApi'
@@ -65,8 +66,11 @@ const Login = () => {
     }
 
     return (
-        <Container size="xs" style={{ maxWidth: 400 }}>
-            <h2>Login</h2>
+        <Container size="xs" style={{ maxWidth: 400, paddingTop: 20 }}>
+            <Title order={2} style={{ marginBottom: 20 }}>
+                Login
+            </Title>
+
             {error !== null && (
                 <Notification color="red" onClose={() => setError(null)}>
                     {error}
