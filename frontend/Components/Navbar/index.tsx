@@ -1,12 +1,21 @@
-import { Container, Group, Button, Select } from '@mantine/core'
+import {
+    Container,
+    Group,
+    Button,
+    Select,
+    ActionIcon,
+    useMantineColorScheme,
+} from '@mantine/core'
 import AuthApi from 'Services/AuthApi'
 import useUser from 'Hooks/useUser'
 import { User, UserContextProps } from 'Contexts'
 import { useState } from 'react'
 import CURRENCIES from 'Constants/currencies'
+import { IconMoon, IconSun } from '@tabler/icons-react'
 
 const Navbar = () => {
     const [isLoading, setIsLoading] = useState(false)
+    const { colorScheme, toggleColorScheme } = useMantineColorScheme()
 
     const { user, updateCurrency, logout } = useUser() as UserContextProps & {
         user: User
@@ -46,6 +55,19 @@ const Navbar = () => {
             </div>
 
             <Group>
+                <ActionIcon
+                    variant="light"
+                    size="lg"
+                    onClick={() => toggleColorScheme()}
+                    aria-label="Toggle color scheme"
+                >
+                    {colorScheme === 'dark' ? (
+                        <IconSun stroke={1.5} />
+                    ) : (
+                        <IconMoon stroke={1.5} />
+                    )}
+                </ActionIcon>
+
                 <Select
                     value={user?.currency.currency}
                     onChange={(value) => handleChangeCurrency(value as string)}
