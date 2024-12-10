@@ -6,6 +6,7 @@ import {
     ActionIcon,
     useMantineColorScheme,
 } from '@mantine/core'
+import { useNavigate } from 'react-router'
 import AuthApi from 'Services/AuthApi'
 import useUser from 'Hooks/useUser'
 import { User, UserContextProps } from 'Contexts'
@@ -16,6 +17,7 @@ import { IconMoon, IconSun } from '@tabler/icons-react'
 const Navbar = () => {
     const [isLoading, setIsLoading] = useState(false)
     const { colorScheme, toggleColorScheme } = useMantineColorScheme()
+    const navigate = useNavigate()
 
     const { user, updateCurrency, logout } = useUser() as UserContextProps & {
         user: User
@@ -23,7 +25,6 @@ const Navbar = () => {
 
     const handleLogout = async () => {
         await AuthApi.logout()
-
         logout()
     }
 
@@ -32,7 +33,6 @@ const Navbar = () => {
 
         try {
             await AuthApi.update({ currency })
-
             updateCurrency(currency)
         } finally {
             setIsLoading(false)
@@ -50,11 +50,19 @@ const Navbar = () => {
                 borderBottom: '1px solid #eaeaea',
             }}
         >
-            <div>
+            <div onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
                 <strong>Budget Tracker</strong>
             </div>
 
             <Group>
+                <Button
+                    variant="outline"
+                    onClick={() => navigate('/charts')}
+                    style={{ marginRight: 20 }}
+                >
+                    Go to Charts
+                </Button>
+
                 <ActionIcon
                     variant="light"
                     size="lg"

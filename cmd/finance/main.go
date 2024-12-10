@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/artim-ctrl/finance/internal/auth"
+	"github.com/artim-ctrl/finance/internal/charts"
 	"github.com/artim-ctrl/finance/internal/config"
 	"github.com/artim-ctrl/finance/internal/database"
 	"github.com/artim-ctrl/finance/internal/database/postgres"
@@ -28,6 +29,7 @@ var opts = []fx.Option{
 	incomes.Module,
 	expenses.Module,
 	servers.Module,
+	charts.Module,
 	fx.Provide(
 		environment.New,
 		config.New,
