@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Button, Table, Title, Flex, Box, LoadingOverlay } from '@mantine/core'
+import {
+    Button,
+    Table,
+    Title,
+    Flex,
+    Box,
+    LoadingOverlay,
+    Input,
+} from '@mantine/core'
 import CreateIncome from './CreateIncome'
 import IncomeApi from 'Services/IncomeApi'
 
@@ -14,9 +22,9 @@ interface IncomeCategory {
 }
 
 const Incomes = ({ currentDate }: IncomesProps) => {
-    const [incomes, setIncomes] = useState<{ name: string; amount: number }[]>(
-        [],
-    )
+    const [incomes, setIncomes] = useState<
+        { name: string; amount: number; id: number }[]
+    >([])
     const [categories, setCategories] = useState<
         { id: number; name: string }[]
     >([])
@@ -32,6 +40,7 @@ const Incomes = ({ currentDate }: IncomesProps) => {
 
         setIncomes(
             categories.map((category) => ({
+                id: category.id,
                 name: category.name,
                 amount:
                     category.incomes !== undefined
@@ -48,6 +57,16 @@ const Incomes = ({ currentDate }: IncomesProps) => {
     useEffect(() => {
         loadCategories(currentDate).finally(() => setIsLoading(false))
     }, [currentDate])
+
+    const handleAmountChange = async (id: number, newAmount: number) => {
+        try {
+            await IncomeApi.update({ id, amount: newAmount })
+
+            loadCategories(currentDate)
+        } catch (error) {
+            console.error('Failed to update amount:', error)
+        }
+    }
 
     return (
         <div>
@@ -79,7 +98,24 @@ const Incomes = ({ currentDate }: IncomesProps) => {
                             <Table.Tr key={index}>
                                 <Table.Td>{income.name}</Table.Td>
                                 <Table.Td>
-                                    {income.amount.toLocaleString()}
+                                    <Input
+                                        type="number"
+                                        defaultValue={income.amount}
+                                        onBlur={(e) => {
+                                            const newAmount = parseFloat(
+                                                e.target.value,
+                                            )
+                                            if (
+                                                !isNaN(newAmount) &&
+                                                newAmount !== income.amount
+                                            ) {
+                                                handleAmountChange(
+                                                    income.id,
+                                                    newAmount,
+                                                )
+                                            }
+                                        }}
+                                    />
                                 </Table.Td>
                             </Table.Tr>
                         ))}

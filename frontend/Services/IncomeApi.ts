@@ -13,6 +13,10 @@ class IncomeApi extends Api {
     async create(data: CreateIncomeData) {
         return await this.post('/v1/incomes', data)
     }
+
+    async update(data: { id: number; amount: number }) {
+        return await this.put('/v1/incomes', data)
+    }
 }
 
 export default new IncomeApi(import.meta.env.VITE_BASE_API_URL)
