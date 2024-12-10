@@ -94,31 +94,39 @@ const Incomes = ({ currentDate }: IncomesProps) => {
                         </Table.Tr>
                     </Table.Thead>
                     <Table.Tbody>
-                        {incomes.map((income, index) => (
-                            <Table.Tr key={index}>
-                                <Table.Td>{income.name}</Table.Td>
-                                <Table.Td>
-                                    <Input
-                                        type="number"
-                                        defaultValue={income.amount}
-                                        onBlur={(e) => {
-                                            const newAmount = parseFloat(
-                                                e.target.value,
-                                            )
-                                            if (
-                                                !isNaN(newAmount) &&
-                                                newAmount !== income.amount
-                                            ) {
-                                                handleAmountChange(
-                                                    income.id,
-                                                    newAmount,
+                        {incomes.map((income, index) => {
+                            const save = (newAmount: number) => {
+                                if (
+                                    !isNaN(newAmount) &&
+                                    newAmount !== income.amount
+                                ) {
+                                    handleAmountChange(income.id, newAmount)
+                                }
+                            }
+
+                            return (
+                                <Table.Tr key={index}>
+                                    <Table.Td>{income.name}</Table.Td>
+                                    <Table.Td>
+                                        <Input
+                                            type="number"
+                                            defaultValue={income.amount}
+                                            onBlur={(e) =>
+                                                save(parseFloat(e.target.value))
+                                            }
+                                            onKeyDown={(e) =>
+                                                e.key === 'Enter' &&
+                                                save(
+                                                    parseFloat(
+                                                        e.currentTarget.value,
+                                                    ),
                                                 )
                                             }
-                                        }}
-                                    />
-                                </Table.Td>
-                            </Table.Tr>
-                        ))}
+                                        />
+                                    </Table.Td>
+                                </Table.Tr>
+                            )
+                        })}
                     </Table.Tbody>
                 </Table>
             </Box>
