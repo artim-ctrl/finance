@@ -10,6 +10,8 @@ import {
 } from '@mantine/core'
 import CreateIncome from './CreateIncome'
 import IncomeApi from 'Services/IncomeApi'
+import useUser from 'Hooks/useUser'
+import { User, UserContextProps } from 'Contexts'
 
 interface IncomesProps {
     currentDate: Date
@@ -31,6 +33,7 @@ const Incomes = ({ currentDate }: IncomesProps) => {
     const [isCreateIncomeModalOpen, setIsCreateIncomeModalOpen] =
         useState(false)
     const [isLoading, setIsLoading] = useState(true)
+    const { user } = useUser() as UserContextProps & { user: User }
 
     const loadCategories = async (currentDate: Date) => {
         const categories = (await IncomeApi.getCategories(
@@ -90,7 +93,9 @@ const Incomes = ({ currentDate }: IncomesProps) => {
                     <Table.Thead>
                         <Table.Tr>
                             <Table.Th>Category</Table.Th>
-                            <Table.Th>Amount (RSD)</Table.Th>
+                            <Table.Th>
+                                Amount ({user.currency.currency})
+                            </Table.Th>
                         </Table.Tr>
                     </Table.Thead>
                     <Table.Tbody>

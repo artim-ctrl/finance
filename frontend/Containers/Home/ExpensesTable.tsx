@@ -12,6 +12,8 @@ import {
 import dayjs from 'dayjs'
 import ExpenseApi from 'Services/ExpenseApi'
 import CreateExpenseModal from './CreateExpenseModal'
+import useUser from 'Hooks/useUser'
+import { User, UserContextProps } from 'Contexts'
 
 interface ExpenseCategory {
     id: number
@@ -29,6 +31,7 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
     const [categories, setCategories] = useState<ExpenseCategory[]>([])
     const [error, setError] = useState<string | null>(null)
     const [modalOpen, setModalOpen] = useState(false)
+    const { user } = useUser() as UserContextProps & { user: User }
 
     const fetchCategories = async (currentMonth: Date) => {
         setIsLoading(true)
@@ -168,9 +171,16 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
                         <Table.Thead>
                             <Table.Tr>
                                 <Table.Th>Category</Table.Th>
-                                <Table.Th>Planned expenses (RSD)</Table.Th>
-                                <Table.Th>Actual expenses (RSD)</Table.Th>
-                                <Table.Th>Deviation from plan (RSD)</Table.Th>
+                                <Table.Th>
+                                    Planned expenses ({user.currency.currency})
+                                </Table.Th>
+                                <Table.Th>
+                                    Actual expenses ({user.currency.currency})
+                                </Table.Th>
+                                <Table.Th>
+                                    Deviation from plan (
+                                    {user.currency.currency})
+                                </Table.Th>
                                 {daysInMonth.map((day) => (
                                     <Table.Th key={day}>Day {day}</Table.Th>
                                 ))}
