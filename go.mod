@@ -1,6 +1,6 @@
 module github.com/artim-ctrl/finance
 
-go 1.23.3
+go 1.23.4
 
 require (
 	github.com/go-playground/locales v0.14.1
@@ -37,7 +37,7 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.57.0 // indirect
+	github.com/valyala/fasthttp v1.58.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
