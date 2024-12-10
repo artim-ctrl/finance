@@ -60,7 +60,7 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 		Amount:           req.Amount,
 	}
 
-	err := h.repo.CreateIncome(c.UserContext(), income)
+	err := h.repo.UpsertIncome(c.UserContext(), income)
 	if err != nil {
 		return response.Error(c, "Couldn't create income: "+err.Error())
 	}
