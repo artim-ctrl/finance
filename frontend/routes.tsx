@@ -6,6 +6,7 @@ import Register from 'Containers/Register'
 import AuthGuard from 'Components/AuthGuard'
 import ROUTES from 'Constants/routes'
 import NavbarProvider from 'Components/NavbarProvider'
+import Charts from 'Containers/Charts'
 
 const routesConfig = [
     {
@@ -26,6 +27,11 @@ const routesConfig = [
     {
         path: ROUTES.ABOUT,
         element: About,
+        isAuthRequired: true,
+    },
+    {
+        path: ROUTES.CHARTS,
+        element: Charts,
         isAuthRequired: true,
     },
 ]

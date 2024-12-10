@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	ahandler "github.com/artim-ctrl/finance/internal/auth/handlers"
+	chandler "github.com/artim-ctrl/finance/internal/charts/handlers"
 	ehandler "github.com/artim-ctrl/finance/internal/expenses/handlers"
 	ihandler "github.com/artim-ctrl/finance/internal/incomes/handlers"
 )
@@ -12,17 +13,20 @@ type Router struct {
 	authHandler     *ahandler.Handler
 	incomesHandler  *ihandler.Handler
 	expensesHandler *ehandler.Handler
+	chartsHandler   *chandler.Handler
 }
 
 func NewRouter(
 	authHandler *ahandler.Handler,
 	incomesHandler *ihandler.Handler,
 	expensesHandler *ehandler.Handler,
+	chartsHandler *chandler.Handler,
 ) *Router {
 	return &Router{
 		authHandler:     authHandler,
 		incomesHandler:  incomesHandler,
 		expensesHandler: expensesHandler,
+		chartsHandler:   chartsHandler,
 	}
 }
 
@@ -49,4 +53,7 @@ func (r *Router) Setup(app *fiber.App) {
 
 	expensePlansGroup := expensesGroup.Group("/plans")
 	expensePlansGroup.Put("/", r.expensesHandler.UpdatePlanMapper, r.expensesHandler.UpdatePlan)
+
+	chartsGroup := apiGroup.Group("/charts")
+	chartsGroup.Get("/", r.chartsHandler.Get)
 }
