@@ -177,103 +177,130 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
                             </Table.Tr>
                         </Table.Thead>
                         <Table.Tbody>
-                            {categories.map((category) => (
-                                <Table.Tr key={category.id}>
-                                    <Table.Td>{category.name}</Table.Td>
-                                    <Table.Td>
-                                        <NumberInput
-                                            value={
-                                                category
-                                                    .monthly_expense_plans?.[0]
-                                                    ?.amount || ''
-                                            }
-                                            onBlur={(event) =>
-                                                handleMonthlyExpenseChange(
-                                                    category.id,
-                                                    parseFloat(
-                                                        event.target.value,
-                                                    ) || 0,
-                                                )
-                                            }
-                                            style={{ width: '100px' }}
-                                            placeholder="0.00"
-                                            min={0}
-                                            decimalScale={2}
-                                            step={0.01}
-                                        />
-                                    </Table.Td>
-                                    <Table.Td>
-                                        {calculateActualExpenses(
-                                            category,
-                                        ).toLocaleString()}
-                                    </Table.Td>
-                                    <Table.Td>
-                                        <span
-                                            style={{
-                                                color:
+                            {categories.map((category) => {
+                                const save = (newAmount: string) => {
+                                    handleMonthlyExpenseChange(
+                                        category.id,
+                                        parseFloat(newAmount) || 0,
+                                    )
+                                }
+
+                                return (
+                                    <Table.Tr key={category.id}>
+                                        <Table.Td>{category.name}</Table.Td>
+                                        <Table.Td>
+                                            <NumberInput
+                                                value={
+                                                    category
+                                                        .monthly_expense_plans?.[0]
+                                                        ?.amount || ''
+                                                }
+                                                onBlur={(e) =>
+                                                    save(e.target.value)
+                                                }
+                                                onKeyDown={(e) =>
+                                                    e.key === 'Enter' &&
+                                                    save(e.currentTarget.value)
+                                                }
+                                                style={{ width: '100px' }}
+                                                placeholder="0.00"
+                                                min={0}
+                                                decimalScale={2}
+                                                step={0.01}
+                                            />
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {calculateActualExpenses(
+                                                category,
+                                            ).toLocaleString()}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            <span
+                                                style={{
+                                                    color:
+                                                        calculateActualExpenses(
+                                                            category,
+                                                        ) >
+                                                        (category
+                                                            .monthly_expense_plans?.[0]
+                                                            ?.amount || 0)
+                                                            ? 'red'
+                                                            : 'green',
+                                                    fontWeight: 'bold',
+                                                }}
+                                            >
+                                                {(
                                                     calculateActualExpenses(
                                                         category,
-                                                    ) >
+                                                    ) -
                                                     (category
                                                         .monthly_expense_plans?.[0]
                                                         ?.amount || 0)
-                                                        ? 'red'
-                                                        : 'green',
-                                                fontWeight: 'bold',
-                                            }}
-                                        >
-                                            {(
-                                                calculateActualExpenses(
+                                                ).toFixed(2)}
+                                            </span>
+                                        </Table.Td>
+                                        {daysInMonth.map((day) => {
+                                            const dayExpense =
+                                                calculateExpenseByDay(
                                                     category,
-                                                ) -
-                                                (category
-                                                    .monthly_expense_plans?.[0]
-                                                    ?.amount || 0)
-                                            ).toFixed(2)}
-                                        </span>
-                                    </Table.Td>
-                                    {daysInMonth.map((day) => {
-                                        const dayExpense =
-                                            calculateExpenseByDay(category, day)
-                                        return (
-                                            <Table.Td key={day}>
-                                                <NumberInput
-                                                    value={
-                                                        dayExpense === 0
-                                                            ? ''
-                                                            : dayExpense
-                                                    }
-                                                    onBlur={(event) => {
-                                                        const value =
-                                                            parseFloat(
-                                                                event.target
-                                                                    .value,
-                                                            ) || 0
-                                                        if (
-                                                            value !== dayExpense
-                                                        ) {
-                                                            handleDailyExpenseChange(
-                                                                category.id,
+                                                    day,
+                                                )
+
+                                            const saveDay = (value: number) => {
+                                                if (value !== dayExpense) {
+                                                    handleDailyExpenseChange(
+                                                        category.id,
+                                                        day,
+                                                        value -
+                                                            calculateExpenseByDay(
+                                                                category,
                                                                 day,
-                                                                value -
-                                                                    calculateExpenseByDay(
-                                                                        category,
-                                                                        day,
-                                                                    ),
-                                                            )
+                                                            ),
+                                                    )
+                                                }
+                                            }
+
+                                            return (
+                                                <Table.Td key={day}>
+                                                    <NumberInput
+                                                        value={
+                                                            dayExpense === 0
+                                                                ? ''
+                                                                : dayExpense
                                                         }
-                                                    }}
-                                                    style={{ width: '100px' }}
-                                                    placeholder="0.00"
-                                                    min={0}
-                                                    decimalScale={2}
-                                                    step={0.01}
-                                                />
-                                            </Table.Td>
-                                        )
-                                    })}
-                                </Table.Tr>
-                            ))}
+                                                        onBlur={(e) => {
+                                                            const value =
+                                                                parseFloat(
+                                                                    e.target
+                                                                        .value,
+                                                                ) || 0
+
+                                                            saveDay(value)
+                                                        }}
+                                                        onKeyDown={(e) => {
+                                                            const value =
+                                                                parseFloat(
+                                                                    e
+                                                                        .currentTarget
+                                                                        .value,
+                                                                ) || 0
+
+                                                            saveDay(value)
+                                                        }}
+                                                        style={{
+                                                            width: '100px',
+                                                        }}
+                                                        placeholder="0.00"
+                                                        min={0}
+                                                        decimalScale={2}
+                                                        step={0.01}
+                                                    />
+                                                </Table.Td>
+                                            )
+                                        })}
+                                    </Table.Tr>
+                                )
+                            })}
                             <Table.Tr>
                                 <Table.Td>
                                     <strong>Totals</strong>
