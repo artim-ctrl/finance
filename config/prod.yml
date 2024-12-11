@@ -1,0 +1,13 @@
+logger:
+  encoding: console
+
+database:
+  dsn: postgresql://artim:4rx7AoTa6y7weleCZNYvHUp6WiouMDO9@dpg-ctcjhaaj1k6c73fh91d0-a/finance_9q5u
+  debug: true
+
+auth:
+  access_secret_key: KNeEmRLejF65YhWjMz64
+  refresh_secret_key: pBCCOYZAXdwvpy7pg553
+
+frontend:
+  base_url: https://finance-frontend-2gge.onrender.com
