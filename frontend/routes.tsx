@@ -7,6 +7,7 @@ import AuthGuard from 'Components/AuthGuard'
 import ROUTES from 'Constants/routes'
 import NavbarProvider from 'Components/NavbarProvider'
 import Charts from 'Containers/Charts'
+import Pie from 'Containers/Pie'
 
 const routesConfig = [
     {
@@ -32,6 +33,11 @@ const routesConfig = [
     {
         path: ROUTES.CHARTS,
         element: Charts,
+        isAuthRequired: true,
+    },
+    {
+        path: ROUTES.PIE,
+        element: Pie,
         isAuthRequired: true,
     },
 ]

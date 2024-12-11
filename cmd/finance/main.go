@@ -19,6 +19,7 @@ import (
 	"github.com/artim-ctrl/finance/internal/expenses"
 	"github.com/artim-ctrl/finance/internal/incomes"
 	"github.com/artim-ctrl/finance/internal/logger"
+	"github.com/artim-ctrl/finance/internal/pie"
 	"github.com/artim-ctrl/finance/internal/servers"
 	"github.com/artim-ctrl/finance/internal/validator"
 )
@@ -30,6 +31,7 @@ var opts = []fx.Option{
 	expenses.Module,
 	servers.Module,
 	charts.Module,
+	pie.Module,
 	fx.Provide(
 		environment.New,
 		config.New,

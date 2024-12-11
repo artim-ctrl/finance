@@ -7,6 +7,7 @@ import (
 	chandler "github.com/artim-ctrl/finance/internal/charts/handlers"
 	ehandler "github.com/artim-ctrl/finance/internal/expenses/handlers"
 	ihandler "github.com/artim-ctrl/finance/internal/incomes/handlers"
+	phandler "github.com/artim-ctrl/finance/internal/pie/handlers"
 )
 
 type Router struct {
@@ -14,6 +15,7 @@ type Router struct {
 	incomesHandler  *ihandler.Handler
 	expensesHandler *ehandler.Handler
 	chartsHandler   *chandler.Handler
+	pieHandler      *phandler.Handler
 }
 
 func NewRouter(
@@ -21,12 +23,14 @@ func NewRouter(
 	incomesHandler *ihandler.Handler,
 	expensesHandler *ehandler.Handler,
 	chartsHandler *chandler.Handler,
+	pieHandler *phandler.Handler,
 ) *Router {
 	return &Router{
 		authHandler:     authHandler,
 		incomesHandler:  incomesHandler,
 		expensesHandler: expensesHandler,
 		chartsHandler:   chartsHandler,
+		pieHandler:      pieHandler,
 	}
 }
 
@@ -56,4 +60,7 @@ func (r *Router) Setup(app *fiber.App) {
 
 	chartsGroup := apiGroup.Group("/charts")
 	chartsGroup.Get("/", r.chartsHandler.Get)
+
+	pieGroup := apiGroup.Group("/pie")
+	pieGroup.Get("/", r.pieHandler.Get)
 }
