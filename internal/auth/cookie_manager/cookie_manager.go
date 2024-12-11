@@ -32,10 +32,10 @@ func (cm *CookieManager) SetCookie(c *fiber.Ctx, name, value string, ttl time.Du
 		Secure:   false,
 	}
 
-	if cm.env.IsProd() {
-		accessTokenCookie.SameSite = "Strict"
-		accessTokenCookie.Secure = true
-	}
+	//if cm.env.IsProd() {
+	//	accessTokenCookie.SameSite = "Strict"
+	//	accessTokenCookie.Secure = true
+	//}
 
 	c.Cookie(accessTokenCookie)
 }
