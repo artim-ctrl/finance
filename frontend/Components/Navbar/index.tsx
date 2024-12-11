@@ -55,6 +55,10 @@ const Navbar = () => {
             </div>
 
             <Group>
+                <Button variant="outline" onClick={() => navigate('/pie')}>
+                    Go to Pie
+                </Button>
+
                 <Button
                     variant="outline"
                     onClick={() => navigate('/charts')}
