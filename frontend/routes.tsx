@@ -8,6 +8,7 @@ import ROUTES from 'Constants/routes'
 import NavbarProvider from 'Components/NavbarProvider'
 import Charts from 'Containers/Charts'
 import Pie from 'Containers/Pie'
+import Summary from 'Containers/Summary'
 
 const routesConfig = [
     {
@@ -38,6 +39,11 @@ const routesConfig = [
     {
         path: ROUTES.PIE,
         element: Pie,
+        isAuthRequired: true,
+    },
+    {
+        path: ROUTES.SUMMARY,
+        element: Summary,
         isAuthRequired: true,
     },
 ]

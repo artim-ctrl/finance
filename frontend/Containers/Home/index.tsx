@@ -22,7 +22,7 @@ const HomePage = () => {
     }, [currentMonth])
 
     return (
-        <Container size="xl" mt="md">
+        <Container size="xl" mt="md" pb="xl">
             <Title order={1} ta="center">
                 Budget Expenses
             </Title>
