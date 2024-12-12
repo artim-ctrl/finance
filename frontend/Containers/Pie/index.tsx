@@ -25,7 +25,7 @@ const colors = [
 
 const Pie = () => {
     const [expensesData, setExpensesData] = useState<Expense[]>([])
-    const [loading, setLoading] = useState<boolean>(true)
+    const [isLoading, setIsLoading] = useState<boolean>(true)
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
@@ -35,14 +35,14 @@ const Pie = () => {
             } catch {
                 setError('Error fetching expenses data')
             } finally {
-                setLoading(false)
+                setIsLoading(false)
             }
         }
 
         fetchData()
     }, [])
 
-    if (loading) {
+    if (isLoading) {
         return <div>Loading...</div>
     }
 

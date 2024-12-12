@@ -6,11 +6,11 @@ import {
     NumberInput,
     TextInput,
     Stack,
-    Notification,
 } from '@mantine/core'
 import { FormErrors, useForm } from '@mantine/form'
 import IncomeApi from 'Services/IncomeApi'
 import { AxiosError } from 'axios'
+import { showError } from 'Services/notify'
 
 interface CreateIncomeProps {
     isOpen: boolean
@@ -44,7 +44,6 @@ const CreateIncome = ({
     existingCategories,
     onIncomeCreated,
 }: CreateIncomeProps) => {
-    const [error, setError] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const categoryOptions = useMemo<CategoryOption[]>(
@@ -81,7 +80,6 @@ const CreateIncome = ({
 
     const handleCreate = async (values: typeof form.values) => {
         setIsLoading(true)
-        setError(null)
 
         const { amount, categoryType, categoryId, categoryName } = values
         const parsedAmount = Number(amount)
@@ -117,7 +115,7 @@ const CreateIncome = ({
             ) {
                 form.setErrors(error.response.data as FormErrors)
             } else {
-                setError((error as Error).message || 'Creation failed')
+                showError((error as Error).message || 'Creation failed')
             }
         } finally {
             setIsLoading(false)
@@ -126,12 +124,6 @@ const CreateIncome = ({
 
     return (
         <Modal opened={isOpen} onClose={onClose} title="Add Income">
-            {error !== null && (
-                <Notification color="red" onClose={() => setError(null)}>
-                    {error}
-                </Notification>
-            )}
-
             <form onSubmit={form.onSubmit(handleCreate)}>
                 <Stack>
                     <Select

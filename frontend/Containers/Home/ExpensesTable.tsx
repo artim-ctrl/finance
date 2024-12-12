@@ -4,7 +4,6 @@ import {
     Title,
     NumberInput,
     Button,
-    Notification,
     Flex,
     Box,
     LoadingOverlay,
@@ -14,6 +13,7 @@ import ExpenseApi from 'Services/ExpenseApi'
 import CreateExpenseModal from './CreateExpenseModal'
 import useUser from 'Hooks/useUser'
 import { User, UserContextProps } from 'Contexts'
+import { showError } from 'Services/notify'
 
 interface ExpenseCategory {
     id: number
@@ -29,13 +29,11 @@ interface ExpensesTableProps {
 const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
     const [isLoading, setIsLoading] = useState(true)
     const [categories, setCategories] = useState<ExpenseCategory[]>([])
-    const [error, setError] = useState<string | null>(null)
     const [modalOpen, setModalOpen] = useState(false)
     const { user } = useUser() as UserContextProps & { user: User }
 
     const fetchCategories = async (currentMonth: Date) => {
         setIsLoading(true)
-        setError(null)
 
         try {
             const data = (await ExpenseApi.getCategories(
@@ -45,7 +43,7 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
 
             setCategories(data)
         } catch (e) {
-            setError((e as Error).message || 'Failed to fetch categories')
+            showError((e as Error).message || 'Failed to fetch categories')
         } finally {
             setIsLoading(false)
         }
@@ -114,7 +112,7 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
 
             await fetchCategories(currentMonth)
         } catch (e) {
-            setError((e as Error).message || 'Failed to update expense plan')
+            showError((e as Error).message || 'Failed to update expense plan')
         }
     }
 
@@ -132,22 +130,12 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
 
             await fetchCategories(currentMonth)
         } catch (e) {
-            setError((e as Error).message || 'Failed to create expense')
+            showError((e as Error).message || 'Failed to create expense')
         }
     }
 
     return (
         <div style={{ position: 'relative', marginTop: '1rem' }}>
-            {error !== null && (
-                <Notification
-                    color="red"
-                    onClose={() => setError(null)}
-                    style={{ marginBottom: '1rem' }}
-                >
-                    {error}
-                </Notification>
-            )}
-
             <Flex justify="space-between" align="center" mt="md">
                 <Title order={2}>Expenses</Title>
                 <Button onClick={() => setModalOpen(true)}>Add Expense</Button>

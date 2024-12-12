@@ -5,7 +5,6 @@ import {
     PasswordInput,
     Container,
     Text,
-    Notification,
     Select,
     Title,
 } from '@mantine/core'
@@ -15,10 +14,10 @@ import ROUTES from 'Constants/routes'
 import { Link } from 'react-router'
 import useUser from 'Hooks/useUser'
 import { AxiosError } from 'axios'
+import { showError } from 'Services/notify'
 
 const Registration = () => {
     const { register } = useUser()
-    const [error, setError] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const form = useForm({
@@ -53,7 +52,6 @@ const Registration = () => {
         password: string
     }) => {
         setIsLoading(true)
-        setError(null)
 
         try {
             register(await AuthApi.register(values))
@@ -65,7 +63,7 @@ const Registration = () => {
             ) {
                 form.setErrors(error.response.data as FormErrors)
             } else {
-                setError((error as Error).message || 'Registration failed')
+                showError((error as Error).message || 'Registration failed')
             }
         } finally {
             setIsLoading(false)
@@ -77,11 +75,6 @@ const Registration = () => {
             <Title order={2} style={{ marginBottom: 20 }}>
                 Sign Up
             </Title>
-            {error !== null && (
-                <Notification color="red" onClose={() => setError(null)}>
-                    {error}
-                </Notification>
-            )}
 
             <form onSubmit={form.onSubmit(handleSubmit)}>
                 <TextInput
