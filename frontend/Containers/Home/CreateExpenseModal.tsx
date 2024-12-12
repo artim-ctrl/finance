@@ -1,16 +1,10 @@
 import { useState } from 'react'
-import {
-    Modal,
-    TextInput,
-    NumberInput,
-    Button,
-    Stack,
-    Notification,
-} from '@mantine/core'
+import { Modal, TextInput, NumberInput, Button, Stack } from '@mantine/core'
 import { DateInput } from '@mantine/dates'
 import { useForm } from '@mantine/form'
 import ExpenseApi from 'Services/ExpenseApi'
 import dayjs from 'dayjs'
+import { showError } from 'Services/notify'
 
 interface CreateExpenseModalProps {
     isOpen: boolean
@@ -29,8 +23,7 @@ const CreateExpenseModal = ({
     onClose,
     onExpenseCreated,
 }: CreateExpenseModalProps) => {
-    const [error, setError] = useState<string | null>(null)
-    const [loading, setLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
     const form = useForm({
         initialValues: {
@@ -50,12 +43,11 @@ const CreateExpenseModal = ({
     })
 
     const handleCreate = async (values: typeof form.values) => {
-        setLoading(true)
-        setError(null)
+        setIsLoading(true)
         const { date, categoryName, amount } = values
         const parsedAmount = Number(amount)
         if (isNaN(parsedAmount) || parsedAmount <= 0) {
-            setLoading(false)
+            setIsLoading(false)
             return
         }
 
@@ -71,20 +63,14 @@ const CreateExpenseModal = ({
             onExpenseCreated()
             onClose()
         } catch (e) {
-            setError((e as Error).message || 'Creation failed')
+            showError((e as Error).message || 'Creation failed')
         } finally {
-            setLoading(false)
+            setIsLoading(false)
         }
     }
 
     return (
         <Modal opened={isOpen} onClose={onClose} title="Add Expense">
-            {error !== null && (
-                <Notification color="red" onClose={() => setError(null)}>
-                    {error}
-                </Notification>
-            )}
-
             <form onSubmit={form.onSubmit(handleCreate)}>
                 <Stack>
                     <TextInput
@@ -109,7 +95,11 @@ const CreateExpenseModal = ({
                         {...form.getInputProps('amount')}
                     />
 
-                    <Button type="submit" loading={loading} disabled={loading}>
+                    <Button
+                        type="submit"
+                        loading={isLoading}
+                        disabled={isLoading}
+                    >
                         Create
                     </Button>
                 </Stack>

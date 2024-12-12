@@ -5,7 +5,6 @@ import {
     PasswordInput,
     Container,
     Text,
-    Notification,
     Title,
 } from '@mantine/core'
 import { FormErrors, useForm } from '@mantine/form'
@@ -14,10 +13,10 @@ import ROUTES from 'Constants/routes'
 import { Link } from 'react-router'
 import useUser from 'Hooks/useUser'
 import { AxiosError } from 'axios'
+import { showError } from 'Services/notify'
 
 const Login = () => {
     const { login } = useUser()
-    const [error, setError] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const form = useForm({
@@ -46,7 +45,6 @@ const Login = () => {
         password: string
     }) => {
         setIsLoading(true)
-        setError(null)
 
         try {
             login(await AuthApi.login(values))
@@ -58,7 +56,7 @@ const Login = () => {
             ) {
                 form.setErrors(error.response.data as FormErrors)
             } else {
-                setError((error as Error).message || 'Login failed')
+                showError((error as Error).message || 'Login failed')
             }
         } finally {
             setIsLoading(false)
@@ -70,12 +68,6 @@ const Login = () => {
             <Title order={2} style={{ marginBottom: 20 }}>
                 Login
             </Title>
-
-            {error !== null && (
-                <Notification color="red" onClose={() => setError(null)}>
-                    {error}
-                </Notification>
-            )}
 
             <form onSubmit={form.onSubmit(handleSubmit)}>
                 <TextInput
