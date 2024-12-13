@@ -45,8 +45,16 @@ const Charts = () => {
                 dataKey="date"
                 withLegend
                 series={[
-                    { name: 'last30Days', color: 'indigo.6' },
-                    { name: 'previous30Days', color: 'teal.6' },
+                    {
+                        label: 'Last 30 days',
+                        name: 'last30Days',
+                        color: 'indigo.6',
+                    },
+                    {
+                        label: 'Previous 30 days',
+                        name: 'previous30Days',
+                        color: 'teal.6',
+                    },
                 ]}
             />
         </Container>
