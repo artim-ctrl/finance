@@ -51,7 +51,7 @@ const Summary = () => {
                 }),
             )
         }
-    }, [selectedIncomes, selectedExpenses])
+    }, [isLoading, selectedIncomes, selectedExpenses])
 
     const load = async () => {
         try {
