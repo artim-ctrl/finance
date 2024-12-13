@@ -15,6 +15,7 @@ func NewRepository(db *postgres.Conn) *Repository {
 }
 
 type ExpenseData struct {
+	ID       int64   `bun:"id" json:"id"`
 	Category string  `bun:"category" json:"category"`
 	Amount   float64 `bun:"amount" json:"amount"`
 }
@@ -23,11 +24,11 @@ func (r *Repository) Get(ctx context.Context) ([]ExpenseData, error) {
 	var expenses []ExpenseData
 
 	err := r.db.NewSelect().
-		ColumnExpr("ec.name AS category, SUM(expenses.amount) AS amount").
+		ColumnExpr("ec.id as id, ec.name AS category, SUM(expenses.amount) AS amount").
 		Table("expenses").
 		Join("INNER JOIN expense_categories ec ON expenses.expense_category_id = ec.id").
 		Where("expenses.date >= CURRENT_DATE - INTERVAL '30 days'").
-		Group("ec.name").
+		Group("ec.id").
 		Order("amount DESC").
 		Scan(ctx, &expenses)
 	if err != nil {

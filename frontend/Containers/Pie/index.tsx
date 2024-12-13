@@ -1,9 +1,12 @@
 import { PieChart } from '@mantine/charts'
-import { Title, Container } from '@mantine/core'
+import { Container, Text, Group, Chip, NumberFormatter } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import PieApi from 'Services/PieApi'
+import useUser from 'Hooks/useUser'
+import { User, UserContextProps } from 'Contexts'
 
 interface Expense {
+    id: number
     category: string
     amount: number
 }
@@ -24,6 +27,9 @@ const colors = [
 ]
 
 const Pie = () => {
+    const { user } = useUser() as UserContextProps & { user: User }
+
+    const [selectedIncomes, setSelectedIncomes] = useState<string[]>([])
     const [expensesData, setExpensesData] = useState<Expense[]>([])
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [error, setError] = useState<string | null>(null)
@@ -31,7 +37,11 @@ const Pie = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                setExpensesData((await PieApi.getExpenses()) as Expense[])
+                const expensesData = (await PieApi.getExpenses()) as Expense[]
+
+                setExpensesData(expensesData)
+
+                setSelectedIncomes(expensesData.map(({ id }) => String(id)))
             } catch {
                 setError('Error fetching expenses data')
             } finally {
@@ -52,7 +62,29 @@ const Pie = () => {
 
     return (
         <Container size="xl" mt="md">
-            <Title order={2}>Pie</Title>
+            <Text size="xl" fw={700} ta="center" mb="lg">
+                Pie
+            </Text>
+
+            <Group gap="xs" wrap="wrap">
+                <Chip.Group
+                    multiple
+                    value={selectedIncomes}
+                    onChange={setSelectedIncomes}
+                >
+                    {expensesData.map(({ id, category, amount }) => (
+                        <Chip key={id} value={String(id)}>
+                            {category} (
+                            <NumberFormatter
+                                value={amount}
+                                decimalScale={2}
+                                suffix={' ' + user.currency.currency}
+                            />
+                            )
+                        </Chip>
+                    ))}
+                </Chip.Group>
+            </Group>
 
             <PieChart
                 size={300}
@@ -62,11 +94,14 @@ const Pie = () => {
                 withLabels
                 withTooltip
                 tooltipDataSource="segment"
-                data={expensesData.map(({ category, amount }, index) => ({
-                    name: category,
-                    value: amount,
-                    color: colors[index],
-                }))}
+                data={expensesData
+                    .filter(({ id }) => selectedIncomes.includes(String(id)))
+                    .map(({ category, amount }, index) => ({
+                        name: category,
+                        value: amount,
+                        color: colors[index],
+                    }))}
+                style={{ margin: '0 auto' }}
             />
         </Container>
     )
