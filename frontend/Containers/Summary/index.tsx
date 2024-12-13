@@ -14,6 +14,8 @@ import ExpenseApi from 'Services/ExpenseApi'
 import useUser from 'Hooks/useUser'
 import { User, UserContextProps } from 'Contexts'
 
+const SELECTED_KEY = 'selected-categories'
+
 interface IncomeCategory {
     id: number
     name: string
@@ -29,6 +31,7 @@ interface ExpenseCategory {
 const Summary = () => {
     const { user } = useUser() as UserContextProps & { user: User }
 
+    const [isLoading, setIsLoading] = useState(true)
     const [incomes, setIncomes] = useState<
         { id: number; name: string; amount: number }[]
     >([])
@@ -38,38 +41,69 @@ const Summary = () => {
     >([])
     const [selectedExpenses, setSelectedExpenses] = useState<string[]>([])
 
+    useEffect(() => {
+        if (!isLoading) {
+            localStorage.setItem(
+                SELECTED_KEY,
+                JSON.stringify({
+                    incomes: selectedIncomes,
+                    expenses: selectedExpenses,
+                }),
+            )
+        }
+    }, [selectedIncomes, selectedExpenses])
+
     const load = async () => {
-        const incomeCategories = (await IncomeApi.getCategories(
-            dayjs().year(),
-            dayjs().month(),
-        )) as IncomeCategory[]
+        try {
+            const incomeCategories = (await IncomeApi.getCategories(
+                dayjs().year(),
+                dayjs().month(),
+            )) as IncomeCategory[]
 
-        setIncomes(
-            incomeCategories.map(({ id, name, incomes }) => ({
-                id,
-                name,
-                amount:
-                    incomes !== undefined
-                        ? incomes.reduce((acc, { amount }) => acc + amount, 0)
-                        : 0,
-            })),
-        )
+            setIncomes(
+                incomeCategories.map(({ id, name, incomes }) => ({
+                    id,
+                    name,
+                    amount:
+                        incomes !== undefined
+                            ? incomes.reduce(
+                                  (acc, { amount }) => acc + amount,
+                                  0,
+                              )
+                            : 0,
+                })),
+            )
 
-        const expenseCategories = (await ExpenseApi.getCategories(
-            dayjs().year(),
-            dayjs().month(),
-        )) as ExpenseCategory[]
+            const expenseCategories = (await ExpenseApi.getCategories(
+                dayjs().year(),
+                dayjs().month(),
+            )) as ExpenseCategory[]
 
-        setExpenses(
-            expenseCategories.map(({ id, name, expenses }) => ({
-                id,
-                name,
-                amount:
-                    expenses !== undefined
-                        ? expenses.reduce((acc, { amount }) => acc + amount, 0)
-                        : 0,
-            })),
-        )
+            setExpenses(
+                expenseCategories.map(({ id, name, expenses }) => ({
+                    id,
+                    name,
+                    amount:
+                        expenses !== undefined
+                            ? expenses.reduce(
+                                  (acc, { amount }) => acc + amount,
+                                  0,
+                              )
+                            : 0,
+                })),
+            )
+
+            setSelectedIncomes(
+                JSON.parse(localStorage.getItem(SELECTED_KEY) || '{}')
+                    .incomes || expenseCategories.map(({ id }) => String(id)),
+            )
+            setSelectedExpenses(
+                JSON.parse(localStorage.getItem(SELECTED_KEY) || '{}')
+                    .expenses || expenseCategories.map(({ id }) => String(id)),
+            )
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     useEffect(() => {
