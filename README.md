@@ -1,50 +1,73 @@
-# React + TypeScript + Vite
+# Finance: Project with Docker, Frontend, and Backend in Go
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Description
 
-Currently, two official plugins are available:
+This project uses Docker Compose to manage both frontend and backend services.
+The frontend is built with TypeScript, and the backend is implemented in Go.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Makefile Commands
 
-## Expanding the ESLint configuration
+Use the following Makefile commands to manage the project:
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-    languageOptions: {
-        // other options...
-        parserOptions: {
-            project: ['./tsconfig.node.json', './tsconfig.app.json'],
-            tsconfigRootDir: import.meta.dirname,
-        },
-    },
-})
+### 1. Start Services
+```sh
+make up
 ```
+Starts all services in detached mode using Docker Compose.
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-    // Set the react version
-    settings: { react: { version: '18.3' } },
-    plugins: {
-        // Add the react plugin
-        react,
-    },
-    rules: {
-        // other rules...
-        // Enable its recommended rules
-        ...react.configs.recommended.rules,
-        ...react.configs['jsx-runtime'].rules,
-    },
-})
+### 2. Stop Services
+```sh
+make down
 ```
+Stops and removes all running containers.
+
+### 3. Code Linting (ESLint)
+```sh
+make eslint
+```
+Runs ESLint to check the frontend code.
+
+### 4. Code Formatting (Prettier)
+```sh
+make prettier
+```
+Formats the frontend code using Prettier.
+
+### 5. Build Frontend
+```sh
+make yarn-build
+```
+Builds the frontend application.
+
+### 6. Create Database Migrations
+```sh
+make migration name=migration_name
+```
+Generates database migration files in the `migrations` directory. Replace `migration_name` with the desired name.
+
+- Two files will be created:
+    - `<timestamp>_migration_name.down.sql`
+    - `<timestamp>_migration_name.up.sql`
+
+## Project Structure
+- **frontend/**: Frontend application files.
+- **internal/**: Backend application written in Go.
+- **migrations/**: SQL scripts for managing database migrations.
+
+## Dependencies
+
+Ensure the following dependencies are installed:
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- [Make](https://www.gnu.org/software/make/)
+
+## Getting Started
+1. Ensure all dependencies are installed.
+2. Build and start the project:
+   ```sh
+   make up
+   ```
+3. To stop the project, use:
+   ```sh
+   make down
+   ```

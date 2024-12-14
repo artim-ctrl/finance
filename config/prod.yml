@@ -2,7 +2,7 @@ logger:
   encoding: console
 
 database:
-  dsn: postgresql://artim:4rx7AoTa6y7weleCZNYvHUp6WiouMDO9@dpg-ctcjhaaj1k6c73fh91d0-a/finance_9q5u
+  dsn: postgresql://user:user@postgres/finance?sslmode=disable
   debug: true
 
 auth:
@@ -10,4 +10,4 @@ auth:
   refresh_secret_key: pBCCOYZAXdwvpy7pg553
 
 frontend:
-  base_url: https://finance-frontend-2gge.onrender.com
+  base_url: http://212.193.61.50
