@@ -9,6 +9,7 @@ import NavbarProvider from 'Components/NavbarProvider'
 import Charts from 'Containers/Charts'
 import Pie from 'Containers/Pie'
 import Summary from 'Containers/Summary'
+import NotFound from 'Containers/Error/NotFound'
 
 const routesConfig = [
     {
@@ -45,6 +46,11 @@ const routesConfig = [
         path: ROUTES.SUMMARY,
         element: Summary,
         isAuthRequired: true,
+    },
+    {
+        path: ROUTES.NOT_FOUND,
+        element: NotFound,
+        isAuthRequired: false,
     },
 ]
 
