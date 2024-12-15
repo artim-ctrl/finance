@@ -48,7 +48,7 @@ func (r *Router) Setup(app *fiber.App) {
 
 	incomesGroup := apiGroup.Group("/incomes")
 	incomesGroup.Get("/:year/:month", r.incomesHandler.GetMapper, r.incomesHandler.Get)
-	incomesGroup.Post("/", r.incomesHandler.CreateMapper, r.incomesHandler.Create)
+	incomesGroup.Post("/:year/:month", r.incomesHandler.CreateMapper, r.incomesHandler.Create)
 	incomesGroup.Put("/", r.incomesHandler.UpdateMapper, r.incomesHandler.Update)
 
 	expensesGroup := apiGroup.Group("/expenses")

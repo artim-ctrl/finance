@@ -13,6 +13,7 @@ import { AxiosError } from 'axios'
 import { showError } from 'Services/notify'
 
 interface CreateIncomeProps {
+    currentDate: Date
     isOpen: boolean
     onClose: () => void
     existingCategories: { id: number; name: string }[]
@@ -39,6 +40,7 @@ const getDefaultCategoryId = (options: CategoryOption[]): string | null => {
 }
 
 const CreateIncome = ({
+    currentDate,
     isOpen,
     onClose,
     existingCategories,
@@ -103,7 +105,11 @@ const CreateIncome = ({
         }
 
         try {
-            await IncomeApi.create(createData)
+            await IncomeApi.create(
+                currentDate.getFullYear(),
+                currentDate.getMonth() + 1,
+                createData,
+            )
 
             form.reset()
             onIncomeCreated()

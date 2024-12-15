@@ -36,6 +36,8 @@ const Incomes = ({ currentDate }: IncomesProps) => {
     const { user } = useUser() as UserContextProps & { user: User }
 
     const loadCategories = async (currentDate: Date) => {
+        setIsLoading(true)
+
         const categories = (await IncomeApi.getCategories(
             currentDate.getFullYear(),
             currentDate.getMonth() + 1,
@@ -55,10 +57,12 @@ const Incomes = ({ currentDate }: IncomesProps) => {
             })),
         )
         setCategories(categories.map(({ id, name }) => ({ id, name })))
+
+        setIsLoading(false)
     }
 
     useEffect(() => {
-        loadCategories(currentDate).finally(() => setIsLoading(false))
+        loadCategories(currentDate)
     }, [currentDate])
 
     const handleAmountChange = async (id: number, newAmount: number) => {
@@ -142,6 +146,7 @@ const Incomes = ({ currentDate }: IncomesProps) => {
 
             {!isLoading && (
                 <CreateIncome
+                    currentDate={currentDate}
                     isOpen={isCreateIncomeModalOpen}
                     onClose={() => setIsCreateIncomeModalOpen(false)}
                     existingCategories={categories}

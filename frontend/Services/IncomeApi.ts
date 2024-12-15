@@ -10,8 +10,8 @@ class IncomeApi extends Api {
         return await this.get(`/v1/incomes/${year}/${month}`)
     }
 
-    async create(data: CreateIncomeData) {
-        return await this.post('/v1/incomes', data)
+    async create(year: number, month: number, data: CreateIncomeData) {
+        return await this.post(`/v1/incomes/${year}/${month}`, data)
     }
 
     async update(data: { id: number; amount: number }) {
