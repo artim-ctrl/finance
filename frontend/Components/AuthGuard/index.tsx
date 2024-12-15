@@ -29,7 +29,10 @@ const AuthGuard = ({ children, isAuthRequired }: AuthGuardProps) => {
         return <Navigate to={ROUTES.LOGIN} state={{ from: location }} />
     }
 
-    if (!isAuthRequired && isAuthenticated) {
+    if (
+        isAuthenticated &&
+        [ROUTES.LOGIN, ROUTES.REGISTER].includes(location.pathname)
+    ) {
         return <Navigate to={ROUTES.HOME} state={{ from: location }} />
     }
 
