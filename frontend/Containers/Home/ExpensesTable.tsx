@@ -205,6 +205,7 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
                                                 min={0}
                                                 decimalScale={2}
                                                 step={0.01}
+                                                hideControls
                                             />
                                         </Table.Td>
                                         <Table.Td>
@@ -292,6 +293,7 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
                                                         min={0}
                                                         decimalScale={2}
                                                         step={0.01}
+                                                        hideControls
                                                     />
                                                 </Table.Td>
                                             )

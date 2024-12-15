@@ -6,7 +6,7 @@ import {
     Flex,
     Box,
     LoadingOverlay,
-    Input,
+    NumberInput,
 } from '@mantine/core'
 import CreateIncome from './CreateIncome'
 import IncomeApi from 'Services/IncomeApi'
@@ -113,8 +113,7 @@ const Incomes = ({ currentDate }: IncomesProps) => {
                                 <Table.Tr key={index}>
                                     <Table.Td>{income.name}</Table.Td>
                                     <Table.Td>
-                                        <Input
-                                            type="number"
+                                        <NumberInput
                                             value={income.amount}
                                             onBlur={(e) =>
                                                 save(parseFloat(e.target.value))
@@ -127,6 +126,11 @@ const Incomes = ({ currentDate }: IncomesProps) => {
                                                     ),
                                                 )
                                             }
+                                            placeholder="0.00"
+                                            min={0}
+                                            decimalScale={2}
+                                            step={0.01}
+                                            hideControls
                                         />
                                     </Table.Td>
                                 </Table.Tr>
