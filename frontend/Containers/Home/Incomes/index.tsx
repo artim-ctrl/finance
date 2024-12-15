@@ -115,7 +115,7 @@ const Incomes = ({ currentDate }: IncomesProps) => {
                                     <Table.Td>
                                         <Input
                                             type="number"
-                                            defaultValue={income.amount}
+                                            value={income.amount}
                                             onBlur={(e) =>
                                                 save(parseFloat(e.target.value))
                                             }
