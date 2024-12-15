@@ -277,6 +277,13 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
                                                             saveDay(value)
                                                         }}
                                                         onKeyDown={(e) => {
+                                                            if (
+                                                                e.key !==
+                                                                'Enter'
+                                                            ) {
+                                                                return
+                                                            }
+
                                                             const value =
                                                                 parseFloat(
                                                                     e
