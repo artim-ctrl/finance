@@ -17,6 +17,3 @@ migration: # (use option name=migration_name)
 	@echo "\033[32mCreating migration files\033[39m"
 	touch ./migrations/`date +%s`_$(name).down.sql
 	touch ./migrations/`date +%s`_$(name).up.sql
-
-prod-build:
-	docker compose -f docker-compose.prod.yml up -d --build

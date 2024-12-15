@@ -2,7 +2,7 @@ logger:
   encoding: console
 
 database:
-  dsn: postgresql://user:user@postgres/finance?sslmode=disable
+  dsn: postgresql://postgres:Vxhq8RUFv1wTQvYEmuZ1V9@localhost:6433/finance?sslmode=disable
   debug: true
 
 auth:
