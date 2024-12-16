@@ -75,7 +75,21 @@ func (r *Repository) GetByDate(ctx context.Context, userID int64, date time.Time
 }
 
 func (r *Repository) UpdateIncome(ctx context.Context, i *Income) error {
-	_, err := r.db.NewUpdate().Model(i).WherePK().Set("amount = ?", i.Amount).Exec(ctx)
+	start := time.Date(i.Date.Year(), i.Date.Month(), 1, 0, 0, 0, 0, time.UTC)
+	end := time.Date(i.Date.Year(), i.Date.Month()+1, 1, 0, 0, 0, 0, time.UTC).Add(-time.Nanosecond)
+
+	income := &Income{}
+	err := r.db.NewSelect().Model(income).
+		Where("i.income_category_id = ?", i.IncomeCategoryID).
+		Where("i.date BETWEEN ? AND ?", start.Format("2006-01-02"), end.Format("2006-01-02")).
+		Scan(ctx)
+	if err != nil {
+		return err
+	}
+
+	income.Amount = i.Amount
+
+	_, err = r.db.NewUpdate().Model(income).WherePK().Exec(ctx)
 
 	return err
 }

@@ -155,10 +155,10 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
                 />
 
                 <Table.ScrollContainer minWidth={1000}>
-                    <Table striped mt="lg">
+                    <Table striped withColumnBorders mt="lg" ta="center">
                         <Table.Thead>
                             <Table.Tr>
-                                <Table.Th>Category</Table.Th>
+                                <Table.Th w="190">Category</Table.Th>
                                 <Table.Th>
                                     Planned expenses ({user.currency.currency})
                                 </Table.Th>
@@ -176,44 +176,66 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
                         </Table.Thead>
                         <Table.Tbody>
                             {categories.map((category) => {
-                                const save = (newAmount: string) => {
-                                    handleMonthlyExpenseChange(
-                                        category.id,
-                                        parseFloat(newAmount) || 0,
-                                    )
+                                const currentAmount =
+                                    category.monthly_expense_plans?.[0]
+                                        ?.amount ?? 0
+
+                                const save = (newAmount: number) => {
+                                    if (currentAmount != newAmount) {
+                                        handleMonthlyExpenseChange(
+                                            category.id,
+                                            newAmount,
+                                        )
+                                    }
                                 }
 
                                 return (
-                                    <Table.Tr key={category.id}>
-                                        <Table.Td>{category.name}</Table.Td>
-                                        <Table.Td>
+                                    <Table.Tr h="40" key={category.id}>
+                                        <Table.Td p="0">
+                                            {category.name}
+                                        </Table.Td>
+                                        <Table.Td p="0">
                                             <NumberInput
-                                                value={
-                                                    category
-                                                        .monthly_expense_plans?.[0]
-                                                        ?.amount || ''
-                                                }
+                                                value={String(
+                                                    currentAmount || '',
+                                                )}
                                                 onBlur={(e) =>
-                                                    save(e.target.value)
+                                                    save(
+                                                        parseFloat(
+                                                            e.target.value,
+                                                        ) || 0,
+                                                    )
                                                 }
-                                                onKeyDown={(e) =>
-                                                    e.key === 'Enter' &&
-                                                    save(e.currentTarget.value)
-                                                }
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        save(
+                                                            parseFloat(
+                                                                e.currentTarget
+                                                                    .value,
+                                                            ) || 0,
+                                                        )
+                                                    }
+                                                }}
                                                 style={{ width: '100px' }}
+                                                styles={{
+                                                    input: {
+                                                        textAlign: 'center',
+                                                    },
+                                                }}
                                                 placeholder="0.00"
                                                 min={0}
                                                 decimalScale={2}
                                                 step={0.01}
                                                 hideControls
+                                                variant="unstyled"
                                             />
                                         </Table.Td>
-                                        <Table.Td>
+                                        <Table.Td p="0">
                                             {calculateActualExpenses(
                                                 category,
                                             ).toLocaleString()}
                                         </Table.Td>
-                                        <Table.Td>
+                                        <Table.Td p="0">
                                             <span
                                                 style={{
                                                     color:
@@ -260,7 +282,11 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
                                             }
 
                                             return (
-                                                <Table.Td key={day}>
+                                                <Table.Td
+                                                    key={day}
+                                                    p="0"
+                                                    px="1"
+                                                >
                                                     <NumberInput
                                                         value={
                                                             dayExpense === 0
@@ -294,13 +320,20 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
                                                             saveDay(value)
                                                         }}
                                                         style={{
-                                                            width: '100px',
+                                                            minWidth: '60px',
                                                         }}
                                                         placeholder="0.00"
                                                         min={0}
                                                         decimalScale={2}
                                                         step={0.01}
                                                         hideControls
+                                                        variant="unstyled"
+                                                        styles={{
+                                                            input: {
+                                                                textAlign:
+                                                                    'center',
+                                                            },
+                                                        }}
                                                     />
                                                 </Table.Td>
                                             )
@@ -309,20 +342,20 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
                                 )
                             })}
                             <Table.Tr>
-                                <Table.Td>
+                                <Table.Td px="0">
                                     <strong>Totals</strong>
                                 </Table.Td>
-                                <Table.Td>
+                                <Table.Td px="0">
                                     <strong>
                                         {totalPlannedExpenses.toLocaleString()}
                                     </strong>
                                 </Table.Td>
-                                <Table.Td>
+                                <Table.Td px="0">
                                     <strong>
                                         {totalActualExpenses.toLocaleString()}
                                     </strong>
                                 </Table.Td>
-                                <Table.Td>
+                                <Table.Td px="0">
                                     <strong
                                         style={{
                                             color:
@@ -335,7 +368,7 @@ const ExpensesTable = ({ currentMonth }: ExpensesTableProps) => {
                                     </strong>
                                 </Table.Td>
                                 {daysInMonth.map((day) => (
-                                    <Table.Td key={day}>
+                                    <Table.Td key={day} px="0">
                                         <strong>
                                             {calculateDailyTotal(day).toFixed(
                                                 2,
