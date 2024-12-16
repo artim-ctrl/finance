@@ -67,7 +67,11 @@ const Incomes = ({ currentDate }: IncomesProps) => {
 
     const handleAmountChange = async (id: number, newAmount: number) => {
         try {
-            await IncomeApi.update({ id, amount: newAmount })
+            await IncomeApi.update(
+                currentDate.getFullYear(),
+                currentDate.getMonth() + 1,
+                { category_id: id, amount: newAmount },
+            )
 
             loadCategories(currentDate)
         } catch (error) {
@@ -135,6 +139,12 @@ const Incomes = ({ currentDate }: IncomesProps) => {
                                             decimalScale={2}
                                             step={0.01}
                                             hideControls
+                                            variant="unstyled"
+                                            styles={{
+                                                input: {
+                                                    textAlign: 'center',
+                                                },
+                                            }}
                                         />
                                     </Table.Td>
                                 </Table.Tr>

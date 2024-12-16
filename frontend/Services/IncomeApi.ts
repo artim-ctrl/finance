@@ -14,8 +14,12 @@ class IncomeApi extends Api {
         return await this.post(`/v1/incomes/${year}/${month}`, data)
     }
 
-    async update(data: { id: number; amount: number }) {
-        return await this.put('/v1/incomes', data)
+    async update(
+        year: number,
+        month: number,
+        data: { category_id: number; amount: number },
+    ) {
+        return await this.put(`/v1/incomes/${year}/${month}`, data)
     }
 }
 
