@@ -5,8 +5,8 @@ class PieApi extends Api {
         super(baseURL)
     }
 
-    async getExpenses() {
-        return await this.get('/v1/pie')
+    async getExpenses(from: string, to: string) {
+        return await this.get('/v1/pie', { from, to })
     }
 }
 
