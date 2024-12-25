@@ -83,7 +83,11 @@ func (r *Repository) UpdateIncome(ctx context.Context, i *Income) error {
 		Where("i.income_category_id = ?", i.IncomeCategoryID).
 		Where("i.date BETWEEN ? AND ?", start.Format("2006-01-02"), end.Format("2006-01-02")).
 		Scan(ctx)
-	if err != nil {
+	if errors.Is(err, sql.ErrNoRows) {
+		_, err = r.db.NewInsert().Model(i).Exec(ctx)
+
+		return err
+	} else if err != nil {
 		return err
 	}
 
