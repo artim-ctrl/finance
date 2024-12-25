@@ -62,5 +62,5 @@ func (r *Router) Setup(app *fiber.App) {
 	chartsGroup.Get("/", r.chartsHandler.Get)
 
 	pieGroup := apiGroup.Group("/pie")
-	pieGroup.Get("/", r.pieHandler.Get)
+	pieGroup.Get("/", r.pieHandler.GetMapper, r.pieHandler.Get)
 }
