@@ -59,7 +59,7 @@ func (h *Handler) Update(c *fiber.Ctx) error {
 
 	err := h.repo.UpdateIncome(c.UserContext(), income)
 	if err != nil {
-		return response.Error(c, "Couldn't create income: "+err.Error())
+		return response.Error(c, "Couldn't update income: "+err.Error())
 	}
 
 	return response.Created(c)
