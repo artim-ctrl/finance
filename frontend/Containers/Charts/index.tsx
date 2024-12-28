@@ -46,13 +46,13 @@ const Charts = () => {
                 withLegend
                 series={[
                     {
-                        label: 'Last 30 days',
-                        name: 'last30Days',
+                        label: 'December 2024',
+                        name: 'currentAmount',
                         color: 'indigo.6',
                     },
                     {
-                        label: 'Previous 30 days',
-                        name: 'previous30Days',
+                        label: 'November 2024',
+                        name: 'previousAmount',
                         color: 'teal.6',
                     },
                 ]}
