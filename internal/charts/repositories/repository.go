@@ -21,7 +21,7 @@ type ExpenseData struct {
 	PreviousAmount float64 `bun:"previous_amount" json:"previousAmount"`
 }
 
-func (r *Repository) Get(ctx context.Context, from, to, fromPrev, toPrev time.Time) ([]ExpenseData, error) {
+func (r *Repository) Get(ctx context.Context, userId int64, from, to, fromPrev, toPrev time.Time) ([]ExpenseData, error) {
 	var expenses []ExpenseData
 	err := r.db.NewSelect().
 		With("current_dates", r.db.NewSelect().
@@ -30,6 +30,8 @@ func (r *Repository) Get(ctx context.Context, from, to, fromPrev, toPrev time.Ti
 			ColumnExpr("cd.date, ROW_NUMBER() OVER (ORDER BY cd.date) AS num, SUM(e.amount) AS amount").
 			TableExpr("current_dates cd").
 			Join("LEFT JOIN expenses e ON e.date = cd.date").
+			Join("LEFT JOIN expense_categories ec ON ec.id = e.expense_category_id").
+			Where("ec.user_id = ?", userId).
 			Group("cd.date")).
 		With("previous_dates", r.db.NewSelect().
 			ColumnExpr("DATE(GENERATE_SERIES(?, ?, INTERVAL '1' DAY)) AS date", fromPrev.Format(time.DateOnly), toPrev.Format(time.DateOnly))).
@@ -37,6 +39,8 @@ func (r *Repository) Get(ctx context.Context, from, to, fromPrev, toPrev time.Ti
 			ColumnExpr("pd.date, ROW_NUMBER() OVER (ORDER BY pd.date) AS num, SUM(e.amount) AS amount").
 			TableExpr("previous_dates pd").
 			Join("LEFT JOIN expenses e ON e.date = pd.date").
+			Join("LEFT JOIN expense_categories ec ON ec.id = e.expense_category_id").
+			Where("ec.user_id = ?", userId).
 			Group("pd.date")).
 		TableExpr("current c").
 		ColumnExpr("c.date, COALESCE(c.amount, 0) AS current_amount, COALESCE(p.amount, 0) AS previous_amount").
