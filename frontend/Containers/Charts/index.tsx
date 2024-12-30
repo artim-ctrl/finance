@@ -21,7 +21,9 @@ const Charts = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [error, setError] = useState<string | null>(null)
 
-    const fetchData = async (categories: string[] | null = null) => {
+    const fetchData = async (
+        categories: string[] | null = null,
+    ): Promise<{ expenses: Expense[]; categories: Category[] }> => {
         try {
             const response = (await ChartsApi.getExpenses(categories)) as {
                 expenses: Expense[]
@@ -30,18 +32,25 @@ const Charts = () => {
 
             setExpensesData(response.expenses as Expense[])
             setCategories(response.categories as Category[])
+
+            return response
         } catch {
             setError('Error fetching expenses data')
         } finally {
             setIsLoading(false)
         }
+
+        return {
+            expenses: [],
+            categories: [],
+        }
     }
 
     useEffect(() => {
-        fetchData().then(() => {
+        fetchData().then(({ categories }) => {
             setSelectedCategories(categories.map(({ id }) => String(id)))
         })
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [])
 
     const onSelectCategory = (value: string[]) => {
         setSelectedCategories(value)
@@ -59,7 +68,9 @@ const Charts = () => {
 
     return (
         <Container size="xl" mt="md">
-            <Title order={2}>Expense Trends</Title>
+            <Title order={2} mb="md">
+                Expense Trends
+            </Title>
 
             <Chip.Group
                 multiple
@@ -76,6 +87,7 @@ const Charts = () => {
             </Chip.Group>
 
             <LineChart
+                mt="md"
                 h={400}
                 data={expensesData}
                 dataKey="date"
