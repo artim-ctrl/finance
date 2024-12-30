@@ -5,8 +5,10 @@ class ChartsApi extends Api {
         super(baseURL)
     }
 
-    async getExpenses() {
-        return await this.get('/v1/charts')
+    async getExpenses(categories: string[] | null) {
+        return await this.get('/v1/charts', {
+            categories: categories ?? undefined,
+        })
     }
 }
 
