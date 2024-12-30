@@ -52,40 +52,36 @@ func (r *Repository) Get(
 	fromPrev,
 	toPrev time.Time,
 ) ([]ExpenseData, error) {
-	currentSub := r.db.NewSelect().
-		ColumnExpr("cd.date, ROW_NUMBER() OVER (ORDER BY cd.date) AS num, SUM(e.amount) AS amount").
-		TableExpr("current_dates cd").
-		Join("LEFT JOIN expenses e ON e.date = cd.date").
-		Join("LEFT JOIN expense_categories ec ON ec.id = e.expense_category_id").
-		Where("ec.user_id = ?", userId).
-		Group("cd.date")
+	categoriesSub := r.db.NewSelect().
+		TableExpr("expense_categories ec").
+		Where("ec.user_id = ?", userId)
 
 	if len(categories) > 0 {
-		currentSub = currentSub.
-			Where("ec.id IN (?)", bun.In(categories))
-	}
-
-	previousSub := r.db.NewSelect().
-		ColumnExpr("pd.date, ROW_NUMBER() OVER (ORDER BY pd.date) AS num, SUM(e.amount) AS amount").
-		TableExpr("previous_dates pd").
-		Join("LEFT JOIN expenses e ON e.date = pd.date").
-		Join("LEFT JOIN expense_categories ec ON ec.id = e.expense_category_id").
-		Where("ec.user_id = ?", userId).
-		Group("pd.date")
-
-	if len(categories) > 0 {
-		previousSub = previousSub.
+		categoriesSub = categoriesSub.
 			Where("ec.id IN (?)", bun.In(categories))
 	}
 
 	var expenses []ExpenseData
 	err := r.db.NewSelect().
+		With("categories", categoriesSub).
+		With("expenses2", r.db.NewSelect().
+			ColumnExpr("e.date, e.amount").
+			TableExpr("expenses e").
+			Join("JOIN categories c ON c.id = e.expense_category_id")).
 		With("current_dates", r.db.NewSelect().
 			ColumnExpr("DATE(GENERATE_SERIES(?, ?, INTERVAL '1' DAY)) AS date", from.Format(time.DateOnly), to.Format(time.DateOnly))).
-		With("current", currentSub).
+		With("current", r.db.NewSelect().
+			ColumnExpr("cd.date, ROW_NUMBER() OVER (ORDER BY cd.date) AS num, SUM(e.amount) AS amount").
+			TableExpr("current_dates cd").
+			Join("LEFT JOIN expenses2 e ON e.date = cd.date").
+			Group("cd.date")).
 		With("previous_dates", r.db.NewSelect().
 			ColumnExpr("DATE(GENERATE_SERIES(?, ?, INTERVAL '1' DAY)) AS date", fromPrev.Format(time.DateOnly), toPrev.Format(time.DateOnly))).
-		With("previous", previousSub).
+		With("previous", r.db.NewSelect().
+			ColumnExpr("pd.date, ROW_NUMBER() OVER (ORDER BY pd.date) AS num, SUM(e.amount) AS amount").
+			TableExpr("previous_dates pd").
+			Join("LEFT JOIN expenses2 e ON e.date = pd.date").
+			Group("pd.date")).
 		TableExpr("current c").
 		ColumnExpr("c.date, COALESCE(c.amount, 0) AS current_amount, COALESCE(p.amount, 0) AS previous_amount").
 		Join("LEFT JOIN previous p ON c.num = p.num").
