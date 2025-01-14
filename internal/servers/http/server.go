@@ -86,6 +86,4 @@ func (s *Server) Stop(_ context.Context) {
 	if err := s.server.Shutdown(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		s.logger.Error("error while stopping server", zap.Error(err))
 	}
-
-	return
 }
