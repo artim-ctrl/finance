@@ -15,7 +15,7 @@ type Date struct {
 }
 
 func (d *Date) UnmarshalJSON(b []byte) error {
-	date, err := time.Parse(`"2006-01-02"`, string(b))
+	date, err := time.Parse(time.DateOnly, string(b))
 	if err != nil {
 		return err
 	}
